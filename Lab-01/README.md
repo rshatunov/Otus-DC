@@ -37,7 +37,7 @@ Leaf-02|10.2.1.3/32|10.2.2.3/32
 Leaf-03|10.2.1.5/32|10.2.5.1/32
 ### Настройка оборудования
  <details>
-<summary>  Настройка Leaf-03: </summary>
+<summary>  Настройка Spine-01: </summary>
 
 ```
 hostname Spine-01
@@ -61,10 +61,9 @@ interface loopback1
   ip address 10.0.1.0/32
 ```
 </details>
+ <details>
+<summary>  Настройка Spine-02: </summary>
 
-<details>
- 
-#### Настройка Spine-02
 ```
 hostname Spine-02
 
@@ -86,6 +85,7 @@ interface Ethernet1/3
 interface loopback1
   ip address 10.0.2.0/32
 ```
+</details>
 #### Настройка Leaf-01
 ```
 hostname Leaf-01
