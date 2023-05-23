@@ -114,7 +114,10 @@ interface Ethernet1/2
 interface loopback1
   ip address 10.1.1.2/32
 ```
-#### Настройка Leaf-03
+
+<details>
+<summary> Настройка Leaf-03<summary>
+
 ```
 hostname Leaf-03
 
@@ -131,3 +134,30 @@ interface Ethernet1/2
 interface loopback1
   ip address 10.1.1.3/32
 ```
+</details>
+<details>
+<summary> Проверка: </summary>
+
+```
+VPCS> ping 192.168.3.3
+
+192.168.3.3 icmp_seq=1 ttl=64 time=0.001 ms
+192.168.3.3 icmp_seq=2 ttl=64 time=0.001 ms
+192.168.3.3 icmp_seq=3 ttl=64 time=0.001 ms
+192.168.3.3 icmp_seq=4 ttl=64 time=0.001 ms
+192.168.3.3 icmp_seq=5 ttl=64 time=0.001 ms
+```
+Проверка параметров:
+```
+VPCS> show ip
+
+NAME        : VPCS[1]
+IP/MASK     : 192.168.3.3/24
+GATEWAY     : 192.168.3.1
+DNS         :
+MAC         : 00:50:79:66:68:04
+LPORT       : 20000
+RHOST:PORT  : 127.0.0.1:30000
+MTU         : 1500
+```
+</details>
