@@ -60,6 +60,7 @@ interface loopback1
   ip address 10.0.1.0/32
 ```
  </details>
+ 
 #### Настройка Spine-02
 ```
 hostname Spine-02
