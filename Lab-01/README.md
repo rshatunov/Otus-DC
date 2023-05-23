@@ -137,7 +137,7 @@ interface loopback1
 </details>
 
  <details>
-<summary> #### Проверка: </summary>
+<summary>  Настройка Leaf-03: </summary>
 
 ```
 hostname Leaf-03
