@@ -38,7 +38,7 @@ Leaf-03|10.2.1.5/32|10.2.5.1/32
 ### Настройка оборудования
  <details>
 <summary>  Настройка Spine-01: </summary>
-```
+```  
 hostname Spine-01
 
 interface Ethernet1/1
