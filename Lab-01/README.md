@@ -115,7 +115,7 @@ interface loopback1
   ip address 10.1.1.2/32
 ```
 
-<details>
+ <details>
 <summary> Настройка Leaf-03: <summary>
 
 ```
