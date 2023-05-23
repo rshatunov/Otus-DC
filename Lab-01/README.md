@@ -135,3 +135,24 @@ interface loopback1
   ip address 10.1.1.3/32
 ```
 </details>
+
+ <details>
+<summary> Проверка: </summary>
+
+```
+hostname Leaf-03
+
+interface Ethernet1/1
+  no switchport
+  ip address 10.2.1.5/31
+  no shutdown
+
+interface Ethernet1/2
+  no switchport
+  ip address 10.2.2.5/31
+  no shutdown
+
+interface loopback1
+  ip address 10.1.1.3/32
+```
+</details>
