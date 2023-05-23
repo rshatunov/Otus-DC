@@ -86,7 +86,9 @@ interface loopback1
   ip address 10.0.2.0/32
 ```
 </details>
-#### Настройка Leaf-01
+ <details>
+<summary>  Настройка Leaf-01: </summary>
+
 ```
 hostname Leaf-01
 
@@ -103,7 +105,10 @@ interface Ethernet1/2
 interface loopback1
   ip address 10.1.1.1/32
 ```
-#### Настройка Leaf-02
+</details>
+ <details>
+<summary>  Настройка Leaf-02: </summary>
+
 ```
 hostname Leaf-02
 
@@ -120,7 +125,7 @@ interface Ethernet1/2
 interface loopback1
   ip address 10.1.1.2/32
 ```
-
+</details>
  <details>
 <summary>  Настройка Leaf-03: </summary>
 
