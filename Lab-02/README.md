@@ -201,7 +201,7 @@ router ospf 1
    maximum-paths 16
 ```
 </details>
-### Проверка настроек
+### Проверка настроек  
 #### Leaf-01  
 ```  
 Leaf-01#show ip ospf neighbor  
