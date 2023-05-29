@@ -203,7 +203,7 @@ router ospf 1
 </details>
 ### Проверка настроек
 #### Leaf-01
-```
+```  
 Leaf-01#show ip ospf neighbor
 Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
 10.0.1.0        1        default  0   FULL                   00:00:29    10.2.1.0        Ethernet1
