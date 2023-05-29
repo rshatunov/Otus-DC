@@ -265,7 +265,136 @@ PING 10.1.1.3 (10.1.1.3) 72(100) bytes of data.
 
 --- 10.1.1.3 ping statistics ---
 5 packets transmitted, 5 received, 0% packet loss, time 77ms
-rtt min/avg/max/mdev = 6.861/14.157/32.925/9.722 ms, pipe 2, ipg/ewma 19.273/14.341 ms1
+rtt min/avg/max/mdev = 6.861/14.157/32.925/9.722 ms, pipe 2, ipg/ewma 19.273/14.341 ms
 ```
 </details>
 
+ <details>
+<summary> Leaf-02: </summary>
+
+```
+Leaf-02#show ip ospf neighbor
+Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
+10.0.2.0        1        default  0   FULL                   00:00:32    10.2.2.2        Ethernet2
+10.0.1.0        1        default  0   FULL                   00:00:37    10.2.1.2        Ethernet1
+
+Leaf-02#show ip route
+
+VRF: default
+Codes: C - connected, S - static, K - kernel,
+       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
+       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
+       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
+       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
+       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
+       NG - Nexthop Group Static Route, V - VXLAN Control Service,
+       DH - DHCP client installed default route, M - Martian,
+       DP - Dynamic Policy Route, L - VRF Leaked,
+       G  - gRIBI, RC - Route Cache Route
+
+Gateway of last resort is not set
+
+ O        10.0.1.0/32 [110/20] via 10.2.1.2, Ethernet1
+ O        10.0.2.0/32 [110/20] via 10.2.2.2, Ethernet2
+ O        10.1.1.1/32 [110/30] via 10.2.1.2, Ethernet1
+                               via 10.2.2.2, Ethernet2
+ C        10.1.1.2/32 is directly connected, Loopback1
+ O        10.1.1.3/32 [110/30] via 10.2.1.2, Ethernet1
+                               via 10.2.2.2, Ethernet2
+ O        10.2.1.0/31 [110/20] via 10.2.1.2, Ethernet1
+ C        10.2.1.2/31 is directly connected, Ethernet1
+ O        10.2.1.4/31 [110/20] via 10.2.1.2, Ethernet1
+ O        10.2.2.0/31 [110/20] via 10.2.2.2, Ethernet2
+ C        10.2.2.2/31 is directly connected, Ethernet2
+ O        10.2.2.4/31 [110/20] via 10.2.2.2, Ethernet2
+
+Leaf-02#ping 10.1.1.1
+PING 10.1.1.1 (10.1.1.1) 72(100) bytes of data.
+80 bytes from 10.1.1.1: icmp_seq=1 ttl=63 time=9.98 ms
+80 bytes from 10.1.1.1: icmp_seq=2 ttl=63 time=6.13 ms
+80 bytes from 10.1.1.1: icmp_seq=3 ttl=63 time=7.16 ms
+80 bytes from 10.1.1.1: icmp_seq=4 ttl=63 time=5.91 ms
+80 bytes from 10.1.1.1: icmp_seq=5 ttl=63 time=5.15 ms
+
+--- 10.1.1.1 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 41ms
+rtt min/avg/max/mdev = 5.159/6.871/9.986/1.685 ms, ipg/ewma 10.409/8.344 ms
+
+Leaf-02#ping 10.1.1.3
+PING 10.1.1.3 (10.1.1.3) 72(100) bytes of data.
+80 bytes from 10.1.1.3: icmp_seq=1 ttl=63 time=8.80 ms
+80 bytes from 10.1.1.3: icmp_seq=2 ttl=63 time=5.67 ms
+80 bytes from 10.1.1.3: icmp_seq=3 ttl=63 time=5.88 ms
+80 bytes from 10.1.1.3: icmp_seq=4 ttl=63 time=8.60 ms
+80 bytes from 10.1.1.3: icmp_seq=5 ttl=63 time=12.7 ms
+
+--- 10.1.1.3 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 37ms
+rtt min/avg/max/mdev = 5.672/8.339/12.742/2.565 ms, ipg/ewma 9.275/8.732 ms
+```
+</details>
+
+ <details>
+<summary> Leaf-03: </summary>
+
+```
+Leaf-03#sh ip ospf neighbor
+Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
+10.0.1.0        1        default  0   FULL                   00:00:31    10.2.1.4        Ethernet1
+10.0.2.0        1        default  0   FULL                   00:00:35    10.2.2.4        Ethernet2
+
+Leaf-03#show ip route
+
+VRF: default
+Codes: C - connected, S - static, K - kernel,
+       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
+       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
+       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
+       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
+       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
+       NG - Nexthop Group Static Route, V - VXLAN Control Service,
+       DH - DHCP client installed default route, M - Martian,
+       DP - Dynamic Policy Route, L - VRF Leaked,
+       G  - gRIBI, RC - Route Cache Route
+
+Gateway of last resort is not set
+
+ O        10.0.1.0/32 [110/20] via 10.2.1.4, Ethernet1
+ O        10.0.2.0/32 [110/20] via 10.2.2.4, Ethernet2
+ O        10.1.1.1/32 [110/30] via 10.2.1.4, Ethernet1
+                               via 10.2.2.4, Ethernet2
+ O        10.1.1.2/32 [110/30] via 10.2.1.4, Ethernet1
+                               via 10.2.2.4, Ethernet2
+ C        10.1.1.3/32 is directly connected, Loopback1
+ O        10.2.1.0/31 [110/20] via 10.2.1.4, Ethernet1
+ O        10.2.1.2/31 [110/20] via 10.2.1.4, Ethernet1
+ C        10.2.1.4/31 is directly connected, Ethernet1
+ O        10.2.2.0/31 [110/20] via 10.2.2.4, Ethernet2
+ O        10.2.2.2/31 [110/20] via 10.2.2.4, Ethernet2
+ C        10.2.2.4/31 is directly connected, Ethernet2
+
+Leaf-03#ping 10.1.1.1
+PING 10.1.1.1 (10.1.1.1) 72(100) bytes of data.
+80 bytes from 10.1.1.1: icmp_seq=1 ttl=63 time=10.1 ms
+80 bytes from 10.1.1.1: icmp_seq=2 ttl=63 time=7.44 ms
+80 bytes from 10.1.1.1: icmp_seq=3 ttl=63 time=6.08 ms
+80 bytes from 10.1.1.1: icmp_seq=4 ttl=63 time=5.85 ms
+80 bytes from 10.1.1.1: icmp_seq=5 ttl=63 time=7.27 ms
+
+--- 10.1.1.1 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 38ms
+rtt min/avg/max/mdev = 5.856/7.362/10.147/1.527 ms, ipg/ewma 9.737/8.703 ms
+
+Leaf-03#ping 10.1.1.2
+PING 10.1.1.2 (10.1.1.2) 72(100) bytes of data.
+80 bytes from 10.1.1.2: icmp_seq=1 ttl=63 time=8.56 ms
+80 bytes from 10.1.1.2: icmp_seq=2 ttl=63 time=5.62 ms
+80 bytes from 10.1.1.2: icmp_seq=3 ttl=63 time=7.04 ms
+80 bytes from 10.1.1.2: icmp_seq=4 ttl=63 time=5.20 ms
+80 bytes from 10.1.1.2: icmp_seq=5 ttl=63 time=5.96 ms
+
+--- 10.1.1.2 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 38ms
+rtt min/avg/max/mdev = 5.206/6.480/8.562/1.206 ms, ipg/ewma 9.596/7.479 ms
+```
+</details>
