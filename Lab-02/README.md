@@ -204,9 +204,9 @@ router ospf 1
 
 ### Проверка настроек  
 
-#### Leaf-01  
+<summary> Leaf-01: </summary>
 
-```  
+```
 Leaf-01#show ip ospf neighbor  
 Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
 10.0.1.0        1        default  0   FULL                   00:00:29    10.2.1.0        Ethernet1
@@ -266,3 +266,5 @@ PING 10.1.1.3 (10.1.1.3) 72(100) bytes of data.
 5 packets transmitted, 5 received, 0% packet loss, time 77ms
 rtt min/avg/max/mdev = 6.861/14.157/32.925/9.722 ms, pipe 2, ipg/ewma 19.273/14.341 ms1
 ```
+</details>
+
