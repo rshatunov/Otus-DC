@@ -17,28 +17,41 @@ interface Ethernet1
    description ### Link to Leaf-01 int Eth1 ###
    no switchport
    ip address 10.2.1.0/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Ethernet2
    description ### Link to Leaf-02 int Eth1 ###
    no switchport
    ip address 10.2.1.2/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Ethernet3
    description ### Link to Leaf-03 int Eth1 ###
    no switchport
    ip address 10.2.1.4/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Loopback1
    ip address 10.0.1.0/32
 !
 router ospf 1
    router-id 10.0.1.0
+   bfd default
    passive-interface default
    no passive-interface Ethernet1
    no passive-interface Ethernet2
@@ -61,28 +74,41 @@ interface Ethernet1
    description ### Link to Leaf-01 int Eth2 ###
    no switchport
    ip address 10.2.2.0/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Ethernet2
    description ### Link to Leaf-02 int Eth2 ###
    no switchport
    ip address 10.2.2.2/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Ethernet3
    description ### Link to Leaf-03 int Eth2 ###
    no switchport
    ip address 10.2.2.4/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Loopback1
    ip address 10.0.2.0/32
 !
 router ospf 1
    router-id 10.0.2.0
+   bfd default
    passive-interface default
    no passive-interface Ethernet1
    no passive-interface Ethernet2
@@ -105,21 +131,30 @@ interface Ethernet1
    description ### Link to Spine-01 int Eth1 ###
    no switchport
    ip address 10.2.1.1/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Ethernet2
    description ### Link to Spine-02 int Eth1 ###
    no switchport
    ip address 10.2.2.1/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Loopback1
    ip address 10.1.1.1/32
 !
 router ospf 1
    router-id 10.1.1.1
+   bfd default
    passive-interface default
    no passive-interface Ethernet1
    no passive-interface Ethernet2
@@ -141,21 +176,30 @@ interface Ethernet1
    description ### Link to Spine-01 int Eth2 ###
    no switchport
    ip address 10.2.1.3/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Ethernet2
    description ### Link to Spine-02 int Eth2 ###
    no switchport
    ip address 10.2.2.3/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Loopback1
    ip address 10.1.1.2/32
 !
 router ospf 1
    router-id 10.1.1.2
+   bfd default
    passive-interface default
    no passive-interface Ethernet1
    no passive-interface Ethernet2
@@ -176,22 +220,30 @@ ip routing
 interface Ethernet1
    description ### Link to Spine-01 int Eth3 ###
    no switchport
-   ip address 10.2.1.5/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Ethernet2
    description ### Link to Spine-02 int Eth3 ###
    no switchport
    ip address 10.2.2.5/31
+   bfd interval 50 min-rx 50 multiplier 3
+   ip ospf neighbor bfd
    ip ospf network point-to-point
+   ip ospf authentication message-digest
    ip ospf area 0.0.0.0
+   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
 !
 interface Loopback1
    ip address 10.1.1.3/32
 !
 router ospf 1
    router-id 10.1.1.3
+   bfd default
    passive-interface default
    no passive-interface Ethernet1
    no passive-interface Ethernet2
@@ -212,6 +264,19 @@ Leaf-01#show ip ospf neighbor
 Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
 10.0.1.0        1        default  0   FULL                   00:00:29    10.2.1.0        Ethernet1
 10.0.2.0        1        default  0   FULL                   00:00:38    10.2.2.0        Ethernet2
+
+Leaf-01#sh bfd peers
+VRF name: default
+-----------------
+DstAddr       MyDisc    YourDisc  Interface/Transport    Type           LastUp
+--------- ----------- ----------- -------------------- ------- ----------------
+10.2.1.0  2408191980   114002610        Ethernet1(14)  normal   05/29/23 09:29
+10.2.2.0  2603905089  1304567596        Ethernet2(15)  normal   05/29/23 09:18
+
+   LastDown            LastDiag    State
+-------------- ------------------- -----
+         NA       No Diagnostic       Up
+         NA       No Diagnostic       Up
 
 Leaf-01#show ip route
 
@@ -278,6 +343,19 @@ Neighbor ID     Instance VRF      Pri State                  Dead Time   Address
 10.0.2.0        1        default  0   FULL                   00:00:32    10.2.2.2        Ethernet2
 10.0.1.0        1        default  0   FULL                   00:00:37    10.2.1.2        Ethernet1
 
+Leaf-02#sh bfd peers
+VRF name: default
+-----------------
+DstAddr       MyDisc    YourDisc  Interface/Transport    Type           LastUp
+--------- ----------- ----------- -------------------- ------- ----------------
+10.2.1.2  3462013340  1357145776        Ethernet1(13)  normal   05/29/23 09:19
+10.2.2.2  3337484190  1943856877        Ethernet2(14)  normal   05/29/23 09:19
+
+   LastDown            LastDiag    State
+-------------- ------------------- -----
+         NA       No Diagnostic       Up
+         NA       No Diagnostic       Up
+
 Leaf-02#show ip route
 
 VRF: default
@@ -343,6 +421,19 @@ Neighbor ID     Instance VRF      Pri State                  Dead Time   Address
 10.0.1.0        1        default  0   FULL                   00:00:31    10.2.1.4        Ethernet1
 10.0.2.0        1        default  0   FULL                   00:00:35    10.2.2.4        Ethernet2
 
+Leaf-03#sh bfd peers
+VRF name: default
+-----------------
+DstAddr       MyDisc    YourDisc  Interface/Transport    Type           LastUp
+--------- ----------- ----------- -------------------- ------- ----------------
+10.2.1.4  1649365958   761178781        Ethernet1(11)  normal   05/29/23 09:19
+10.2.2.4  4117607006  2666863911        Ethernet2(12)  normal   05/29/23 09:19
+
+   LastDown            LastDiag    State
+-------------- ------------------- -----
+         NA       No Diagnostic       Up
+         NA       No Diagnostic       Up
+         
 Leaf-03#show ip route
 
 VRF: default
