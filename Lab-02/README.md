@@ -10,24 +10,42 @@
 
 ```
 hostname Spine-01
-
-interface Ethernet1/1
-  no switchport
-  ip address 10.2.1.0/31
-  no shutdown
-
-interface Ethernet1/2
-  no switchport
-  ip address 10.2.1.2/31
-  no shutdown
-
-interface Ethernet1/3
-  no switchport
-  ip address 10.2.1.4/31
-  no shutdown
-
-interface loopback1
-  ip address 10.0.1.0/32
+!
+ip routing
+!
+interface Ethernet1
+   description ### Link to Leaf-01 int Eth1 ###
+   no switchport
+   ip address 10.2.1.0/31
+   ip ospf network point-to-point
+   ip ospf area 0.0.0.0
+!
+interface Ethernet2
+   description ### Link to Leaf-02 int Eth1 ###
+   no switchport
+   ip address 10.2.1.2/31
+   ip ospf network point-to-point
+   ip ospf area 0.0.0.0
+!
+interface Ethernet3
+   description ### Link to Leaf-03 int Eth1 ###
+   no switchport
+   ip address 10.2.1.4/31
+   ip ospf network point-to-point
+   ip ospf area 0.0.0.0
+!
+interface Loopback1
+   ip address 10.0.1.0/32
+!
+router ospf 1
+   router-id 10.0.1.0
+   passive-interface default
+   no passive-interface Ethernet1
+   no passive-interface Ethernet2
+   no passive-interface Ethernet3
+   network 10.0.0.0/16 area 0.0.0.0
+   network 10.2.0.0/16 area 0.0.0.0
+   max-lsa 12000
 ```
 </details>
  <details>
