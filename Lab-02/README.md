@@ -201,6 +201,7 @@ router ospf 1
    maximum-paths 16
 ```
 </details>
+
 ### Проверка настроек  
 
 #### Leaf-01  
