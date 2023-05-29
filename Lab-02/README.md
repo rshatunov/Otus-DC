@@ -204,6 +204,7 @@ router ospf 1
 
 ### Проверка настроек  
 
+ <details>
 <summary> Leaf-01: </summary>
 
 ```
