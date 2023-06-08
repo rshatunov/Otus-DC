@@ -1,4 +1,4 @@
-# LAB-02
+# LAB-03
 # Underlay. IS-IS
 ### Цели
 - Настроить IS-IS для Underlay сети.
@@ -62,7 +62,7 @@ set interfaces em1 description "### Link to vQFX-PFE int em1 ###"
 set interfaces em1.0 family inet address 169.254.0.2/24
 set interfaces lo0.0 family inet address 10.0.2.0/32
 
- #### Настройка IS-IS ####
+#### Настройка IS-IS ####
 set interfaces lo0.0 family iso address 49.0001.0100.0000.2000.00
 set interfaces xe-0/0/1.0 family iso
 set interfaces xe-0/0/2.0 family iso
@@ -91,134 +91,99 @@ set protocols isis interface interface lo0.0 passive
 <summary>  Настройка Leaf-01: </summary>
 
 ```
-hostname Leaf-01
-!
-ip routing
-!
-interface Ethernet1
-   description ### Link to Spine-01 int Eth1 ###
-   no switchport
-   ip address 10.2.1.1/31
-   bfd interval 50 min-rx 50 multiplier 3
-   ip ospf neighbor bfd
-   ip ospf network point-to-point
-   ip ospf authentication message-digest
-   ip ospf area 0.0.0.0
-   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
-!
-interface Ethernet2
-   description ### Link to Spine-02 int Eth1 ###
-   no switchport
-   ip address 10.2.2.1/31
-   bfd interval 50 min-rx 50 multiplier 3
-   ip ospf neighbor bfd
-   ip ospf network point-to-point
-   ip ospf authentication message-digest
-   ip ospf area 0.0.0.0
-   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
-!
-interface Loopback1
-   ip address 10.1.1.1/32
-!
-router ospf 1
-   router-id 10.1.1.1
-   bfd default
-   passive-interface default
-   no passive-interface Ethernet1
-   no passive-interface Ethernet2
-   network 10.1.0.0/16 area 0.0.0.0
-   network 10.2.0.0/16 area 0.0.0.0
-   max-lsa 12000
-   maximum-paths 16
+#### Базовая настройка ####
+set system host-name Leaf-01
+set interfaces xe-0/0/1 "### Link to Spine-01 int xe-0/0/1 ###"
+set interfaces xe-0/0/1.0 family inet address 10.2.1.1/31
+set interfaces xe-0/0/2 "### Link to Spine-02 int xe-0/0/1 ###"
+set interfaces xe-0/0/2.0 family inet address 10.2.2.1/31
+set interfaces em1 description "### Link to vQFX-PFE int em1 ###"
+set interfaces em1.0 family inet address 169.254.0.2/24
+set interfaces lo0.0 family inet address 10.1.1.1/32
+
+#### Настройка IS-IS ####
+set interfaces lo0.0 family iso address 49.0001.0100.0100.1001.00
+set interfaces xe-0/0/1.0 family iso
+set interfaces xe-0/0/2.0 family iso
+set protocols isis level 2 wide-metrics-only
+set protocols isis level 1 disable
+set protocols isis interface xe-0/0/1.0 point-to-point
+set protocols isis interface xe-0/0/1.0 family inet bfd-liveness-detection minimum-interval 200 multiplier 3
+set protocols isis interface xe-0/0/1.0 level 2 metric 10
+set protocols isis interface xe-0/0/1.0 level 2 hello-authentication-key "$9$t0AHuRSMWx-dsBIdbsgJZtu0ISr"
+set protocols isis interface xe-0/0/1.0 level 2 hello-authentication-type md5
+set protocols isis interface xe-0/0/2.0 point-to-point
+set protocols isis interface xe-0/0/2.0 family inet bfd-liveness-detection minimum-interval 200 multiplier 3
+set protocols isis interface xe-0/0/2.0 level 2 metric 10
+set protocols isis interface xe-0/0/2.0 level 2 hello-authentication-key "$9$t0AHuRSMWx-dsBIdbsgJZtu0ISr"
+set protocols isis interface xe-0/0/2.0 level 2 hello-authentication-type md5
+set protocols isis interface interface lo0.0 passive
 ```
 </details>
  <details>
 <summary>  Настройка Leaf-02: </summary>
 
 ```
-hostname Leaf-02
-!
-ip routing
-!
-interface Ethernet1
-   description ### Link to Spine-01 int Eth2 ###
-   no switchport
-   ip address 10.2.1.3/31
-   bfd interval 50 min-rx 50 multiplier 3
-   ip ospf neighbor bfd
-   ip ospf network point-to-point
-   ip ospf authentication message-digest
-   ip ospf area 0.0.0.0
-   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
-!
-interface Ethernet2
-   description ### Link to Spine-02 int Eth2 ###
-   no switchport
-   ip address 10.2.2.3/31
-   bfd interval 50 min-rx 50 multiplier 3
-   ip ospf neighbor bfd
-   ip ospf network point-to-point
-   ip ospf authentication message-digest
-   ip ospf area 0.0.0.0
-   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
-!
-interface Loopback1
-   ip address 10.1.1.2/32
-!
-router ospf 1
-   router-id 10.1.1.2
-   bfd default
-   passive-interface default
-   no passive-interface Ethernet1
-   no passive-interface Ethernet2
-   network 10.1.0.0/16 area 0.0.0.0
-   network 10.2.0.0/16 area 0.0.0.0
-   max-lsa 12000
-   maximum-paths 16
+#### Базовая настройка ####
+set system host-name Leaf-02
+set interfaces xe-0/0/1 "### Link to Spine-01 int xe-0/0/2 ###"
+set interfaces xe-0/0/1.0 family inet address 10.2.1.3/31
+set interfaces xe-0/0/2 "### Link to Spine-02 int xe-0/0/2 ###"
+set interfaces xe-0/0/2.0 family inet address 10.2.2.3/31
+set interfaces em1 description "### Link to vQFX-PFE int em1 ###"
+set interfaces em1.0 family inet address 169.254.0.2/24
+set interfaces lo0.0 family inet address 10.1.1.2/32
+
+#### Настройка IS-IS ####
+set interfaces lo0.0 family iso address 49.0001.0100.0100.1002.00
+set interfaces xe-0/0/1.0 family iso
+set interfaces xe-0/0/2.0 family iso
+set protocols isis level 2 wide-metrics-only
+set protocols isis level 1 disable
+set protocols isis interface xe-0/0/1.0 point-to-point
+set protocols isis interface xe-0/0/1.0 family inet bfd-liveness-detection minimum-interval 200 multiplier 3
+set protocols isis interface xe-0/0/1.0 level 2 metric 10
+set protocols isis interface xe-0/0/1.0 level 2 hello-authentication-key "$9$Q835FCuEhrKvL69vWL7VbQF39uO"
+set protocols isis interface xe-0/0/1.0 level 2 hello-authentication-type md5
+set protocols isis interface xe-0/0/2.0 point-to-point
+set protocols isis interface xe-0/0/2.0 family inet bfd-liveness-detection minimum-interval 200 multiplier 3
+set protocols isis interface xe-0/0/2.0 level 2 metric 10
+set protocols isis interface xe-0/0/2.0 level 2 hello-authentication-key "$9$Q835FCuEhrKvL69vWL7VbQF39uO"
+set protocols isis interface xe-0/0/2.0 level 2 hello-authentication-type md5
+set protocols isis interface interface lo0.0 passive
 ```
 </details>
  <details>
 <summary>  Настройка Leaf-03: </summary>
 
 ```
-hostname Leaf-03
-!
-ip routing
-!
-interface Ethernet1
-   description ### Link to Spine-01 int Eth3 ###
-   no switchport
-   bfd interval 50 min-rx 50 multiplier 3
-   ip ospf neighbor bfd
-   ip ospf network point-to-point
-   ip ospf authentication message-digest
-   ip ospf area 0.0.0.0
-   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
-!
-interface Ethernet2
-   description ### Link to Spine-02 int Eth3 ###
-   no switchport
-   ip address 10.2.2.5/31
-   bfd interval 50 min-rx 50 multiplier 3
-   ip ospf neighbor bfd
-   ip ospf network point-to-point
-   ip ospf authentication message-digest
-   ip ospf area 0.0.0.0
-   ip ospf message-digest-key 23 md5 7 yIINRhhDqQiAVT8QiEzWFg==
-!
-interface Loopback1
-   ip address 10.1.1.3/32
-!
-router ospf 1
-   router-id 10.1.1.3
-   bfd default
-   passive-interface default
-   no passive-interface Ethernet1
-   no passive-interface Ethernet2
-   network 10.1.0.0/16 area 0.0.0.0
-   network 10.2.0.0/16 area 0.0.0.0
-   max-lsa 12000
-   maximum-paths 16
+#### Базовая настройка ####
+set system host-name Leaf-03
+set interfaces xe-0/0/1 "### Link to Spine-01 int xe-0/0/3 ###"
+set interfaces xe-0/0/1.0 family inet address 10.2.1.5/31
+set interfaces xe-0/0/2 "### Link to Spine-02 int xe-0/0/3 ###"
+set interfaces xe-0/0/2.0 family inet address 10.2.2.5/31
+set interfaces em1 description "### Link to vQFX-PFE int em1 ###"
+set interfaces em1.0 family inet address 169.254.0.2/24
+set interfaces lo0.0 family inet address 10.1.1.3/32
+
+#### Настройка IS-IS ####
+set interfaces lo0.0 family iso address 49.0001.0100.0100.1003.00
+set interfaces xe-0/0/1.0 family iso
+set interfaces xe-0/0/2.0 family iso
+set protocols isis level 2 wide-metrics-only
+set protocols isis level 1 disable
+set protocols isis interface xe-0/0/1.0 point-to-point
+set protocols isis interface xe-0/0/1.0 family inet bfd-liveness-detection minimum-interval 200 multiplier 3
+set protocols isis interface xe-0/0/1.0 level 2 metric 10
+set protocols isis interface xe-0/0/1.0 level 2 hello-authentication-key "$9$ojJi.zF/AtOUjtuOIcSoJZj.P"
+set protocols isis interface xe-0/0/1.0 level 2 hello-authentication-type md5
+set protocols isis interface xe-0/0/2.0 point-to-point
+set protocols isis interface xe-0/0/2.0 family inet bfd-liveness-detection minimum-interval 200 multiplier 3
+set protocols isis interface xe-0/0/2.0 level 2 metric 10
+set protocols isis interface xe-0/0/2.0 level 2 hello-authentication-key "$9$ojJi.zF/AtOUjtuOIcSoJZj.P"
+set protocols isis interface xe-0/0/2.0 level 2 hello-authentication-type md5
+set protocols isis interface interface lo0.0 passive
 ```
 </details>
 
@@ -228,77 +193,71 @@ router ospf 1
 <summary> Leaf-01: </summary>
 
 ```
-Leaf-01#show ip ospf neighbor  
-Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
-10.0.1.0        1        default  0   FULL                   00:00:29    10.2.1.0        Ethernet1
-10.0.2.0        1        default  0   FULL                   00:00:38    10.2.2.0        Ethernet2
+root@Leaf-01> show isis adjacency
+Interface             System         L State        Hold (secs) SNPA
+xe-0/0/1.0            Spine-01       2  Up                   20
+xe-0/0/2.0            Spine-02       2  Up                   26
 
-Leaf-01#sh bfd peers
-VRF name: default
------------------
-DstAddr       MyDisc    YourDisc  Interface/Transport    Type           LastUp
---------- ----------- ----------- -------------------- ------- ----------------
-10.2.1.0  2408191980   114002610        Ethernet1(14)  normal   05/29/23 09:29
-10.2.2.0  2603905089  1304567596        Ethernet2(15)  normal   05/29/23 09:18
+{master:0}
+root@Leaf-01> show bfd session
+                                                  Detect   Transmit
+Address                  State     Interface      Time     Interval  Multiplier
+10.2.1.0                 Up        xe-0/0/1.0     0.600     0.200        3
+10.2.2.0                 Up        xe-0/0/2.0     0.600     0.200        3
 
-   LastDown            LastDiag    State
--------------- ------------------- -----
-         NA       No Diagnostic       Up
-         NA       No Diagnostic       Up
+2 sessions, 2 clients
+Cumulative transmit rate 10.0 pps, cumulative receive rate 10.0 pps
 
-Leaf-01#show ip route
+{master:0}
+root@Leaf-01> show route protocol isis
 
-VRF: default
-Codes: C - connected, S - static, K - kernel,
-       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
-       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
-       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
-       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
-       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
-       NG - Nexthop Group Static Route, V - VXLAN Control Service,
-       DH - DHCP client installed default route, M - Martian,
-       DP - Dynamic Policy Route, L - VRF Leaked,
-       G  - gRIBI, RC - Route Cache Route
+inet.0: 15 destinations, 15 routes (15 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
 
-Gateway of last resort is not set
+10.0.1.0/32        *[IS-IS/18] 16:17:34, metric 10
+                    > to 10.2.1.0 via xe-0/0/1.0
+10.0.2.0/32        *[IS-IS/18] 09:40:55, metric 10
+                    > to 10.2.2.0 via xe-0/0/2.0
+10.1.1.2/32        *[IS-IS/18] 09:40:55, metric 20
+                      to 10.2.1.0 via xe-0/0/1.0
+                    > to 10.2.2.0 via xe-0/0/2.0
+10.1.1.3/32        *[IS-IS/18] 05:23:44, metric 20
+                      to 10.2.1.0 via xe-0/0/1.0
+                    > to 10.2.2.0 via xe-0/0/2.0
+10.2.1.2/31        *[IS-IS/18] 16:17:34, metric 20
+                    > to 10.2.1.0 via xe-0/0/1.0
+10.2.1.4/31        *[IS-IS/18] 16:17:34, metric 20
+                    > to 10.2.1.0 via xe-0/0/1.0
+10.2.2.2/31        *[IS-IS/18] 09:40:55, metric 20
+                    > to 10.2.2.0 via xe-0/0/2.0
+10.2.2.4/31        *[IS-IS/18] 09:40:55, metric 20
+                    > to 10.2.2.0 via xe-0/0/2.0
 
- O        10.0.1.0/32 [110/20] via 10.2.1.0, Ethernet1
- O        10.0.2.0/32 [110/20] via 10.2.2.0, Ethernet2
- C        10.1.1.1/32 is directly connected, Loopback1
- O        10.1.1.2/32 [110/30] via 10.2.1.0, Ethernet1
-                               via 10.2.2.0, Ethernet2
- O        10.1.1.3/32 [110/30] via 10.2.1.0, Ethernet1
-                               via 10.2.2.0, Ethernet2
- C        10.2.1.0/31 is directly connected, Ethernet1
- O        10.2.1.2/31 [110/20] via 10.2.1.0, Ethernet1
- O        10.2.1.4/31 [110/20] via 10.2.1.0, Ethernet1
- C        10.2.2.0/31 is directly connected, Ethernet2
- O        10.2.2.2/31 [110/20] via 10.2.2.0, Ethernet2
- O        10.2.2.4/31 [110/20] via 10.2.2.0, Ethernet2
+iso.0: 1 destinations, 1 routes (1 active, 0 holddown, 0 hidden)
 
-Leaf-01#ping 10.1.1.2
-PING 10.1.1.2 (10.1.1.2) 72(100) bytes of data.
-80 bytes from 10.1.1.2: icmp_seq=1 ttl=63 time=18.4 ms
-80 bytes from 10.1.1.2: icmp_seq=2 ttl=63 time=12.6 ms
-80 bytes from 10.1.1.2: icmp_seq=3 ttl=63 time=6.14 ms
-80 bytes from 10.1.1.2: icmp_seq=4 ttl=63 time=7.29 ms
-80 bytes from 10.1.1.2: icmp_seq=5 ttl=63 time=5.75 ms
+inet6.0: 2 destinations, 2 routes (2 active, 0 holddown, 0 hidden)
+
+{master:0}
+root@Leaf-01> ping 10.1.1.2 count 3
+PING 10.1.1.2 (10.1.1.2): 56 data bytes
+64 bytes from 10.1.1.2: icmp_seq=0 ttl=63 time=369.098 ms
+64 bytes from 10.1.1.2: icmp_seq=1 ttl=63 time=377.741 ms
+64 bytes from 10.1.1.2: icmp_seq=2 ttl=63 time=286.931 ms
 
 --- 10.1.1.2 ping statistics ---
-5 packets transmitted, 5 received, 0% packet loss, time 60ms
-rtt min/avg/max/mdev = 5.759/10.048/18.431/4.858 ms, pipe 2, ipg/ewma 15.186/13.966 ms
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 286.931/344.590/377.741/40.923 ms
 
-Leaf-01#ping 10.1.1.3
-PING 10.1.1.3 (10.1.1.3) 72(100) bytes of data.
-80 bytes from 10.1.1.3: icmp_seq=1 ttl=63 time=14.2 ms
-80 bytes from 10.1.1.3: icmp_seq=2 ttl=63 time=8.76 ms
-80 bytes from 10.1.1.3: icmp_seq=3 ttl=63 time=6.86 ms
-80 bytes from 10.1.1.3: icmp_seq=4 ttl=63 time=32.9 ms
-80 bytes from 10.1.1.3: icmp_seq=5 ttl=63 time=7.99 ms
+{master:0}
+root@Leaf-01> ping 10.1.1.3 count 3
+PING 10.1.1.3 (10.1.1.3): 56 data bytes
+64 bytes from 10.1.1.3: icmp_seq=0 ttl=63 time=404.894 ms
+64 bytes from 10.1.1.3: icmp_seq=1 ttl=63 time=326.446 ms
+64 bytes from 10.1.1.3: icmp_seq=2 ttl=63 time=340.421 ms
 
 --- 10.1.1.3 ping statistics ---
-5 packets transmitted, 5 received, 0% packet loss, time 77ms
-rtt min/avg/max/mdev = 6.861/14.157/32.925/9.722 ms, pipe 2, ipg/ewma 19.273/14.341 ms
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 326.446/357.254/404.894/34.167 ms
 ```
 </details>
 
@@ -306,77 +265,71 @@ rtt min/avg/max/mdev = 6.861/14.157/32.925/9.722 ms, pipe 2, ipg/ewma 19.273/14.
 <summary> Leaf-02: </summary>
 
 ```
-Leaf-02#show ip ospf neighbor
-Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
-10.0.2.0        1        default  0   FULL                   00:00:32    10.2.2.2        Ethernet2
-10.0.1.0        1        default  0   FULL                   00:00:37    10.2.1.2        Ethernet1
+root@Leaf-02> show isis adjacency
+Interface             System         L State        Hold (secs) SNPA
+xe-0/0/1.0            Spine-01       2  Up                   25
+xe-0/0/2.0            Spine-02       2  Up                   24
 
-Leaf-02#sh bfd peers
-VRF name: default
------------------
-DstAddr       MyDisc    YourDisc  Interface/Transport    Type           LastUp
---------- ----------- ----------- -------------------- ------- ----------------
-10.2.1.2  3462013340  1357145776        Ethernet1(13)  normal   05/29/23 09:19
-10.2.2.2  3337484190  1943856877        Ethernet2(14)  normal   05/29/23 09:19
+{master:0}
+root@Leaf-02> show bfd session
+                                                  Detect   Transmit
+Address                  State     Interface      Time     Interval  Multiplier
+10.2.1.2                 Up        xe-0/0/1.0     0.600     0.200        3
+10.2.2.2                 Up        xe-0/0/2.0     0.600     0.200        3
 
-   LastDown            LastDiag    State
--------------- ------------------- -----
-         NA       No Diagnostic       Up
-         NA       No Diagnostic       Up
+2 sessions, 2 clients
+Cumulative transmit rate 10.0 pps, cumulative receive rate 10.0 pps
 
-Leaf-02#show ip route
+{master:0}
+root@Leaf-02> show route protocol isis
 
-VRF: default
-Codes: C - connected, S - static, K - kernel,
-       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
-       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
-       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
-       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
-       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
-       NG - Nexthop Group Static Route, V - VXLAN Control Service,
-       DH - DHCP client installed default route, M - Martian,
-       DP - Dynamic Policy Route, L - VRF Leaked,
-       G  - gRIBI, RC - Route Cache Route
+inet.0: 15 destinations, 15 routes (15 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
 
-Gateway of last resort is not set
+10.0.1.0/32        *[IS-IS/18] 14:02:32, metric 10
+                    > to 10.2.1.2 via xe-0/0/1.0
+10.0.2.0/32        *[IS-IS/18] 10:14:29, metric 10
+                    > to 10.2.2.2 via xe-0/0/2.0
+10.1.1.1/32        *[IS-IS/18] 09:43:40, metric 20
+                      to 10.2.1.2 via xe-0/0/1.0
+                    > to 10.2.2.2 via xe-0/0/2.0
+10.1.1.3/32        *[IS-IS/18] 05:26:30, metric 20
+                      to 10.2.1.2 via xe-0/0/1.0
+                    > to 10.2.2.2 via xe-0/0/2.0
+10.2.1.0/31        *[IS-IS/18] 14:02:32, metric 20
+                    > to 10.2.1.2 via xe-0/0/1.0
+10.2.1.4/31        *[IS-IS/18] 14:02:32, metric 20
+                    > to 10.2.1.2 via xe-0/0/1.0
+10.2.2.0/31        *[IS-IS/18] 10:14:29, metric 20
+                    > to 10.2.2.2 via xe-0/0/2.0
+10.2.2.4/31        *[IS-IS/18] 10:14:29, metric 20
+                    > to 10.2.2.2 via xe-0/0/2.0
 
- O        10.0.1.0/32 [110/20] via 10.2.1.2, Ethernet1
- O        10.0.2.0/32 [110/20] via 10.2.2.2, Ethernet2
- O        10.1.1.1/32 [110/30] via 10.2.1.2, Ethernet1
-                               via 10.2.2.2, Ethernet2
- C        10.1.1.2/32 is directly connected, Loopback1
- O        10.1.1.3/32 [110/30] via 10.2.1.2, Ethernet1
-                               via 10.2.2.2, Ethernet2
- O        10.2.1.0/31 [110/20] via 10.2.1.2, Ethernet1
- C        10.2.1.2/31 is directly connected, Ethernet1
- O        10.2.1.4/31 [110/20] via 10.2.1.2, Ethernet1
- O        10.2.2.0/31 [110/20] via 10.2.2.2, Ethernet2
- C        10.2.2.2/31 is directly connected, Ethernet2
- O        10.2.2.4/31 [110/20] via 10.2.2.2, Ethernet2
+iso.0: 1 destinations, 1 routes (1 active, 0 holddown, 0 hidden)
 
-Leaf-02#ping 10.1.1.1
-PING 10.1.1.1 (10.1.1.1) 72(100) bytes of data.
-80 bytes from 10.1.1.1: icmp_seq=1 ttl=63 time=9.98 ms
-80 bytes from 10.1.1.1: icmp_seq=2 ttl=63 time=6.13 ms
-80 bytes from 10.1.1.1: icmp_seq=3 ttl=63 time=7.16 ms
-80 bytes from 10.1.1.1: icmp_seq=4 ttl=63 time=5.91 ms
-80 bytes from 10.1.1.1: icmp_seq=5 ttl=63 time=5.15 ms
+inet6.0: 2 destinations, 2 routes (2 active, 0 holddown, 0 hidden)
+
+{master:0}
+root@Leaf-02> ping 10.1.1.1 count 3
+PING 10.1.1.1 (10.1.1.1): 56 data bytes
+64 bytes from 10.1.1.1: icmp_seq=0 ttl=63 time=478.965 ms
+64 bytes from 10.1.1.1: icmp_seq=1 ttl=63 time=386.188 ms
+64 bytes from 10.1.1.1: icmp_seq=2 ttl=63 time=397.866 ms
 
 --- 10.1.1.1 ping statistics ---
-5 packets transmitted, 5 received, 0% packet loss, time 41ms
-rtt min/avg/max/mdev = 5.159/6.871/9.986/1.685 ms, ipg/ewma 10.409/8.344 ms
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 386.188/421.006/478.965/41.259 ms
 
-Leaf-02#ping 10.1.1.3
-PING 10.1.1.3 (10.1.1.3) 72(100) bytes of data.
-80 bytes from 10.1.1.3: icmp_seq=1 ttl=63 time=8.80 ms
-80 bytes from 10.1.1.3: icmp_seq=2 ttl=63 time=5.67 ms
-80 bytes from 10.1.1.3: icmp_seq=3 ttl=63 time=5.88 ms
-80 bytes from 10.1.1.3: icmp_seq=4 ttl=63 time=8.60 ms
-80 bytes from 10.1.1.3: icmp_seq=5 ttl=63 time=12.7 ms
+{master:0}
+root@Leaf-02> ping 10.1.1.3 count 3
+PING 10.1.1.3 (10.1.1.3): 56 data bytes
+64 bytes from 10.1.1.3: icmp_seq=0 ttl=63 time=429.469 ms
+64 bytes from 10.1.1.3: icmp_seq=1 ttl=63 time=446.259 ms
+64 bytes from 10.1.1.3: icmp_seq=2 ttl=63 time=447.246 ms
 
 --- 10.1.1.3 ping statistics ---
-5 packets transmitted, 5 received, 0% packet loss, time 37ms
-rtt min/avg/max/mdev = 5.672/8.339/12.742/2.565 ms, ipg/ewma 9.275/8.732 ms
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 429.469/440.991/447.246/8.157 ms
 ```
 </details>
 
@@ -384,76 +337,70 @@ rtt min/avg/max/mdev = 5.672/8.339/12.742/2.565 ms, ipg/ewma 9.275/8.732 ms
 <summary> Leaf-03: </summary>
 
 ```
-Leaf-03#sh ip ospf neighbor
-Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
-10.0.1.0        1        default  0   FULL                   00:00:31    10.2.1.4        Ethernet1
-10.0.2.0        1        default  0   FULL                   00:00:35    10.2.2.4        Ethernet2
+root@Leaf-03> show isis adjacency
+Interface             System         L State        Hold (secs) SNPA
+xe-0/0/1.0            Spine-01       2  Up                   19
+xe-0/0/2.0            Spine-02       2  Up                   20
 
-Leaf-03#sh bfd peers
-VRF name: default
------------------
-DstAddr       MyDisc    YourDisc  Interface/Transport    Type           LastUp
---------- ----------- ----------- -------------------- ------- ----------------
-10.2.1.4  1649365958   761178781        Ethernet1(11)  normal   05/29/23 09:19
-10.2.2.4  4117607006  2666863911        Ethernet2(12)  normal   05/29/23 09:19
+{master:0}
+root@Leaf-03> show bfd session
+                                                  Detect   Transmit
+Address                  State     Interface      Time     Interval  Multiplier
+10.2.1.4                 Up        xe-0/0/1.0     0.600     0.200        3
+10.2.2.4                 Up        xe-0/0/2.0     0.600     0.200        3
 
-   LastDown            LastDiag    State
--------------- ------------------- -----
-         NA       No Diagnostic       Up
-         NA       No Diagnostic       Up
-         
-Leaf-03#show ip route
+2 sessions, 2 clients
+Cumulative transmit rate 10.0 pps, cumulative receive rate 10.0 pps
 
-VRF: default
-Codes: C - connected, S - static, K - kernel,
-       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
-       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
-       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
-       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
-       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
-       NG - Nexthop Group Static Route, V - VXLAN Control Service,
-       DH - DHCP client installed default route, M - Martian,
-       DP - Dynamic Policy Route, L - VRF Leaked,
-       G  - gRIBI, RC - Route Cache Route
+{master:0}
+root@Leaf-03> show route protocol isis
 
-Gateway of last resort is not set
+inet.0: 15 destinations, 15 routes (15 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
 
- O        10.0.1.0/32 [110/20] via 10.2.1.4, Ethernet1
- O        10.0.2.0/32 [110/20] via 10.2.2.4, Ethernet2
- O        10.1.1.1/32 [110/30] via 10.2.1.4, Ethernet1
-                               via 10.2.2.4, Ethernet2
- O        10.1.1.2/32 [110/30] via 10.2.1.4, Ethernet1
-                               via 10.2.2.4, Ethernet2
- C        10.1.1.3/32 is directly connected, Loopback1
- O        10.2.1.0/31 [110/20] via 10.2.1.4, Ethernet1
- O        10.2.1.2/31 [110/20] via 10.2.1.4, Ethernet1
- C        10.2.1.4/31 is directly connected, Ethernet1
- O        10.2.2.0/31 [110/20] via 10.2.2.4, Ethernet2
- O        10.2.2.2/31 [110/20] via 10.2.2.4, Ethernet2
- C        10.2.2.4/31 is directly connected, Ethernet2
+10.0.1.0/32        *[IS-IS/18] 05:28:31, metric 10
+                    > to 10.2.1.4 via xe-0/0/1.0
+10.0.2.0/32        *[IS-IS/18] 23:10:20, metric 10
+                    > to 10.2.2.4 via xe-0/0/2.0
+10.1.1.1/32        *[IS-IS/18] 05:28:31, metric 20
+                      to 10.2.1.4 via xe-0/0/1.0
+                    > to 10.2.2.4 via xe-0/0/2.0
+10.1.1.2/32        *[IS-IS/18] 05:28:31, metric 20
+                      to 10.2.1.4 via xe-0/0/1.0
+                    > to 10.2.2.4 via xe-0/0/2.0
+10.2.1.0/31        *[IS-IS/18] 05:28:31, metric 20
+                    > to 10.2.1.4 via xe-0/0/1.0
+10.2.1.2/31        *[IS-IS/18] 05:28:31, metric 20
+                    > to 10.2.1.4 via xe-0/0/1.0
+10.2.2.0/31        *[IS-IS/18] 23:10:20, metric 20
+                    > to 10.2.2.4 via xe-0/0/2.0
+10.2.2.2/31        *[IS-IS/18] 23:10:20, metric 20
+                    > to 10.2.2.4 via xe-0/0/2.0
 
-Leaf-03#ping 10.1.1.1
-PING 10.1.1.1 (10.1.1.1) 72(100) bytes of data.
-80 bytes from 10.1.1.1: icmp_seq=1 ttl=63 time=10.1 ms
-80 bytes from 10.1.1.1: icmp_seq=2 ttl=63 time=7.44 ms
-80 bytes from 10.1.1.1: icmp_seq=3 ttl=63 time=6.08 ms
-80 bytes from 10.1.1.1: icmp_seq=4 ttl=63 time=5.85 ms
-80 bytes from 10.1.1.1: icmp_seq=5 ttl=63 time=7.27 ms
+iso.0: 1 destinations, 1 routes (1 active, 0 holddown, 0 hidden)
+
+inet6.0: 2 destinations, 2 routes (2 active, 0 holddown, 0 hidden)
+
+{master:0}
+root@Leaf-03> ping 10.1.1.1 count 3
+PING 10.1.1.1 (10.1.1.1): 56 data bytes
+64 bytes from 10.1.1.1: icmp_seq=0 ttl=63 time=415.650 ms
+64 bytes from 10.1.1.1: icmp_seq=1 ttl=63 time=321.459 ms
+64 bytes from 10.1.1.1: icmp_seq=2 ttl=63 time=331.700 ms
 
 --- 10.1.1.1 ping statistics ---
-5 packets transmitted, 5 received, 0% packet loss, time 38ms
-rtt min/avg/max/mdev = 5.856/7.362/10.147/1.527 ms, ipg/ewma 9.737/8.703 ms
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 321.459/356.270/415.650/42.196 ms
 
-Leaf-03#ping 10.1.1.2
-PING 10.1.1.2 (10.1.1.2) 72(100) bytes of data.
-80 bytes from 10.1.1.2: icmp_seq=1 ttl=63 time=8.56 ms
-80 bytes from 10.1.1.2: icmp_seq=2 ttl=63 time=5.62 ms
-80 bytes from 10.1.1.2: icmp_seq=3 ttl=63 time=7.04 ms
-80 bytes from 10.1.1.2: icmp_seq=4 ttl=63 time=5.20 ms
-80 bytes from 10.1.1.2: icmp_seq=5 ttl=63 time=5.96 ms
+{master:0}
+root@Leaf-03> ping 10.1.1.2 count 3
+PING 10.1.1.2 (10.1.1.2): 56 data bytes
+64 bytes from 10.1.1.2: icmp_seq=0 ttl=63 time=325.547 ms
+64 bytes from 10.1.1.2: icmp_seq=1 ttl=63 time=332.095 ms
+64 bytes from 10.1.1.2: icmp_seq=2 ttl=63 time=342.325 ms
 
 --- 10.1.1.2 ping statistics ---
-5 packets transmitted, 5 received, 0% packet loss, time 38ms
-rtt min/avg/max/mdev = 5.206/6.480/8.562/1.206 ms, ipg/ewma 9.596/7.479 ms
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 325.547/333.322/342.325/6.904 ms
 ```
 </details>
