@@ -9,7 +9,7 @@
 <summary>  Настройка Spine-01: </summary>
 
 ```
-#### Базовая настройка
+#### Базовая настройка ####
 set system host-name Spine-01
 set interfaces xe-0/0/1 description "### Link to Leaf-01 int xe-0/0/1 ###"
 set interfaces xe-0/0/1.0 family inet address 10.2.1.0/31
@@ -20,7 +20,8 @@ set interfaces xe-0/0/3.0 family inet address 10.2.1.4/31
 set interfaces em1 description "### Link to vQFX-PFE int em1 ###"
 set interfaces em1.0 family inet address 169.254.0.2/24
 set interfaces lo0.0 family inet address 10.0.1.0/32
-#### Настройка IS-IS
+
+#### Настройка IS-IS ####
 set interfaces lo0.0 family iso address 49.0001.0100.0000.1000.00
 set interfaces xe-0/0/1.0 family iso
 set interfaces xe-0/0/2.0 family iso
