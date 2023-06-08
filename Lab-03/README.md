@@ -11,6 +11,7 @@
 ```
 #### Базовая настройка ####
 set system host-name Spine-01
+delete interfaces
 set interfaces xe-0/0/1 description "### Link to Leaf-01 int xe-0/0/1 ###"
 set interfaces xe-0/0/1.0 family inet address 10.2.1.0/31
 set interfaces xe-0/0/2 description "### Link to Leaf-02 int xe-0/0/1 ###"
@@ -52,6 +53,7 @@ set protocols isis interface interface lo0.0 passive
 ```
 #### Базовая настройка ####
 set system host-name Spine-02
+delete interfaces
 set interfaces xe-0/0/1 description "### Link to Leaf-01 int xe-0/0/2 ###"
 set interfaces xe-0/0/1.0 family inet address 10.2.2.0/31
 set interfaces xe-0/0/2 description "### Link to Leaf-02 int xe-0/0/2 ###"
@@ -93,6 +95,7 @@ set protocols isis interface interface lo0.0 passive
 ```
 #### Базовая настройка ####
 set system host-name Leaf-01
+delete interfaces
 set interfaces xe-0/0/1 "### Link to Spine-01 int xe-0/0/1 ###"
 set interfaces xe-0/0/1.0 family inet address 10.2.1.1/31
 set interfaces xe-0/0/2 "### Link to Spine-02 int xe-0/0/1 ###"
@@ -126,6 +129,7 @@ set protocols isis interface interface lo0.0 passive
 ```
 #### Базовая настройка ####
 set system host-name Leaf-02
+delete interfaces
 set interfaces xe-0/0/1 "### Link to Spine-01 int xe-0/0/2 ###"
 set interfaces xe-0/0/1.0 family inet address 10.2.1.3/31
 set interfaces xe-0/0/2 "### Link to Spine-02 int xe-0/0/2 ###"
@@ -159,6 +163,7 @@ set protocols isis interface interface lo0.0 passive
 ```
 #### Базовая настройка ####
 set system host-name Leaf-03
+delete interfaces
 set interfaces xe-0/0/1 "### Link to Spine-01 int xe-0/0/3 ###"
 set interfaces xe-0/0/1.0 family inet address 10.2.1.5/31
 set interfaces xe-0/0/2 "### Link to Spine-02 int xe-0/0/3 ###"
