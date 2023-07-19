@@ -213,7 +213,7 @@ vlan 10,20
 #### Настройка интерфейсов ####
 interface Ethernet1
    description ### Link to Spine-01 int Eth2 ###
-   no switchport
+   no switchport 
    ip address 10.2.1.3/31
    bfd interval 50 min-rx 50 multiplier 3
 interface Ethernet2
