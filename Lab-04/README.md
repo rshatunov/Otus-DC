@@ -68,7 +68,7 @@ router bgp 65000
 
 ```
 #### Базовая настройка ####
-hostname Spine-01
+hostname Spine-02
 terminal width 250
 username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
 aaa authorization serial-console
@@ -79,26 +79,26 @@ route-map LOOPBAKS permit 10
 
 #### Настройка интерфейсов ####
 interface Ethernet1
-   description ### Link to Leaf-01 int Eth1 ###
+   description ### Link to Leaf-01 int Eth2 ###
    no switchport
-   ip address 10.2.1.0/31
+   ip address 10.2.2.0/31
    bfd interval 50 min-rx 50 multiplier 3
 interface Ethernet2
-   description ### Link to Leaf-02 int Eth1 ###
+   description ### Link to Leaf-02 int Eth2 ###
    no switchport
-   ip address 10.2.1.2/31
+   ip address 10.2.2.2/31
    bfd interval 50 min-rx 50 multiplier 3
 interface Ethernet3
-   description ### Link to Leaf-03 int Eth1 ###
+   description ### Link to Leaf-03 int Eth2 ###
    no switchport
-   ip address 10.2.1.4/31
+   ip address 10.2.2.4/31
    bfd interval 50 min-rx 50 multiplier 3
 interface Loopback0
-   ip address 10.0.1.0/32
+   ip address 10.0.2.0/32
 
 #### Настройка BGP ####
 router bgp 65000
-   router-id 10.0.1.0
+   router-id 10.0.2.0
    bgp listen range 10.2.0.0/16 peer-group LEAF remote-as 65000
    bgp listen range 10.1.0.0/16 peer-group VXLAN remote-as 65000
    neighbor LEAF peer group
