@@ -164,13 +164,12 @@ interface Vxlan1
 
 #### Настройка BGP ####
 router bgp 65000
-   router-id 10.2.0.1
+   router-id 10.1.0.1
    maximum-paths 32
-   neighbor LEAF peer group
-   neighbor LEAF timers 5 15
    neighbor SPINE peer group
    neighbor SPINE remote-as 65000
    neighbor SPINE bfd
+   neighbor SPINE timers 5 15
    neighbor SPINE password 7 46uUt2hZxViJORtPt/8sQQ==
    neighbor VXLAN peer group
    neighbor VXLAN remote-as 65000
