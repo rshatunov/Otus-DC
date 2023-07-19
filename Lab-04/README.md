@@ -738,7 +738,7 @@ DstAddr               MyDisc         YourDisc       Interface/Transport         
 </details>
 
  <details>
-<summary> Leaf-03: </summary>
+<summary> Srv-01: </summary>
 
 ```
 root@Srv-01:~# ping 10.3.10.2
@@ -754,5 +754,25 @@ rtt min/avg/max/mdev = 11.461/19.861/36.077/11.468 ms
 
 root@Srv-01:~# ip nei
 10.3.10.2 dev ens3 lladdr 00:50:00:00:02:00 REACHABLE
+```
+</details>
+
+ <details>
+<summary> Srv-03: </summary>
+
+```
+root@Srv-03:~# ping 10.3.20.4
+PING 10.3.20.4 (10.3.20.4) 56(84) bytes of data.
+64 bytes from 10.3.20.4: icmp_seq=1 ttl=64 time=28.4 ms
+64 bytes from 10.3.20.4: icmp_seq=2 ttl=64 time=11.2 ms
+^C
+--- 10.3.20.4 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 11.205/19.781/28.358/8.576 ms
+ 
+ 
+root@Srv-03:~# ip nei
+10.3.20.254 dev ens3  INCOMPLETE
+10.3.20.4 dev ens3 lladdr 00:50:00:00:04:00 REACHABLE
 ```
 </details>
