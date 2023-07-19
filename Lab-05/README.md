@@ -286,7 +286,8 @@ route-map LOOPBAKS permit 20
 vlan 20
 
 #### Настройка интерфейсов ####
-   description ### Link to Spine-01 int Eth3 ###
+interface Ethernet1
+ description ### Link to Spine-01 int Eth3 ###
    no switchport
    ip address 10.2.1.5/31
    bfd interval 50 min-rx 50 multiplier 3
