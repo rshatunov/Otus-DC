@@ -11,6 +11,7 @@
 ```
 #### Базовая настройка ####
 hostname Spine-01
+service routing protocols model multi-agent
 terminal width 250
 username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
 aaa authorization serial-console
@@ -69,6 +70,7 @@ router bgp 65000
 ```
 #### Базовая настройка ####
 hostname Spine-02
+service routing protocols model multi-agent
 terminal width 250
 username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
 aaa authorization serial-console
@@ -126,33 +128,70 @@ router bgp 65000
 
 ```
 #### Базовая настройка ####
-set system host-name Leaf-01
-delete interfaces
-set interfaces xe-0/0/1 "### Link to Spine-01 int xe-0/0/1 ###"
-set interfaces xe-0/0/1.0 family inet address 10.2.1.1/31
-set interfaces xe-0/0/2 "### Link to Spine-02 int xe-0/0/1 ###"
-set interfaces xe-0/0/2.0 family inet address 10.2.2.1/31
-set interfaces em1 description "### Link to vQFX-PFE int em1 ###"
-set interfaces em1.0 family inet address 169.254.0.2/24
-set interfaces lo0.0 family inet address 10.1.1.1/32
+hostname Leaf-01
+service routing protocols model multi-agent
+terminal width 250
+username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+aaa authorization serial-console
+aaa authorization exec default local
+ip routing
+route-map LOOPBAKS permit 10
+   match interface Loopback0
+route-map LOOPBAKS permit 20
+   match interface Loopback1
+vlan 10
 
-#### Настройка IS-IS ####
-set interfaces lo0.0 family iso address 49.0001.0100.0100.1001.00
-set interfaces xe-0/0/1.0 family iso
-set interfaces xe-0/0/2.0 family iso
-set protocols isis level 2 wide-metrics-only
-set protocols isis level 1 disable
-set protocols isis interface xe-0/0/1.0 point-to-point
-set protocols isis interface xe-0/0/1.0 family inet bfd-liveness-detection minimum-interval 200 multiplier 3
-set protocols isis interface xe-0/0/1.0 level 2 metric 10
-set protocols isis interface xe-0/0/1.0 level 2 hello-authentication-key "$9$t0AHuRSMWx-dsBIdbsgJZtu0ISr"
-set protocols isis interface xe-0/0/1.0 level 2 hello-authentication-type md5
-set protocols isis interface xe-0/0/2.0 point-to-point
-set protocols isis interface xe-0/0/2.0 family inet bfd-liveness-detection minimum-interval 200 multiplier 3
-set protocols isis interface xe-0/0/2.0 level 2 metric 10
-set protocols isis interface xe-0/0/2.0 level 2 hello-authentication-key "$9$t0AHuRSMWx-dsBIdbsgJZtu0ISr"
-set protocols isis interface xe-0/0/2.0 level 2 hello-authentication-type md5
-set protocols isis interface interface lo0.0 passive
+#### Настройка интерфейсов ####
+interface Ethernet1
+   description ### Link to Spine-01 int Eth1 ###
+   no switchport
+   ip address 10.2.1.1/31
+   bfd interval 50 min-rx 50 multiplier 3
+interface Ethernet2
+   description ### Link to Spine-02 int Eth1 ###
+   no switchport
+   ip address 10.2.2.1/31
+   bfd interval 50 min-rx 50 multiplier 3
+interface Loopback0
+   ip address 10.1.0.1/32
+interface Loopback1
+   ip address 10.1.1.1/32
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan udp-port 4789
+   vxlan vlan 10 vni 10010
+
+
+#### Настройка BGP ####
+router bgp 65000
+   router-id 10.2.0.1
+   maximum-paths 32
+   neighbor LEAF peer group
+   neighbor LEAF timers 5 15
+   neighbor SPINE peer group
+   neighbor SPINE remote-as 65000
+   neighbor SPINE bfd
+   neighbor SPINE password 7 46uUt2hZxViJORtPt/8sQQ==
+   neighbor VXLAN peer group
+   neighbor VXLAN remote-as 65000
+   neighbor VXLAN update-source Loopback0
+   neighbor VXLAN bfd
+   neighbor VXLAN timers 5 15
+   neighbor VXLAN password 7 BBGRh1MqInmF4hdb+bokKg==
+   neighbor VXLAN send-community
+   neighbor 10.0.1.0 peer group VXLAN
+   neighbor 10.0.2.0 peer group VXLAN
+   neighbor 10.2.1.0 peer group SPINE
+   neighbor 10.2.2.0 peer group SPINE
+   redistribute connected route-map LOOPBAKS
+   vlan 10
+      rd 10.1.0.1:10010
+      route-target both 65000:10010
+      redistribute learned
+   address-family evpn
+      neighbor VXLAN activate
+   address-family ipv4
+      no neighbor VXLAN activate
 ```
 </details>
  <details>
