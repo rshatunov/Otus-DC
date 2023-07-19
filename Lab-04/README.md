@@ -1,9 +1,9 @@
-# LAB-05
-# VxLAN. EVPN L2
+# LAB-04
+# Underlay. BGP
 ### Цели
-- Настроить Overlay на основе VxLAN EVPN для L2 связанности между клиентами.
+- Настроить BGP для Underlay сети.
 ### Схема сети
-![pic_05.jpg](pic_05.jpg)
+![pic.jpg](pic.jpg)
 ### Настройка оборудования
  <details>
 <summary>  Настройка Spine-01: </summary>
