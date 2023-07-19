@@ -3,7 +3,7 @@
 ### Цели
 - Настроить Overlay на основе VxLAN EVPN для L2 связанности между клиентами.
 ### Схема сети
-![pic_01.jpg](pic_01.jpg)
+![pic_05.jpg](pic_05.jpg)
 ### Настройка оборудования
  <details>
 <summary>  Настройка Spine-01: </summary>
