@@ -46,6 +46,7 @@ interface Loopback0
 #### Настройка BGP ####
 router bgp 65000
    router-id 10.0.1.0
+   maximum-paths 32
    bgp listen range 10.1.0.0/16 peer-group OVERLAY peer-filter AS-FILTER
    bgp listen range 10.2.0.0/16 peer-group UNDERLAY peer-filter AS-FILTER
    neighbor OVERLAY peer group
@@ -107,6 +108,7 @@ interface Loopback0
 #### Настройка BGP ####
 router bgp 65000
    router-id 10.0.2.0
+   maximum-paths 32
    bgp listen range 10.1.0.0/16 peer-group OVERLAY peer-filter AS-FILTER
    bgp listen range 10.2.0.0/16 peer-group UNDERLAY peer-filter AS-FILTER
    neighbor OVERLAY peer group
@@ -178,6 +180,7 @@ interface Vlan10
 #### Настройка BGP ####
 router bgp 65001
    router-id 10.1.0.1
+   maximum-paths 32
    neighbor OVERLAY peer group
    neighbor OVERLAY remote-as 65000
    neighbor OVERLAY update-source Loopback0
@@ -268,6 +271,7 @@ interface Vxlan1
 #### Настройка BGP ####
 router bgp 65002
    router-id 10.1.0.2
+   maximum-paths 32
    neighbor OVERLAY peer group
    neighbor OVERLAY remote-as 65000
    neighbor OVERLAY update-source Loopback0
@@ -354,6 +358,7 @@ interface Vxlan1
 #### Настройка BGP ####
 router bgp 65003
    router-id 10.1.0.3
+   maximum-paths 32
    neighbor OVERLAY peer group
    neighbor OVERLAY remote-as 65000
    neighbor OVERLAY update-source Loopback0
