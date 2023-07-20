@@ -403,8 +403,10 @@ BGP summary information for VRF default
 Router identifier 10.1.0.1, local AS number 65001
 Neighbor Status Codes: m - Under maintenance
   Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.2.1.0         4 65000          16416     16685    0    0 00:12:33 Estab   5      5
-  10.2.2.0         4 65000          16436     16710    0    0 00:12:26 Estab   5      5
+  10.2.1.0         4 65000            208       265    0    0 00:01:30 Estab   5      5
+  10.2.2.0         4 65000            210       275    0    0 00:01:26 Estab   5      5
+
+
 Leaf-01#sh ip route
 
 VRF: default
@@ -425,10 +427,14 @@ Gateway of last resort is not set
  B E      10.0.2.0/32 [200/0] via 10.2.2.0, Ethernet2
  C        10.1.0.1/32 is directly connected, Loopback0
  B E      10.1.0.2/32 [200/0] via 10.2.1.0, Ethernet1
+                              via 10.2.2.0, Ethernet2
  B E      10.1.0.3/32 [200/0] via 10.2.1.0, Ethernet1
+                              via 10.2.2.0, Ethernet2
  C        10.1.1.1/32 is directly connected, Loopback1
  B E      10.1.1.2/32 [200/0] via 10.2.1.0, Ethernet1
+                              via 10.2.2.0, Ethernet2
  B E      10.1.1.3/32 [200/0] via 10.2.1.0, Ethernet1
+                              via 10.2.2.0, Ethernet2
  C        10.2.1.0/31 is directly connected, Ethernet1
  C        10.2.2.0/31 is directly connected, Ethernet2
 
@@ -438,8 +444,8 @@ BGP summary information for VRF default
 Router identifier 10.1.0.1, local AS number 65001
 Neighbor Status Codes: m - Under maintenance
   Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.0.1.0         4 65000          16136     16337    0    0 00:12:32 Estab   9      9
-  10.0.2.0         4 65000          16242     16348    0    0 00:12:25 Estab   9      9
+  10.0.1.0         4 65000            226       237    0    0 00:01:33 Estab   9      9
+  10.0.2.0         4 65000            198       259    0    0 00:01:28 Estab   9      9
 
 
 Leaf-01#show bgp evpn route-type imet
@@ -513,7 +519,7 @@ Remote VTEPS for Vxlan1:
 
 VTEP           Tunnel Type(s)
 -------------- --------------
-10.1.1.2       flood, unicast
+10.1.1.2       unicast, flood
 10.1.1.3       unicast
 
 Total number of remote VTEPS:  2
@@ -525,22 +531,22 @@ Leaf-01#sh vxlan address-table
 
 VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
 ----  -----------     ----      ---  ----             -----   ---------
-  10  0050.0000.0200  EVPN      Vx1  10.1.1.2         1       0:00:00 ago
-4094  5000.0000.5183  EVPN      Vx1  10.1.1.3         1       0:00:01 ago
-4094  5000.006b.0f11  EVPN      Vx1  10.1.1.2         1       0:00:01 ago
+  10  0050.0000.0200  EVPN      Vx1  10.1.1.2         1       0:01:28 ago
+4094  5000.0000.5183  EVPN      Vx1  10.1.1.3         1       0:01:29 ago
+4094  5000.006b.0f11  EVPN      Vx1  10.1.1.2         1       0:01:28 ago
 Total Remote Mac Addresses for this criterion: 3
 
 
-Leaf-01#sh mac address-table
+Leaf-01#show mac address-table
           Mac Address Table
 ------------------------------------------------------------------
 
 Vlan    Mac Address       Type        Ports      Moves   Last Move
 ----    -----------       ----        -----      -----   ---------
-  10    0050.0000.0100    DYNAMIC     Et8        1       18:10:13 ago
-  10    0050.0000.0200    DYNAMIC     Vx1        1       0:00:08 ago
-4094    5000.0000.5183    DYNAMIC     Vx1        1       0:00:08 ago
-4094    5000.006b.0f11    DYNAMIC     Vx1        1       0:00:08 ago
+  10    0050.0000.0100    DYNAMIC     Et8        1       0:03:10 ago
+  10    0050.0000.0200    DYNAMIC     Vx1        1       0:01:28 ago
+4094    5000.0000.5183    DYNAMIC     Vx1        1       0:01:29 ago
+4094    5000.006b.0f11    DYNAMIC     Vx1        1       0:01:28 ago
 Total Mac Addresses for this criterion: 4
 
           Multicast Mac Address Table
@@ -556,10 +562,10 @@ VRF name: default
 -----------------
 DstAddr               MyDisc         YourDisc       Interface/Transport           Type               LastUp             LastDown            LastDiag    State
 -------------- ---------------- ---------------- ------------------------- -------------- -------------------- -------------------- ------------------- -----
-10.0.1.0           220598722       2335403897                        NA       multihop       07/20/23 07:18       07/20/23 07:18       No Diagnostic       Up
-10.0.2.0          2067137186        687954056                        NA       multihop       07/20/23 07:18       07/20/23 07:18       No Diagnostic       Up
-10.2.1.0          3584724434       2835167711             Ethernet1(11)         normal       07/20/23 07:18       07/20/23 07:18       No Diagnostic       Up
-10.2.2.0          3624234627        148785667             Ethernet2(12)         normal       07/20/23 07:18       07/20/23 07:18       No Diagnostic       Up
+10.0.1.0          1753987605       1673186178                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+10.0.2.0          3059243512        931197416                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+10.2.1.0          4164287212       2860175064             Ethernet1(14)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+10.2.2.0          3407301345       1502409858             Ethernet2(15)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
 ```
 </details>
 
@@ -572,8 +578,8 @@ BGP summary information for VRF default
 Router identifier 10.1.0.2, local AS number 65002
 Neighbor Status Codes: m - Under maintenance
   Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.2.1.2         4 65000          16512     16687    0    0 00:17:23 Estab   5      5
-  10.2.2.2         4 65000          16594     16837    0    0 00:17:23 Estab   5      5
+  10.2.1.2         4 65000            229       292    0    0 00:03:21 Estab   5      5
+  10.2.2.2         4 65000            225       270    0    0 00:03:17 Estab   5      5
 
 
 Leaf-02#sh ip route
@@ -595,11 +601,15 @@ Gateway of last resort is not set
  B E      10.0.1.0/32 [200/0] via 10.2.1.2, Ethernet1
  B E      10.0.2.0/32 [200/0] via 10.2.2.2, Ethernet2
  B E      10.1.0.1/32 [200/0] via 10.2.1.2, Ethernet1
+                              via 10.2.2.2, Ethernet2
  C        10.1.0.2/32 is directly connected, Loopback0
  B E      10.1.0.3/32 [200/0] via 10.2.1.2, Ethernet1
+                              via 10.2.2.2, Ethernet2
  B E      10.1.1.1/32 [200/0] via 10.2.1.2, Ethernet1
+                              via 10.2.2.2, Ethernet2
  C        10.1.1.2/32 is directly connected, Loopback1
  B E      10.1.1.3/32 [200/0] via 10.2.1.2, Ethernet1
+                              via 10.2.2.2, Ethernet2
  C        10.2.1.2/31 is directly connected, Ethernet1
  C        10.2.2.2/31 is directly connected, Ethernet2
 
@@ -609,8 +619,8 @@ BGP summary information for VRF default
 Router identifier 10.1.0.2, local AS number 65002
 Neighbor Status Codes: m - Under maintenance
   Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.0.1.0         4 65000          16035     16511    0    0 00:17:22 Estab   6      6
-  10.0.2.0         4 65000          16156     16714    0    0 00:17:22 Estab   6      6
+  10.0.1.0         4 65000            184       269    0    0 00:03:20 Estab   6      6
+  10.0.2.0         4 65000            204       313    0    0 00:03:16 Estab   6      6
 
 
 Leaf-02#show bgp evpn route-type imet
@@ -690,10 +700,10 @@ Leaf-02#sh vxlan address-table
 
 VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
 ----  -----------     ----      ---  ----             -----   ---------
-  10  0050.0000.0100  EVPN      Vx1  10.1.1.1         1       0:17:21 ago
-  20  0050.0000.0400  EVPN      Vx1  10.1.1.3         1       0:17:20 ago
-4069  5000.0000.5183  EVPN      Vx1  10.1.1.3         1       0:17:21 ago
-4069  5000.00ca.39cc  EVPN      Vx1  10.1.1.1         1       0:17:21 ago
+  10  0050.0000.0100  EVPN      Vx1  10.1.1.1         1       0:03:18 ago
+  20  0050.0000.0400  EVPN      Vx1  10.1.1.3         1       0:03:18 ago
+4094  5000.0000.5183  EVPN      Vx1  10.1.1.3         1       0:03:18 ago
+4094  5000.00ca.39cc  EVPN      Vx1  10.1.1.1         1       0:03:18 ago
 Total Remote Mac Addresses for this criterion: 4
 
 
@@ -703,12 +713,12 @@ Leaf-02#show mac address-table
 
 Vlan    Mac Address       Type        Ports      Moves   Last Move
 ----    -----------       ----        -----      -----   ---------
-  10    0050.0000.0100    DYNAMIC     Vx1        1       0:01:45 ago
-  10    0050.0000.0200    DYNAMIC     Et7        1       18:01:38 ago
-  20    0050.0000.0300    DYNAMIC     Et8        1       18:01:21 ago
-  20    0050.0000.0400    DYNAMIC     Vx1        1       0:01:45 ago
-4069    5000.0000.5183    DYNAMIC     Vx1        1       0:01:46 ago
-4069    5000.00ca.39cc    DYNAMIC     Vx1        1       0:01:45 ago
+  10    0050.0000.0100    DYNAMIC     Vx1        1       0:03:18 ago
+  10    0050.0000.0200    DYNAMIC     Et7        1       0:05:05 ago
+  20    0050.0000.0300    DYNAMIC     Et8        1       0:05:05 ago
+  20    0050.0000.0400    DYNAMIC     Vx1        1       0:03:18 ago
+4094    5000.0000.5183    DYNAMIC     Vx1        1       0:03:18 ago
+4094    5000.00ca.39cc    DYNAMIC     Vx1        1       0:03:18 ago
 Total Mac Addresses for this criterion: 6
 
           Multicast Mac Address Table
@@ -719,16 +729,15 @@ Vlan    Mac Address       Type        Ports
 Total Mac Addresses for this criterion: 0
 
 
-
 Leaf-02#show bfd peers
 VRF name: default
 -----------------
 DstAddr               MyDisc         YourDisc       Interface/Transport           Type               LastUp             LastDown            LastDiag    State
 -------------- ---------------- ---------------- ------------------------- -------------- -------------------- -------------------- ------------------- -----
-10.0.1.0           784324212       1923922068                        NA       multihop       07/20/23 07:18       07/20/23 07:18       No Diagnostic       Up
-10.0.2.0          3460721294       3076751324                        NA       multihop       07/20/23 07:18       07/20/23 07:18       No Diagnostic       Up
-10.2.1.2          1361029817        446577332             Ethernet1(11)         normal       07/20/23 07:18       07/20/23 07:18       No Diagnostic       Up
-10.2.2.2           207568505       1925687257             Ethernet2(12)         normal       07/20/23 07:18       07/20/23 07:18       No Diagnostic       Up
+10.0.1.0          1236533517       3698570466                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+10.0.2.0          2345063771       2591930530                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+10.2.1.2          2864335174       2386495424             Ethernet1(14)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+10.2.2.2          3776027089       2269298508             Ethernet2(15)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
 ```
 </details>
 
@@ -741,10 +750,10 @@ BGP summary information for VRF default
 Router identifier 10.1.0.3, local AS number 65003
 Neighbor Status Codes: m - Under maintenance
   Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.2.1.4         4 65000          16560     16814    0    0 00:03:23 Estab   5      5
-  10.2.2.4         4 65000          16636     16906    0    0 00:03:20 Estab   5      5
-
-
+  10.2.1.4         4 65000            274       332    0    0 00:05:45 Estab   5      5
+  10.2.2.4         4 65000            273       343    0    0 00:05:41 Estab   5      5
+Leaf-03#
+Leaf-03#
 Leaf-03#sh ip route
 
 VRF: default
@@ -764,24 +773,29 @@ Gateway of last resort is not set
  B E      10.0.1.0/32 [200/0] via 10.2.1.4, Ethernet1
  B E      10.0.2.0/32 [200/0] via 10.2.2.4, Ethernet2
  B E      10.1.0.1/32 [200/0] via 10.2.1.4, Ethernet1
+                              via 10.2.2.4, Ethernet2
  B E      10.1.0.2/32 [200/0] via 10.2.1.4, Ethernet1
+                              via 10.2.2.4, Ethernet2
  C        10.1.0.3/32 is directly connected, Loopback0
  B E      10.1.1.1/32 [200/0] via 10.2.1.4, Ethernet1
+                              via 10.2.2.4, Ethernet2
  B E      10.1.1.2/32 [200/0] via 10.2.1.4, Ethernet1
+                              via 10.2.2.4, Ethernet2
  C        10.1.1.3/32 is directly connected, Loopback1
  C        10.2.1.4/31 is directly connected, Ethernet1
  C        10.2.2.4/31 is directly connected, Ethernet2
 
-
+Leaf-03#
+Leaf-03#
 Leaf-03#sh bgp evpn summary
 BGP summary information for VRF default
 Router identifier 10.1.0.3, local AS number 65003
 Neighbor Status Codes: m - Under maintenance
   Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.0.1.0         4 65000          16454     16588    0    0 00:03:22 Estab   9      9
-  10.0.2.0         4 65000          16563     16548    0    0 00:03:19 Estab   9      9
-
-
+  10.0.1.0         4 65000            226       300    0    0 00:05:44 Estab   9      9
+  10.0.2.0         4 65000            288       305    0    0 00:05:43 Estab   9      9
+Leaf-03#
+Leaf-03#
 Leaf-03#show bgp evpn route-type imet
 BGP routing table information for VRF default
 Router identifier 10.1.0.3, local AS number 65003
@@ -806,8 +820,8 @@ AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Li
                                  10.1.1.2              -       100     0       65000 65002 i
  * >     RD: 10.1.0.3:10020 imet 10.1.1.3
                                  -                     -       -       0       i
-
-
+Leaf-03#
+Leaf-03#
 Leaf-03#show bgp evpn route-type mac-ip
 BGP routing table information for VRF default
 Router identifier 10.1.0.3, local AS number 65003
@@ -846,39 +860,41 @@ AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Li
                                  -                     -       -       0       i
  * >     RD: 10.1.0.3:10020 mac-ip 0050.0000.0400 10.3.20.4
                                  -                     -       -       0       i
-
-
+Leaf-03#
+Leaf-03#
 Leaf-03#sh vxlan vtep
 Remote VTEPS for Vxlan1:
 
 VTEP           Tunnel Type(s)
 -------------- --------------
 10.1.1.1       unicast
-10.1.1.2       flood, unicast
+10.1.1.2       unicast, flood
 
 Total number of remote VTEPS:  2
-
-
+Leaf-03#
+Leaf-03#
 Leaf-03#sh vxlan address-table
           Vxlan Mac Address Table
 ----------------------------------------------------------------------
 
 VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
 ----  -----------     ----      ---  ----             -----   ---------
-  20  0050.0000.0300  EVPN      Vx1  10.1.1.2         1       0:03:19 ago
-4056  5000.006b.0f11  EVPN      Vx1  10.1.1.2         1       0:03:19 ago
-4056  5000.00ca.39cc  EVPN      Vx1  10.1.1.1         1       0:03:18 ago
+  20  0050.0000.0300  EVPN      Vx1  10.1.1.2         1       0:05:42 ago
+4094  5000.006b.0f11  EVPN      Vx1  10.1.1.2         1       0:05:43 ago
+4094  5000.00ca.39cc  EVPN      Vx1  10.1.1.1         1       0:05:43 ago
 Total Remote Mac Addresses for this criterion: 3
+Leaf-03#
+Leaf-03#
 Leaf-03#show mac address-table
           Mac Address Table
 ------------------------------------------------------------------
 
 Vlan    Mac Address       Type        Ports      Moves   Last Move
 ----    -----------       ----        -----      -----   ---------
-  20    0050.0000.0300    DYNAMIC     Vx1        1       0:03:19 ago
-  20    0050.0000.0400    DYNAMIC     Et8        1       1:06:59 ago
-4056    5000.006b.0f11    DYNAMIC     Vx1        1       0:03:19 ago
-4056    5000.00ca.39cc    DYNAMIC     Vx1        1       0:03:18 ago
+  20    0050.0000.0300    DYNAMIC     Vx1        1       0:05:42 ago
+  20    0050.0000.0400    DYNAMIC     Et8        1       0:07:33 ago
+4094    5000.006b.0f11    DYNAMIC     Vx1        1       0:05:43 ago
+4094    5000.00ca.39cc    DYNAMIC     Vx1        1       0:05:43 ago
 Total Mac Addresses for this criterion: 4
 
           Multicast Mac Address Table
@@ -887,17 +903,18 @@ Total Mac Addresses for this criterion: 4
 Vlan    Mac Address       Type        Ports
 ----    -----------       ----        -----
 Total Mac Addresses for this criterion: 0
-
-
+Leaf-03#
+Leaf-03#
 Leaf-03#show bfd peers
 VRF name: default
 -----------------
 DstAddr               MyDisc         YourDisc       Interface/Transport           Type               LastUp             LastDown            LastDiag    State
 -------------- ---------------- ---------------- ------------------------- -------------- -------------------- -------------------- ------------------- -----
-10.0.1.0          2168146709         16546822                        NA       multihop       07/20/23 07:39       07/20/23 07:39       No Diagnostic       Up
-10.0.2.0          4274052878       2880064287                        NA       multihop       07/20/23 07:39       07/20/23 07:39       No Diagnostic       Up
-10.2.1.4          1155352672       1805198150             Ethernet1(11)         normal       07/20/23 07:39       07/20/23 07:39       No Diagnostic       Up
-10.2.2.4          3378185624        738324301             Ethernet2(12)         normal       07/20/23 07:39       07/20/23 07:39       No Diagnostic       Up
+10.0.1.0          1183837922       1428561445                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+10.0.2.0           511213494        562380621                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+10.2.1.4          3568961531       3355172905             Ethernet1(14)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+10.2.2.4          2226181931        951437747             Ethernet2(15)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+
 ```
 </details>
 
