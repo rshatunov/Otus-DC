@@ -138,7 +138,10 @@ terminal width 250
 username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
 aaa authorization serial-console
 aaa authorization exec default local
+vrf instance VRF-A
+ip virtual-router mac-address 00:00:11:11:11:11
 ip routing
+ip routing vrf VRF-A
 route-map LOOPBAKS permit 10
    match interface Loopback0
 route-map LOOPBAKS permit 20
@@ -156,6 +159,9 @@ interface Ethernet2
    no switchport
    ip address 10.2.2.1/31
    bfd interval 50 min-rx 50 multiplier 3
+interface Ethernet8
+   description ### Link to Srv-01 int e0 ###
+   switchport access vlan 10
 interface Loopback0
    ip address 10.1.0.1/32
 interface Loopback1
@@ -164,6 +170,10 @@ interface Vxlan1
    vxlan source-interface Loopback1
    vxlan udp-port 4789
    vxlan vlan 10 vni 10010
+   vxlan vrf VRF-A vni 10000
+interface Vlan10
+   vrf VRF-A
+   ip address virtual 10.3.10.254/24
 
 #### Настройка BGP ####
 router bgp 65000
