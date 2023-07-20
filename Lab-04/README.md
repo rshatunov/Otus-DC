@@ -3,7 +3,7 @@
 ### Цели
 - Настроить BGP для Underlay сети.
 ### Схема сети
-![pic.jpg](pic.jpg)
+![pic-04.jpg](pic-04.jpg)
 ### Настройка оборудования
  <details>
 <summary>  Настройка Spine-01: </summary>
