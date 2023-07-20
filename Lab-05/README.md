@@ -152,6 +152,9 @@ interface Ethernet2
    no switchport
    ip address 10.2.2.1/31
    bfd interval 50 min-rx 50 multiplier 3
+interface Ethernet8
+   description ### Link to Srv-01 int e0 ###
+   switchport access vlan 10
 interface Loopback0
    ip address 10.1.0.1/32
 interface Loopback1
@@ -213,7 +216,7 @@ vlan 10,20
 #### Настройка интерфейсов ####
 interface Ethernet1
    description ### Link to Spine-01 int Eth2 ###
-   no switchport
+   no switchport 
    ip address 10.2.1.3/31
    bfd interval 50 min-rx 50 multiplier 3
 interface Ethernet2
@@ -221,6 +224,12 @@ interface Ethernet2
    no switchport
    ip address 10.2.2.3/31
    bfd interval 50 min-rx 50 multiplier 3
+interface Ethernet7
+   description ### Link to Srv-02 int e0 ###
+   switchport access vlan 10
+interface Ethernet8
+   description ### Link to Srv-03 int e0 ###
+   switchport access vlan 20
 interface Loopback0
    ip address 10.1.0.2/32
 interface Loopback1
@@ -286,7 +295,8 @@ route-map LOOPBAKS permit 20
 vlan 20
 
 #### Настройка интерфейсов ####
-   description ### Link to Spine-01 int Eth3 ###
+interface Ethernet1
+ description ### Link to Spine-01 int Eth3 ###
    no switchport
    ip address 10.2.1.5/31
    bfd interval 50 min-rx 50 multiplier 3
@@ -295,6 +305,9 @@ interface Ethernet2
    no switchport
    ip address 10.2.2.5/31
    bfd interval 50 min-rx 50 multiplier 3
+interface Ethernet8
+   description ### Link to Srv-04 int e0 ###
+   switchport access vlan 20
 interface Loopback0
    ip address 10.1.0.3/32
 interface Loopback1
