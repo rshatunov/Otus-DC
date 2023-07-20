@@ -19,6 +19,10 @@ aaa authorization exec default local
 ip routing
 route-map LOOPBAKS permit 10
    match interface Loopback0
+peer-filter AS-FILTER
+   10 match as-range 65001 result accept
+   20 match as-range 65002 result accept
+   30 match as-range 65003 result accept
 
 #### Настройка интерфейсов ####
 interface Ethernet1
@@ -42,26 +46,24 @@ interface Loopback0
 #### Настройка BGP ####
 router bgp 65000
    router-id 10.0.1.0
-   bgp listen range 10.2.0.0/16 peer-group LEAF remote-as 65000
-   bgp listen range 10.1.0.0/16 peer-group VXLAN remote-as 65000
-   neighbor LEAF peer group
-   neighbor LEAF next-hop-self
-   neighbor LEAF bfd
-   neighbor LEAF route-reflector-client
-   neighbor LEAF timers 5 15
-   neighbor LEAF password 7 n1ehpTkR6OzDbuUgsQd1sQ==
-   neighbor VXLAN peer group
-   neighbor VXLAN update-source Loopback0
-   neighbor VXLAN bfd
-   neighbor VXLAN route-reflector-client
-   neighbor VXLAN timers 5 15
-   neighbor VXLAN password 7 BBGRh1MqInmF4hdb+bokKg==
-   neighbor VXLAN send-community
+   bgp listen range 10.1.0.0/16 peer-group OVERLAY peer-filter AS-FILTER
+   bgp listen range 10.2.0.0/16 peer-group UNDERLAY peer-filter AS-FILTER
+   neighbor OVERLAY peer group
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY bfd
+   neighbor OVERLAY ebgp-multihop 2
+   neighbor OVERLAY timers 5 15
+   neighbor OVERLAY password 7 uOE+oO5B97YK28lH6OwjCQ==
+   neighbor OVERLAY send-community
+   neighbor UNDERLAY peer group
+   neighbor UNDERLAY bfd
+   neighbor UNDERLAY timers 5 15
+   neighbor UNDERLAY password 7 ZcyyQF+TaMkNnh+RPCdLHA==
    redistribute connected route-map LOOPBAKS
    address-family evpn
-      neighbor VXLAN activate
+      neighbor OVERLAY activate
    address-family ipv4
-      no neighbor VXLAN activate
+      no neighbor OVERLAY activate
 ```
 </details>
  <details>
@@ -78,6 +80,10 @@ aaa authorization exec default local
 ip routing
 route-map LOOPBAKS permit 10
    match interface Loopback0
+peer-filter AS-FILTER
+   10 match as-range 65001 result accept
+   20 match as-range 65002 result accept
+   30 match as-range 65003 result accept
 
 #### Настройка интерфейсов ####
 interface Ethernet1
@@ -101,26 +107,24 @@ interface Loopback0
 #### Настройка BGP ####
 router bgp 65000
    router-id 10.0.2.0
-   bgp listen range 10.2.0.0/16 peer-group LEAF remote-as 65000
-   bgp listen range 10.1.0.0/16 peer-group VXLAN remote-as 65000
-   neighbor LEAF peer group
-   neighbor LEAF next-hop-self
-   neighbor LEAF bfd
-   neighbor LEAF route-reflector-client
-   neighbor LEAF timers 5 15
-   neighbor LEAF password 7 n1ehpTkR6OzDbuUgsQd1sQ==
-   neighbor VXLAN peer group
-   neighbor VXLAN update-source Loopback0
-   neighbor VXLAN bfd
-   neighbor VXLAN route-reflector-client
-   neighbor VXLAN timers 5 15
-   neighbor VXLAN password 7 BBGRh1MqInmF4hdb+bokKg==
-   neighbor VXLAN send-community
+   bgp listen range 10.1.0.0/16 peer-group OVERLAY peer-filter AS-FILTER
+   bgp listen range 10.2.0.0/16 peer-group UNDERLAY peer-filter AS-FILTER
+   neighbor OVERLAY peer group
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY bfd
+   neighbor OVERLAY ebgp-multihop 2
+   neighbor OVERLAY timers 5 15
+   neighbor OVERLAY password 7 uOE+oO5B97YK28lH6OwjCQ==
+   neighbor OVERLAY send-community
+   neighbor UNDERLAY peer group
+   neighbor UNDERLAY bfd
+   neighbor UNDERLAY timers 5 15
+   neighbor UNDERLAY password 7 ZcyyQF+TaMkNnh+RPCdLHA==
    redistribute connected route-map LOOPBAKS
    address-family evpn
-      neighbor VXLAN activate
+      neighbor OVERLAY activate
    address-family ipv4
-      no neighbor VXLAN activate
+      no neighbor OVERLAY activate
 ```
 </details>
  <details>
