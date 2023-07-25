@@ -10,58 +10,37 @@
 
 ```
 #### Базовая настройка ####
-hostname Spine-01
-service routing protocols model multi-agent
-terminal width 250
-username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
-aaa authorization serial-console
-aaa authorization exec default local
-ip routing
-route-map LOOPBAKS permit 10
-   match interface Loopback0
+set system host-name Spine-01
+set system root-authentication encrypted-password "$6$hqZ84sgt$MfWryGCaFZwKx84RZiAwzBqbopiADxKrxv3Gz9It9BlkmA2E0f0wSCTCzC/ygyIXeINXOq6Pu5fPxyu4TgQ3L."
 
 #### Настройка интерфейсов ####
-interface Ethernet1
-   description ### Link to Leaf-01 int Eth1 ###
-   no switchport
-   ip address 10.2.1.0/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Ethernet2
-   description ### Link to Leaf-02 int Eth1 ###
-   no switchport
-   ip address 10.2.1.2/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Ethernet3
-   description ### Link to Leaf-03 int Eth1 ###
-   no switchport
-   ip address 10.2.1.4/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Loopback0
-   ip address 10.0.1.0/32
+set interfaces xe-0/0/1 description "### Link to Leaf-01 int xe-0/0/1 ###"
+set interfaces xe-0/0/1 unit 0 family inet address 10.2.1.0/31
+set interfaces xe-0/0/2 description "### Link to Leaf-02 int xe-0/0/1 ###"
+set interfaces xe-0/0/2 unit 0 family inet address 10.2.1.2/31
+set interfaces xe-0/0/3 description "### Link to Leaf-03 int xe-0/0/1 ###"
+set interfaces xe-0/0/3 unit 0 family inet address 10.2.1.4/31
+set interfaces em1 description "### Link to vQFX-PFE int em1 ###"
+set interfaces em1 unit 0 family inet address 169.254.0.2/24
+set interfaces lo0 unit 0 family inet address 10.0.1.0/32
 
-#### Настройка BGP ####
-router bgp 65000
-   router-id 10.0.1.0
-   bgp listen range 10.2.0.0/16 peer-group LEAF remote-as 65000
-   bgp listen range 10.1.0.0/16 peer-group VXLAN remote-as 65000
-   neighbor LEAF peer group
-   neighbor LEAF next-hop-self
-   neighbor LEAF bfd
-   neighbor LEAF route-reflector-client
-   neighbor LEAF timers 5 15
-   neighbor LEAF password 7 n1ehpTkR6OzDbuUgsQd1sQ==
-   neighbor VXLAN peer group
-   neighbor VXLAN update-source Loopback0
-   neighbor VXLAN bfd
-   neighbor VXLAN route-reflector-client
-   neighbor VXLAN timers 5 15
-   neighbor VXLAN password 7 BBGRh1MqInmF4hdb+bokKg==
-   neighbor VXLAN send-community
-   redistribute connected route-map LOOPBAKS
-   address-family evpn
-      neighbor VXLAN activate
-   address-family ipv4
-      no neighbor VXLAN activate
+#### Настройка eBGP ####
+set routing-options router-id 10.0.1.0
+set routing-options autonomous-system 65000
+set policy-options policy-statement LOOPBACKS from family inet
+set policy-options policy-statement LOOPBACKS from protocol direct
+set policy-options policy-statement LOOPBACKS from route-filter 10.0.0.0/16 prefix-length-range /32-/32
+set policy-options policy-statement LOOPBACKS then accept
+set protocols bgp group UNDERLAY type external
+set protocols bgp group UNDERLAY hold-time 15
+set protocols bgp group UNDERLAY authentication-key "$9$dGbwgZGiP5F24PQF39CKMWxVw4aZ"
+set protocols bgp group UNDERLAY export LOOPBACKS
+set protocols bgp group UNDERLAY bfd-liveness-detection minimum-interval 200
+set protocols bgp group UNDERLAY bfd-liveness-detection multiplier 3
+set protocols bgp group UNDERLAY multipath multiple-as
+set protocols bgp group UNDERLAY neighbor 10.2.1.1 peer-as 65001
+set protocols bgp group UNDERLAY neighbor 10.2.1.3 peer-as 65002
+set protocols bgp group UNDERLAY neighbor 10.2.1.5 peer-as 65003
 ```
 </details>
  <details>
@@ -69,58 +48,37 @@ router bgp 65000
 
 ```
 #### Базовая настройка ####
-hostname Spine-02
-service routing protocols model multi-agent
-terminal width 250
-username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
-aaa authorization serial-console
-aaa authorization exec default local
-ip routing
-route-map LOOPBAKS permit 10
-   match interface Loopback0
+set system host-name Spine-02
+set system root-authentication encrypted-password "$6$/AKK5DlV$InrdcbhZhwruBf5A.oLt1OmDpn95RtTOotNl.bZSbrS0q6bYDRJt7VMyXdqQaoRs.WWF1k7HLJDdN.fAZNHWC0"
 
 #### Настройка интерфейсов ####
-interface Ethernet1
-   description ### Link to Leaf-01 int Eth2 ###
-   no switchport
-   ip address 10.2.2.0/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Ethernet2
-   description ### Link to Leaf-02 int Eth2 ###
-   no switchport
-   ip address 10.2.2.2/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Ethernet3
-   description ### Link to Leaf-03 int Eth2 ###
-   no switchport
-   ip address 10.2.2.4/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Loopback0
-   ip address 10.0.2.0/32
+set interfaces xe-0/0/1 description "### Link to Leaf-01 int xe-0/0/2 ###"
+set interfaces xe-0/0/1 unit 0 family inet address 10.2.2.0/31
+set interfaces xe-0/0/2 description "### Link to Leaf-02 int xe-0/0/2 ###"
+set interfaces xe-0/0/2 unit 0 family inet address 10.2.2.2/31
+set interfaces xe-0/0/3 description "### Link to Leaf-03 int xe-0/0/2 ###"
+set interfaces xe-0/0/3 unit 0 family inet address 10.2.2.4/31
+set interfaces em1 description "### Link to vQFX-PFE int em1 ###"
+set interfaces em1 unit 0 family inet address 169.254.0.2/24
+set interfaces lo0 unit 0 family inet address 10.0.2.0/32
 
-#### Настройка BGP ####
-router bgp 65000
-   router-id 10.0.2.0
-   bgp listen range 10.2.0.0/16 peer-group LEAF remote-as 65000
-   bgp listen range 10.1.0.0/16 peer-group VXLAN remote-as 65000
-   neighbor LEAF peer group
-   neighbor LEAF next-hop-self
-   neighbor LEAF bfd
-   neighbor LEAF route-reflector-client
-   neighbor LEAF timers 5 15
-   neighbor LEAF password 7 n1ehpTkR6OzDbuUgsQd1sQ==
-   neighbor VXLAN peer group
-   neighbor VXLAN update-source Loopback0
-   neighbor VXLAN bfd
-   neighbor VXLAN route-reflector-client
-   neighbor VXLAN timers 5 15
-   neighbor VXLAN password 7 BBGRh1MqInmF4hdb+bokKg==
-   neighbor VXLAN send-community
-   redistribute connected route-map LOOPBAKS
-   address-family evpn
-      neighbor VXLAN activate
-   address-family ipv4
-      no neighbor VXLAN activate
+#### Настройка eBGP ####
+set routing-options router-id 10.0.2.0
+set routing-options autonomous-system 65000
+set policy-options policy-statement LOOPBACKS from family inet
+set policy-options policy-statement LOOPBACKS from protocol direct
+set policy-options policy-statement LOOPBACKS from route-filter 10.0.0.0/16 prefix-length-range /32-/32
+set policy-options policy-statement LOOPBACKS then accept
+set protocols bgp group UNDERLAY type external
+set protocols bgp group UNDERLAY hold-time 15
+set protocols bgp group UNDERLAY authentication-key "$9$dGbwgZGiP5F24PQF39CKMWxVw4aZ"
+set protocols bgp group UNDERLAY export LOOPBACKS
+set protocols bgp group UNDERLAY bfd-liveness-detection minimum-interval 200
+set protocols bgp group UNDERLAY bfd-liveness-detection multiplier 3
+set protocols bgp group UNDERLAY multipath multiple-as
+set protocols bgp group UNDERLAY neighbor 10.2.2.1 peer-as 65001
+set protocols bgp group UNDERLAY neighbor 10.2.2.3 peer-as 65002
+set protocols bgp group UNDERLAY neighbor 10.2.2.5 peer-as 65003
 ```
 </details>
  <details>
