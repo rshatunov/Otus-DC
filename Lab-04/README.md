@@ -203,91 +203,95 @@ set protocols bgp group UNDERLAY neighbor 10.2.2.4 peer-as 65000
 <summary> Leaf-01: </summary>
 
 ```
-BGP routing table information for VRF default
-Router identifier 10.1.0.1, local AS number 65000
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
+root@Leaf-01> show bgp summary
+Groups: 1 Peers: 2 Down peers: 0
+Table          Tot Paths  Act Paths Suppressed    History Damp State    Pending
+inet.0
+                       6          6          0          0          0          0
+Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Accepted/Damped...
+10.2.1.0              65000      14421      14467       0       1    18:08:56 3/3/3/0              0/0/0/0
+10.2.2.0              65000       4439       4458       0       4     5:35:28 3/3/3/0              0/0/0/0
 
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >     RD: 10.1.0.1:10010 imet 10.1.1.1
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.2.0
- *  ec   RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.1.0
- * >Ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       i Or-ID: 10.1.0.3 C-LST: 10.0.1.0
- *  ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       i Or-ID: 10.1.0.3 C-LST: 10.0.2.0
+{master:0}
+root@Leaf-01> show bfd session
+                                                  Detect   Transmit
+Address                  State     Interface      Time     Interval  Multiplier
+10.2.1.0                 Up        xe-0/0/1.0     0.600     0.200        3
+10.2.2.0                 Up        xe-0/0/2.0     0.600     0.200        3
 
+2 sessions, 2 clients
+Cumulative transmit rate 10.0 pps, cumulative receive rate 10.0 pps
 
-Leaf-01#show bgp evpn route-type mac-ip
-BGP routing table information for VRF default
-Router identifier 10.1.0.1, local AS number 65000
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
+{master:0}
+root@Leaf-01> show route protocol bgp
 
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >     RD: 10.1.0.1:10010 mac-ip 0050.0000.0100
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.2.0
- *  ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.1.0
- * >Ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0300
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.2.0
- *  ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0300
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.1.0
- * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400
-                                 10.1.1.3              -       100     0       i Or-ID: 10.1.0.3 C-LST: 10.0.1.0
- *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400
-                                 10.1.1.3              -       100     0       i Or-ID: 10.1.0.3 C-LST: 10.0.2.0
+inet.0: 11 destinations, 13 routes (11 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
 
+10.0.1.0/32        *[BGP/170] 17:55:54, localpref 100
+                      AS path: 65000 I, validation-state: unverified
+                    > to 10.2.1.0 via xe-0/0/1.0
+10.0.2.0/32        *[BGP/170] 05:35:37, localpref 100
+                      AS path: 65000 I, validation-state: unverified
+                    > to 10.2.2.0 via xe-0/0/2.0
+10.1.0.2/32        *[BGP/170] 01:13:44, localpref 100
+                      AS path: 65000 65002 I, validation-state: unverified
+                      to 10.2.1.0 via xe-0/0/1.0
+                    > to 10.2.2.0 via xe-0/0/2.0
+                    [BGP/170] 01:13:44, localpref 100
+                      AS path: 65000 65002 I, validation-state: unverified
+                    > to 10.2.1.0 via xe-0/0/1.0
+10.1.0.3/32        *[BGP/170] 05:35:37, localpref 100, from 10.2.1.0
+                      AS path: 65000 65003 I, validation-state: unverified
+                      to 10.2.1.0 via xe-0/0/1.0
+                    > to 10.2.2.0 via xe-0/0/2.0
+                    [BGP/170] 05:35:37, localpref 100
+                      AS path: 65000 65003 I, validation-state: unverified
+                    > to 10.2.2.0 via xe-0/0/2.0
 
-Leaf-01#sh vxlan vtep
-Remote VTEPS for Vxlan1:
+inet6.0: 2 destinations, 2 routes (2 active, 0 holddown, 0 hidden)
 
-VTEP           Tunnel Type(s)
--------------- --------------
-10.1.1.2       unicast, flood
+{master:0}
+root@Leaf-01> show route forwarding-table destination 10.1.0.2 table default
+Routing table: default.inet
+Internet:
+Enabled protocols: Bridging,
+Destination        Type RtRef Next hop           Type Index    NhRef Netif
+10.1.0.2/32        user     0                    ulst   131070     3
+                              10.2.1.0           ucst     1734     5 xe-0/0/1.0
+                              10.2.2.0           ucst     1735     5 xe-0/0/2.0
 
-Total number of remote VTEPS:  1
+{master:0}
+root@Leaf-01> show route forwarding-table destination 10.1.0.3 table default
+Routing table: default.inet
+Internet:
+Enabled protocols: Bridging,
+Destination        Type RtRef Next hop           Type Index    NhRef Netif
+10.1.0.3/32        user     0                    ulst   131070     3
+                              10.2.1.0           ucst     1734     5 xe-0/0/1.0
+                              10.2.2.0           ucst     1735     5 xe-0/0/2.0
 
+{master:0}
+root@Leaf-01> ping count 3 source 10.1.0.1 10.1.0.2
+PING 10.1.0.2 (10.1.0.2): 56 data bytes
+64 bytes from 10.1.0.2: icmp_seq=0 ttl=63 time=447.184 ms
+64 bytes from 10.1.0.2: icmp_seq=1 ttl=63 time=557.027 ms
+64 bytes from 10.1.0.2: icmp_seq=2 ttl=63 time=469.737 ms
 
-Leaf-01#sh vxlan vni
-VNI to VLAN Mapping for Vxlan1
-VNI         VLAN       Source       Interface       802.1Q Tag
------------ ---------- ------------ --------------- ----------
-10010       10         static       Ethernet8       untagged
-                                    Vxlan1          10
+--- 10.1.0.2 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 447.184/491.316/557.027/47.368 ms
 
+{master:0}
+root@Leaf-01> ping count 3 source 10.1.0.1 10.1.0.3
+PING 10.1.0.3 (10.1.0.3): 56 data bytes
+64 bytes from 10.1.0.3: icmp_seq=0 ttl=63 time=324.863 ms
+64 bytes from 10.1.0.3: icmp_seq=1 ttl=63 time=326.041 ms
+64 bytes from 10.1.0.3: icmp_seq=2 ttl=63 time=436.176 ms
 
-Leaf-01#show mac address-table vlan 10
-          Mac Address Table
-------------------------------------------------------------------
-
-Vlan    Mac Address       Type        Ports      Moves   Last Move
-----    -----------       ----        -----      -----   ---------
-  10    0050.0000.0100    DYNAMIC     Et8        1       0:43:11 ago
-  10    0050.0000.0200    DYNAMIC     Vx1        1       0:13:34 ago
-Total Mac Addresses for this criterion: 2
-
-
-Leaf-01#show bfd peers
-VRF name: default
------------------
-DstAddr               MyDisc         YourDisc       Interface/Transport           Type               LastUp             LastDown            LastDiag    State
--------------- ---------------- ---------------- ------------------------- -------------- -------------------- -------------------- ------------------- -----
-10.0.1.0           862731166       2254670486                        NA       multihop       07/19/23 05:17       07/19/23 05:17       No Diagnostic       Up
-10.0.2.0          3798212470       3720827591                        NA       multihop       07/19/23 05:17       07/19/23 05:17       No Diagnostic       Up
-10.2.1.0          1854986126       1727769550             Ethernet1(14)         normal       07/19/23 05:17       07/19/23 05:17       No Diagnostic       Up
-10.2.2.0          1476292841       3661412075             Ethernet2(15)         normal       07/19/23 05:17       07/19/23 05:17       No Diagnostic       Up
+--- 10.1.0.3 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 324.863/362.360/436.176/52.198 ms
 ```
 </details>
 
@@ -295,157 +299,95 @@ DstAddr               MyDisc         YourDisc       Interface/Transport         
 <summary> Leaf-02: </summary>
 
 ```
-Leaf-02#show ip bgp summary
-BGP summary information for VRF default
-Router identifier 10.1.0.2, local AS number 65000
-Neighbor Status Codes: m - Under maintenance
-  Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.2.1.2         4 65000          14336     14294    0    0 00:17:45 Estab   5      5
-  10.2.2.2         4 65000          14326     14243    0    0 00:17:45 Estab   5      5
+root@Leaf-02> show bgp summary
+Groups: 1 Peers: 2 Down peers: 0
+Table          Tot Paths  Act Paths Suppressed    History Damp State    Pending
+inet.0
+                       6          6          0          0          0          0
+Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Accepted/Damped...
+10.2.1.2              65000       1000       1000       0       1     1:15:15 3/3/3/0              0/0/0/0
+10.2.2.2              65000       5853       5874       0       1     7:22:18 3/3/3/0              0/0/0/0
 
+{master:0}
+root@Leaf-02> show bfd session
+                                                  Detect   Transmit
+Address                  State     Interface      Time     Interval  Multiplier
+10.2.1.2                 Up        xe-0/0/1.0     0.600     0.200        3
+10.2.2.2                 Up        xe-0/0/2.0     0.600     0.200        3
 
-Leaf-02#sh ip route
+2 sessions, 2 clients
+Cumulative transmit rate 10.0 pps, cumulative receive rate 10.0 pps
 
-VRF: default
-Codes: C - connected, S - static, K - kernel,
-       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
-       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
-       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
-       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
-       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
-       NG - Nexthop Group Static Route, V - VXLAN Control Service,
-       DH - DHCP client installed default route, M - Martian,
-       DP - Dynamic Policy Route, L - VRF Leaked,
-       G  - gRIBI, RC - Route Cache Route
+{master:0}
+root@Leaf-02> show route protocol bgp
 
-Gateway of last resort is not set
+inet.0: 11 destinations, 13 routes (11 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
 
- B I      10.0.1.0/32 [200/0] via 10.2.1.2, Ethernet1
- B I      10.0.2.0/32 [200/0] via 10.2.2.2, Ethernet2
- B I      10.1.0.1/32 [200/0] via 10.2.1.2, Ethernet1
-                              via 10.2.2.2, Ethernet2
- C        10.1.0.2/32 is directly connected, Loopback0
- B I      10.1.0.3/32 [200/0] via 10.2.1.2, Ethernet1
-                              via 10.2.2.2, Ethernet2
- B I      10.1.1.1/32 [200/0] via 10.2.1.2, Ethernet1
-                              via 10.2.2.2, Ethernet2
- C        10.1.1.2/32 is directly connected, Loopback1
- B I      10.1.1.3/32 [200/0] via 10.2.1.2, Ethernet1
-                              via 10.2.2.2, Ethernet2
- C        10.2.1.2/31 is directly connected, Ethernet1
- C        10.2.2.2/31 is directly connected, Ethernet2
+10.0.1.0/32        *[BGP/170] 01:15:24, localpref 100
+                      AS path: 65000 I, validation-state: unverified
+                    > to 10.2.1.2 via xe-0/0/1.0
+10.0.2.0/32        *[BGP/170] 07:22:27, localpref 100
+                      AS path: 65000 I, validation-state: unverified
+                    > to 10.2.2.2 via xe-0/0/2.0
+10.1.0.1/32        *[BGP/170] 01:15:24, localpref 100
+                      AS path: 65000 65001 I, validation-state: unverified
+                      to 10.2.1.2 via xe-0/0/1.0
+                    > to 10.2.2.2 via xe-0/0/2.0
+                    [BGP/170] 01:15:24, localpref 100
+                      AS path: 65000 65001 I, validation-state: unverified
+                    > to 10.2.1.2 via xe-0/0/1.0
+10.1.0.3/32        *[BGP/170] 01:15:24, localpref 100
+                      AS path: 65000 65003 I, validation-state: unverified
+                      to 10.2.1.2 via xe-0/0/1.0
+                    > to 10.2.2.2 via xe-0/0/2.0
+                    [BGP/170] 01:15:24, localpref 100
+                      AS path: 65000 65003 I, validation-state: unverified
+                    > to 10.2.1.2 via xe-0/0/1.0
 
+inet6.0: 2 destinations, 2 routes (2 active, 0 holddown, 0 hidden)
 
-Leaf-02#sh bgp evpn summary
-BGP summary information for VRF default
-Router identifier 10.1.0.2, local AS number 65000
-Neighbor Status Codes: m - Under maintenance
-  Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.0.1.0         4 65000          14182     14178    0    0 00:17:44 Estab   4      4
-  10.0.2.0         4 65000          14190     14196    0    0 00:17:44 Estab   4      4
+{master:0}
+root@Leaf-02> ...able destination 10.1.0.1 table default
+Routing table: default.inet
+Internet:
+Enabled protocols: Bridging,
+Destination        Type RtRef Next hop           Type Index    NhRef Netif
+10.1.0.1/32        user     0                    ulst   131070     3
+                              10.2.1.2           ucst     1735     5 xe-0/0/1.0
+                              10.2.2.2           ucst     1734     5 xe-0/0/2.0
 
+{master:0}
+root@Leaf-02> ...able destination 10.1.0.3 table default
+Routing table: default.inet
+Internet:
+Enabled protocols: Bridging,
+Destination        Type RtRef Next hop           Type Index    NhRef Netif
+10.1.0.3/32        user     0                    ulst   131070     3
+                              10.2.1.2           ucst     1735     5 xe-0/0/1.0
+                              10.2.2.2           ucst     1734     5 xe-0/0/2.0
 
-Leaf-02#show bgp evpn route-type imet
-BGP routing table information for VRF default
-Router identifier 10.1.0.2, local AS number 65000
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
+{master:0}
+root@Leaf-02> ping count 3 source 10.1.0.2 10.1.0.1
+PING 10.1.0.1 (10.1.0.1): 56 data bytes
+64 bytes from 10.1.0.1: icmp_seq=0 ttl=63 time=334.942 ms
+64 bytes from 10.1.0.1: icmp_seq=1 ttl=63 time=343.276 ms
+64 bytes from 10.1.0.1: icmp_seq=2 ttl=63 time=346.507 ms
 
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >Ec   RD: 10.1.0.1:10010 imet 10.1.1.1
-                                 10.1.1.1              -       100     0       i Or-ID: 10.1.0.1 C-LST: 10.0.2.0
- *  ec   RD: 10.1.0.1:10010 imet 10.1.1.1
-                                 10.1.1.1              -       100     0       i Or-ID: 10.1.0.1 C-LST: 10.0.1.0
- * >Ec   RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 -                     -       -       0       i
- *  ec   RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       i Or-ID: 10.1.0.3 C-LST: 10.0.1.0
- *  ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       i Or-ID: 10.1.0.3 C-LST: 10.0.2.0
+--- 10.1.0.1 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 334.942/341.575/346.507/4.872 ms
 
+{master:0}
+root@Leaf-02> ping count 3 source 10.1.0.2 10.1.0.3
+PING 10.1.0.3 (10.1.0.3): 56 data bytes
+64 bytes from 10.1.0.3: icmp_seq=0 ttl=63 time=331.235 ms
+64 bytes from 10.1.0.3: icmp_seq=1 ttl=63 time=342.144 ms
+64 bytes from 10.1.0.3: icmp_seq=2 ttl=63 time=356.837 ms
 
-Leaf-02#show bgp evpn route-type mac-ip
-BGP routing table information for VRF default
-Router identifier 10.1.0.2, local AS number 65000
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >Ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100
-                                 10.1.1.1              -       100     0       i Or-ID: 10.1.0.1 C-LST: 10.0.2.0
- *  ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100
-                                 10.1.1.1              -       100     0       i Or-ID: 10.1.0.1 C-LST: 10.0.1.0
- * >     RD: 10.1.0.2:10010 mac-ip 0050.0000.0200
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.2:10010 mac-ip 0050.0000.0300
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400
-                                 10.1.1.3              -       100     0       i Or-ID: 10.1.0.3 C-LST: 10.0.1.0
- *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400
-                                 10.1.1.3              -       100     0       i Or-ID: 10.1.0.3 C-LST: 10.0.2.0
-
-
-Leaf-02#sh vxlan vtep
-Remote VTEPS for Vxlan1:
-
-VTEP           Tunnel Type(s)
--------------- --------------
-10.1.1.1       flood, unicast
-10.1.1.3       flood, unicast
-
-Total number of remote VTEPS:  2
-
-
-Leaf-02#sh vxlan vni
-VNI to VLAN Mapping for Vxlan1
-VNI         VLAN       Source       Interface       802.1Q Tag
------------ ---------- ------------ --------------- ----------
-10010       10         static       Ethernet7       untagged
-                                    Vxlan1          10
-10020       20         static       Ethernet8       untagged
-                                    Vxlan1          20
-
-
-Leaf-02#show mac address-table vlan 10
-          Mac Address Table
-------------------------------------------------------------------
-
-Vlan    Mac Address       Type        Ports      Moves   Last Move
-----    -----------       ----        -----      -----   ---------
-  10    0050.0000.0100    DYNAMIC     Vx1        1       0:17:43 ago
-  10    0050.0000.0200    DYNAMIC     Et7        1       0:47:23 ago
-Total Mac Addresses for this criterion: 2
-
-
-Total Mac Addresses for this criterion: 0
-Leaf-02#show mac address-table vlan 20
-          Mac Address Table
-------------------------------------------------------------------
-
-Vlan    Mac Address       Type        Ports      Moves   Last Move
-----    -----------       ----        -----      -----   ---------
-  20    0050.0000.0300    DYNAMIC     Et8        1       0:47:23 ago
-  20    0050.0000.0400    DYNAMIC     Vx1        1       0:14:43 ago
-Total Mac Addresses for this criterion: 2
-
-
-Leaf-02#show bfd peers
-VRF name: default
------------------
-DstAddr               MyDisc         YourDisc       Interface/Transport           Type               LastUp             LastDown            LastDiag    State
--------------- ---------------- ---------------- ------------------------- -------------- -------------------- -------------------- ------------------- -----
-10.0.1.0          2565670243       2919875080                        NA       multihop       07/19/23 05:20       07/19/23 05:20       No Diagnostic       Up
-10.0.2.0          2132240366        971400428                        NA       multihop       07/19/23 05:20       07/19/23 05:20       No Diagnostic       Up
-10.2.1.2          3294616926       3636286554             Ethernet1(14)         normal       07/19/23 05:20       07/19/23 05:20       No Diagnostic       Up
-10.2.2.2           601339831        740636767             Ethernet2(15)         normal       07/19/23 05:20       07/19/23 05:20       No Diagnostic       Up
+--- 10.1.0.3 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 331.235/343.405/356.837/10.490 ms
 ```
 </details>
 
@@ -453,142 +395,94 @@ DstAddr               MyDisc         YourDisc       Interface/Transport         
 <summary> Leaf-03: </summary>
 
 ```
-Leaf-03#show ip bgp summary
-BGP summary information for VRF default
-Router identifier 10.1.0.3, local AS number 65000
-Neighbor Status Codes: m - Under maintenance
-  Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.2.1.4         4 65000          14384     14333    0    0 00:17:25 Estab   5      5
-  10.2.2.4         4 65000          14346     14308    0    0 00:17:25 Estab   5      5
+root@Leaf-03> show bgp summary
+Groups: 1 Peers: 2 Down peers: 0
+Table          Tot Paths  Act Paths Suppressed    History Damp State    Pending
+inet.0
+                       6          6          0          0          0          0
+Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Accepted/Damped...
+10.2.1.4              65000      13451      13492       0       0    16:56:11 3/3/3/0              0/0/0/0
+10.2.2.4              65000      10820      10839       0       1    13:36:41 3/3/3/0              0/0/0/0
 
+{master:0}
+root@Leaf-03> show bfd session
+                                                  Detect   Transmit
+Address                  State     Interface      Time     Interval  Multiplier
+10.2.1.4                 Up        xe-0/0/1.0     0.600     0.200        3
+10.2.2.4                 Up        xe-0/0/2.0     0.600     0.200        3
 
-Leaf-03#sh ip route
+2 sessions, 2 clients
+Cumulative transmit rate 10.0 pps, cumulative receive rate 10.0 pps
 
-VRF: default
-Codes: C - connected, S - static, K - kernel,
-       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
-       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
-       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
-       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
-       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
-       NG - Nexthop Group Static Route, V - VXLAN Control Service,
-       DH - DHCP client installed default route, M - Martian,
-       DP - Dynamic Policy Route, L - VRF Leaked,
-       G  - gRIBI, RC - Route Cache Route
+{master:0}
+root@Leaf-03> show route protocol bgp
 
-Gateway of last resort is not set
+inet.0: 11 destinations, 13 routes (11 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
 
- B I      10.0.1.0/32 [200/0] via 10.2.1.4, Ethernet1
- B I      10.0.2.0/32 [200/0] via 10.2.2.4, Ethernet2
- B I      10.1.0.1/32 [200/0] via 10.2.1.4, Ethernet1
-                              via 10.2.2.4, Ethernet2
- B I      10.1.0.2/32 [200/0] via 10.2.1.4, Ethernet1
-                              via 10.2.2.4, Ethernet2
- C        10.1.0.3/32 is directly connected, Loopback0
- B I      10.1.1.1/32 [200/0] via 10.2.1.4, Ethernet1
-                              via 10.2.2.4, Ethernet2
- B I      10.1.1.2/32 [200/0] via 10.2.1.4, Ethernet1
-                              via 10.2.2.4, Ethernet2
- C        10.1.1.3/32 is directly connected, Loopback1
- C        10.2.1.4/31 is directly connected, Ethernet1
- C        10.2.2.4/31 is directly connected, Ethernet2
+10.0.1.0/32        *[BGP/170] 16:56:17, localpref 100
+                      AS path: 65000 I, validation-state: unverified
+                    > to 10.2.1.4 via xe-0/0/1.0
+10.0.2.0/32        *[BGP/170] 13:36:48, localpref 100
+                      AS path: 65000 I, validation-state: unverified
+                    > to 10.2.2.4 via xe-0/0/2.0
+10.1.0.1/32        *[BGP/170] 00:00:31, localpref 100, from 10.2.1.4
+                      AS path: 65000 65001 I, validation-state: unverified
+                      to 10.2.1.4 via xe-0/0/1.0
+                    > to 10.2.2.4 via xe-0/0/2.0
+                    [BGP/170] 00:00:31, localpref 100
+                      AS path: 65000 65001 I, validation-state: unverified
+                    > to 10.2.2.4 via xe-0/0/2.0
+10.1.0.2/32        *[BGP/170] 01:17:24, localpref 100
+                      AS path: 65000 65002 I, validation-state: unverified
+                      to 10.2.1.4 via xe-0/0/1.0
+                    > to 10.2.2.4 via xe-0/0/2.0
+                    [BGP/170] 01:17:24, localpref 100
+                      AS path: 65000 65002 I, validation-state: unverified
+                    > to 10.2.1.4 via xe-0/0/1.0
 
+inet6.0: 2 destinations, 2 routes (2 active, 0 holddown, 0 hidden)
 
-Leaf-03#sh bgp evpn summary
-BGP summary information for VRF default
-Router identifier 10.1.0.3, local AS number 65000
-Neighbor Status Codes: m - Under maintenance
-  Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.0.1.0         4 65000          14212     14178    0    0 00:17:24 Estab   5      5
-  10.0.2.0         4 65000          14240     14211    0    0 00:17:24 Estab   5      5
+{master:0}
+root@Leaf-03> ...able destination 10.1.0.1 table default
+Routing table: default.inet
+Internet:
+Enabled protocols: Bridging,
+Destination        Type RtRef Next hop           Type Index    NhRef Netif
+10.1.0.1/32        user     0                    ulst   131070     3
+                              10.2.1.4           ucst     1734     5 xe-0/0/1.0
+                              10.2.2.4           ucst     1735     5 xe-0/0/2.0
 
+{master:0}
+root@Leaf-03> ...able destination 10.1.0.2 table default
+Routing table: default.inet
+Internet:
+Enabled protocols: Bridging,
+Destination        Type RtRef Next hop           Type Index    NhRef Netif
+10.1.0.2/32        user     0                    ulst   131070     3
+                              10.2.1.4           ucst     1734     5 xe-0/0/1.0
+                              10.2.2.4           ucst     1735     5 xe-0/0/2.0
 
-Leaf-03#show bgp evpn route-type imet
-BGP routing table information for VRF default
-Router identifier 10.1.0.3, local AS number 65000
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
+{master:0}
+root@Leaf-03> ping count 3 source 10.1.0.3 10.1.0.1
+PING 10.1.0.1 (10.1.0.1): 56 data bytes
+64 bytes from 10.1.0.1: icmp_seq=0 ttl=63 time=467.729 ms
+64 bytes from 10.1.0.1: icmp_seq=1 ttl=63 time=378.116 ms
+64 bytes from 10.1.0.1: icmp_seq=2 ttl=63 time=387.135 ms
 
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >Ec   RD: 10.1.0.1:10010 imet 10.1.1.1
-                                 10.1.1.1              -       100     0       i Or-ID: 10.1.0.1 C-LST: 10.0.1.0
- *  ec   RD: 10.1.0.1:10010 imet 10.1.1.1
-                                 10.1.1.1              -       100     0       i Or-ID: 10.1.0.1 C-LST: 10.0.2.0
- * >Ec   RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.1.0
- *  ec   RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.2.0
- * >     RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 -                     -       -       0       i
+--- 10.1.0.1 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 378.116/410.993/467.729/40.287 ms
 
+{master:0}
+root@Leaf-03> ping count 3 source 10.1.0.3 10.1.0.2
+PING 10.1.0.2 (10.1.0.2): 56 data bytes
+64 bytes from 10.1.0.2: icmp_seq=0 ttl=63 time=433.043 ms
+64 bytes from 10.1.0.2: icmp_seq=1 ttl=63 time=343.014 ms
+64 bytes from 10.1.0.2: icmp_seq=2 ttl=63 time=359.168 ms
 
-Leaf-03#show bgp evpn route-type mac-ip
-BGP routing table information for VRF default
-Router identifier 10.1.0.3, local AS number 65000
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >Ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100
-                                 10.1.1.1              -       100     0       i Or-ID: 10.1.0.1 C-LST: 10.0.1.0
- *  ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100
-                                 10.1.1.1              -       100     0       i Or-ID: 10.1.0.1 C-LST: 10.0.2.0
- * >Ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.1.0
- *  ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.2.0
- * >Ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0300
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.1.0
- *  ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0300
-                                 10.1.1.2              -       100     0       i Or-ID: 10.1.0.2 C-LST: 10.0.2.0
- * >     RD: 10.1.0.3:10020 mac-ip 0050.0000.0400
-                                 -                     -       -       0       i
-
-
-Leaf-03#sh vxlan vtep
-Remote VTEPS for Vxlan1:
-
-VTEP           Tunnel Type(s)
--------------- --------------
-10.1.1.2       unicast
-
-Total number of remote VTEPS:  1
-
-
-Leaf-03#sh vxlan vni
-VNI to VLAN Mapping for Vxlan1
-VNI         VLAN       Source       Interface       802.1Q Tag
------------ ---------- ------------ --------------- ----------
-10020       20         static       Ethernet8       untagged
-                                    Vxlan1          20
-
-
-Leaf-03#show mac address-table vlan 20
-          Mac Address Table
-------------------------------------------------------------------
-
-Vlan    Mac Address       Type        Ports      Moves   Last Move
-----    -----------       ----        -----      -----   ---------
-  20    0050.0000.0300    DYNAMIC     Vx1        1       0:17:23 ago
-  20    0050.0000.0400    DYNAMIC     Et8        1       0:50:04 ago
-Total Mac Addresses for this criterion: 2
-
-
-Total Mac Addresses for this criterion: 0
-Leaf-03#show bfd peers
-VRF name: default
------------------
-DstAddr               MyDisc         YourDisc       Interface/Transport           Type               LastUp             LastDown            LastDiag    State
--------------- ---------------- ---------------- ------------------------- -------------- -------------------- -------------------- ------------------- -----
-10.0.1.0          1579112925        827709169                        NA       multihop       07/19/23 05:23       07/19/23 05:23       No Diagnostic       Up
-10.0.2.0          1913612640       1384503254                        NA       multihop       07/19/23 05:23       07/19/23 05:23       No Diagnostic       Up
-10.2.1.4          1374574741       2534370159             Ethernet1(14)         normal       07/19/23 05:23       07/19/23 05:23       No Diagnostic       Up
-10.2.2.4          2340849870       3574004050             Ethernet2(15)         normal       07/19/23 05:23       07/19/23 05:23       No Diagnostic       Up
+--- 10.1.0.2 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 343.014/378.408/433.043/39.191 ms
 ```
 </details>
