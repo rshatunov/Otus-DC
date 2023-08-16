@@ -470,18 +470,78 @@ router bgp 65003
 <summary> Leaf-01: </summary>
 
 ```
-Leaf-01#show ip bgp summary
-BGP summary information for VRF default
+Leaf-01#show ip bgp
+BGP routing table information for VRF default
 Router identifier 10.1.0.1, local AS number 65001
-Neighbor Status Codes: m - Under maintenance
-  Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.2.1.0         4 65000            208       265    0    0 00:01:30 Estab   5      5
-  10.2.2.0         4 65000            210       275    0    0 00:01:26 Estab   5      5
+Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
+                    S - Stale, c - Contributing to ECMP, b - backup, L - labeled-unicast
+                    % - Pending BGP convergence
+Origin codes: i - IGP, e - EGP, ? - incomplete
+RPKI Origin Validation codes: V - valid, I - invalid, U - unknown
+AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
 
+          Network                Next Hop              Metric  AIGP       LocPref Weight  Path
+ * >      10.0.1.0/32            10.2.1.0              0       -          100     0       65000 i
+ *        10.0.1.0/32            169.254.253.2         0       -          100     0       65000 i
+ * >      10.0.2.0/32            10.2.2.0              0       -          100     0       65000 i
+ *        10.0.2.0/32            169.254.253.2         0       -          100     0       65000 i
+ * >      10.1.0.0/32            -                     -       -          -       0       i
+ *        10.1.0.0/32            169.254.253.2         0       -          100     0       i
+ * >      10.1.0.1/32            -                     -       -          -       0       i
+ * >      10.1.0.2/32            169.254.253.2         0       -          100     0       i
+ * >Ec    10.1.0.3/32            10.2.2.0              0       -          100     0       65000 65003 i
+ *  ec    10.1.0.3/32            10.2.1.0              0       -          100     0       65000 65003 i
+ *        10.1.0.3/32            169.254.253.2         0       -          100     0       65000 65003 i
+ * >Ec    10.1.1.3/32            10.2.2.0              0       -          100     0       65000 65003 i
+ *  ec    10.1.1.3/32            10.2.1.0              0       -          100     0       65000 65003 i
+ *        10.1.1.3/32            169.254.253.2         0       -          100     0       65000 65003 i
+Leaf-01#
+Leaf-01#
+Leaf-01#show bgp evpn
+BGP routing table information for VRF default
+Router identifier 10.1.0.1, local AS number 65001
+Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
+                    S - Stale, c - Contributing to ECMP, b - backup
+                    % - Pending BGP convergence
+Origin codes: i - IGP, e - EGP, ? - incomplete
+AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
 
-Leaf-01#sh ip route
+          Network                Next Hop              Metric  LocPref Weight  Path
+ * >Ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200
+                                 10.1.1.3              -       100     0       65000 65003 i
+ * >Ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200 10.3.10.2
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200 10.3.10.2
+                                 10.1.1.3              -       100     0       65000 65003 i
+ * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300
+                                 10.1.1.3              -       100     0       65000 65003 i
+ * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300 10.3.20.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300 10.3.20.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+ * >     RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc
+                                 -                     -       -       0       i
+ * >     RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc 10.3.10.1
+                                 -                     -       -       0       i
+ * >     RD: 10.1.0.1:10010 imet 10.1.0.0
+                                 -                     -       -       0       i
+ * >Ec   RD: 10.1.0.3:10010 imet 10.1.1.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10010 imet 10.1.1.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+ * >Ec   RD: 10.1.0.3:10020 imet 10.1.1.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10020 imet 10.1.1.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+Leaf-01#
+Leaf-01#
+Leaf-01#show ip route vrf VRF-A
 
-VRF: default
+VRF: VRF-A
 Codes: C - connected, S - static, K - kernel,
        O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
        E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
@@ -495,131 +555,26 @@ Codes: C - connected, S - static, K - kernel,
 
 Gateway of last resort is not set
 
- B E      10.0.1.0/32 [200/0] via 10.2.1.0, Ethernet1
- B E      10.0.2.0/32 [200/0] via 10.2.2.0, Ethernet2
- C        10.1.0.1/32 is directly connected, Loopback0
- B E      10.1.0.2/32 [200/0] via 10.2.1.0, Ethernet1
-                              via 10.2.2.0, Ethernet2
- B E      10.1.0.3/32 [200/0] via 10.2.1.0, Ethernet1
-                              via 10.2.2.0, Ethernet2
- C        10.1.1.1/32 is directly connected, Loopback1
- B E      10.1.1.2/32 [200/0] via 10.2.1.0, Ethernet1
-                              via 10.2.2.0, Ethernet2
- B E      10.1.1.3/32 [200/0] via 10.2.1.0, Ethernet1
-                              via 10.2.2.0, Ethernet2
- C        10.2.1.0/31 is directly connected, Ethernet1
- C        10.2.2.0/31 is directly connected, Ethernet2
+ B E      10.3.10.2/32 [200/0] via VTEP 10.1.1.3 VNI 10000 router-mac 50:00:00:e4:72:94 local-interface Vxlan1
+ C        10.3.10.0/24 is directly connected, Vlan10
+ B E      10.3.20.3/32 [200/0] via VTEP 10.1.1.3 VNI 10000 router-mac 50:00:00:e4:72:94 local-interface Vxlan1
 
-
-Leaf-01#sh bgp evpn summary
-BGP summary information for VRF default
-Router identifier 10.1.0.1, local AS number 65001
-Neighbor Status Codes: m - Under maintenance
-  Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.0.1.0         4 65000            226       237    0    0 00:01:33 Estab   9      9
-  10.0.2.0         4 65000            198       259    0    0 00:01:28 Estab   9      9
-
-
-Leaf-01#show bgp evpn route-type imet
-BGP routing table information for VRF default
-Router identifier 10.1.0.1, local AS number 65001
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >     RD: 10.1.0.1:10010 imet 10.1.1.1
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >Ec   RD: 10.1.0.2:10020 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10020 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >Ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
-
-
-Leaf-01#show bgp evpn route-type mac-ip
-BGP routing table information for VRF default
-Router identifier 10.1.0.1, local AS number 65001
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >     RD: 10.1.0.1:10010 mac-ip 0050.0000.0100
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.1:10010 mac-ip 0050.0000.0100 10.3.10.1
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >Ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200 10.3.10.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200 10.3.10.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >Ec   RD: 10.1.0.2:10020 mac-ip 0050.0000.0300
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10020 mac-ip 0050.0000.0300
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >Ec   RD: 10.1.0.2:10020 mac-ip 0050.0000.0300 10.3.20.3
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10020 mac-ip 0050.0000.0300 10.3.20.3
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400 10.3.20.4
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400 10.3.20.4
-                                 10.1.1.3              -       100     0       65000 65003 i
-
-
-Leaf-01#sh vxlan vtep
-Remote VTEPS for Vxlan1:
-
-VTEP           Tunnel Type(s)
--------------- --------------
-10.1.1.2       unicast, flood
-10.1.1.3       unicast
-
-Total number of remote VTEPS:  2
-
-
-Leaf-01#sh vxlan address-table
-          Vxlan Mac Address Table
-----------------------------------------------------------------------
-
-VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
-----  -----------     ----      ---  ----             -----   ---------
-  10  0050.0000.0200  EVPN      Vx1  10.1.1.2         1       0:01:28 ago
-4094  5000.0000.5183  EVPN      Vx1  10.1.1.3         1       0:01:29 ago
-4094  5000.006b.0f11  EVPN      Vx1  10.1.1.2         1       0:01:28 ago
-Total Remote Mac Addresses for this criterion: 3
-
-
+Leaf-01#
+Leaf-01#
 Leaf-01#show mac address-table
           Mac Address Table
 ------------------------------------------------------------------
 
 Vlan    Mac Address       Type        Ports      Moves   Last Move
 ----    -----------       ----        -----      -----   ---------
-  10    0050.0000.0100    DYNAMIC     Et8        1       0:03:10 ago
-  10    0050.0000.0200    DYNAMIC     Vx1        1       0:01:28 ago
-4094    5000.0000.5183    DYNAMIC     Vx1        1       0:01:29 ago
-4094    5000.006b.0f11    DYNAMIC     Vx1        1       0:01:28 ago
-Total Mac Addresses for this criterion: 4
+  10    0050.0000.0200    DYNAMIC     Vx1        1       0:06:33 ago
+  10    5000.00c3.da3f    STATIC      Po1
+  10    5000.00ca.39cc    DYNAMIC     Po10       1       0:06:40 ago
+4092    5000.00c3.da3f    STATIC      Po1
+4092    5000.00e4.7294    DYNAMIC     Vx1        1       0:06:33 ago
+4093    5000.00c3.da3f    STATIC      Po1
+4094    5000.00c3.da3f    STATIC      Po1
+Total Mac Addresses for this criterion: 7
 
           Multicast Mac Address Table
 ------------------------------------------------------------------
@@ -627,17 +582,50 @@ Total Mac Addresses for this criterion: 4
 Vlan    Mac Address       Type        Ports
 ----    -----------       ----        -----
 Total Mac Addresses for this criterion: 0
+Leaf-01#
+Leaf-01#
+Leaf-01#show vxlan address-table
+          Vxlan Mac Address Table
+----------------------------------------------------------------------
 
+VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
+----  -----------     ----      ---  ----             -----   ---------
+  10  0050.0000.0200  EVPN      Vx1  10.1.1.3         1       0:06:33 ago
+4092  5000.00e4.7294  EVPN      Vx1  10.1.1.3         1       0:06:33 ago
+Total Remote Mac Addresses for this criterion: 2
+Leaf-01#
+Leaf-01#
+Leaf-01#show mlag
+MLAG Configuration:
+domain-id                          :             mlag-01
+local-interface                    :            Vlan4094
+peer-address                       :       169.254.254.2
+peer-link                          :       Port-Channel1
+peer-config                        :          consistent
 
-Leaf-01#show bfd peers
-VRF name: default
------------------
-DstAddr               MyDisc         YourDisc       Interface/Transport           Type               LastUp             LastDown            LastDiag    State
--------------- ---------------- ---------------- ------------------------- -------------- -------------------- -------------------- ------------------- -----
-10.0.1.0          1753987605       1673186178                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
-10.0.2.0          3059243512        931197416                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
-10.2.1.0          4164287212       2860175064             Ethernet1(14)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
-10.2.2.0          3407301345       1502409858             Ethernet2(15)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+MLAG Status:
+state                              :              Active
+negotiation status                 :           Connected
+peer-link status                   :                  Up
+local-int status                   :                  Up
+system-id                          :   52:00:00:5b:6f:f5
+dual-primary detection             :            Disabled
+dual-primary interface errdisabled :               False
+
+MLAG Ports:
+Disabled                           :                   0
+Configured                         :                   0
+Inactive                           :                   0
+Active-partial                     :                   0
+Active-full                        :                   1
+
+Leaf-01#
+Leaf-01#
+Leaf-01#show mlag interfaces 10
+                                                                                           local/remote
+   mlag       desc                                       state       local       remote          status
+---------- ------------------------------------ ----------------- ----------- ------------ ------------
+     10       ### Link to Srv-01 int Po10 ##       active-full        Po10         Po10           up/up
 ```
 </details>
 
@@ -645,18 +633,78 @@ DstAddr               MyDisc         YourDisc       Interface/Transport         
 <summary> Leaf-02: </summary>
 
 ```
-Leaf-02#show ip bgp summary
-BGP summary information for VRF default
-Router identifier 10.1.0.2, local AS number 65002
-Neighbor Status Codes: m - Under maintenance
-  Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.2.1.2         4 65000            229       292    0    0 00:03:21 Estab   5      5
-  10.2.2.2         4 65000            225       270    0    0 00:03:17 Estab   5      5
+Leaf-02#show ip bgp
+BGP routing table information for VRF default
+Router identifier 10.1.0.2, local AS number 65001
+Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
+                    S - Stale, c - Contributing to ECMP, b - backup, L - labeled-unicast
+                    % - Pending BGP convergence
+Origin codes: i - IGP, e - EGP, ? - incomplete
+RPKI Origin Validation codes: V - valid, I - invalid, U - unknown
+AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
 
+          Network                Next Hop              Metric  AIGP       LocPref Weight  Path
+ * >      10.0.1.0/32            10.2.1.2              0       -          100     0       65000 i
+ *        10.0.1.0/32            169.254.253.1         0       -          100     0       65000 i
+ * >      10.0.2.0/32            10.2.2.2              0       -          100     0       65000 i
+ *        10.0.2.0/32            169.254.253.1         0       -          100     0       65000 i
+ * >      10.1.0.0/32            -                     -       -          -       0       i
+ *        10.1.0.0/32            169.254.253.1         0       -          100     0       i
+ * >      10.1.0.1/32            169.254.253.1         0       -          100     0       i
+ * >      10.1.0.2/32            -                     -       -          -       0       i
+ * >Ec    10.1.0.3/32            10.2.2.2              0       -          100     0       65000 65003 i
+ *  ec    10.1.0.3/32            10.2.1.2              0       -          100     0       65000 65003 i
+ *        10.1.0.3/32            169.254.253.1         0       -          100     0       65000 65003 i
+ * >Ec    10.1.1.3/32            10.2.2.2              0       -          100     0       65000 65003 i
+ *  ec    10.1.1.3/32            10.2.1.2              0       -          100     0       65000 65003 i
+ *        10.1.1.3/32            169.254.253.1         0       -          100     0       65000 65003 i
+Leaf-02#
+Leaf-02#
+Leaf-02#show bgp evpn
+BGP routing table information for VRF default
+Router identifier 10.1.0.2, local AS number 65001
+Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
+                    S - Stale, c - Contributing to ECMP, b - backup
+                    % - Pending BGP convergence
+Origin codes: i - IGP, e - EGP, ? - incomplete
+AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
 
-Leaf-02#sh ip route
+          Network                Next Hop              Metric  LocPref Weight  Path
+ * >Ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200
+                                 10.1.1.3              -       100     0       65000 65003 i
+ * >Ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200 10.3.10.2
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200 10.3.10.2
+                                 10.1.1.3              -       100     0       65000 65003 i
+ * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300
+                                 10.1.1.3              -       100     0       65000 65003 i
+ * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300 10.3.20.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300 10.3.20.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+ * >     RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc
+                                 -                     -       -       0       i
+ * >     RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc 10.3.10.1
+                                 -                     -       -       0       i
+ * >     RD: 10.1.0.2:10010 imet 10.1.0.0
+                                 -                     -       -       0       i
+ * >Ec   RD: 10.1.0.3:10010 imet 10.1.1.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10010 imet 10.1.1.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+ * >Ec   RD: 10.1.0.3:10020 imet 10.1.1.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+ *  ec   RD: 10.1.0.3:10020 imet 10.1.1.3
+                                 10.1.1.3              -       100     0       65000 65003 i
+Leaf-02#
+Leaf-02#
+Leaf-02#show ip route vrf VRF-A
 
-VRF: default
+VRF: VRF-A
 Codes: C - connected, S - static, K - kernel,
        O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
        E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
@@ -670,128 +718,26 @@ Codes: C - connected, S - static, K - kernel,
 
 Gateway of last resort is not set
 
- B E      10.0.1.0/32 [200/0] via 10.2.1.2, Ethernet1
- B E      10.0.2.0/32 [200/0] via 10.2.2.2, Ethernet2
- B E      10.1.0.1/32 [200/0] via 10.2.1.2, Ethernet1
-                              via 10.2.2.2, Ethernet2
- C        10.1.0.2/32 is directly connected, Loopback0
- B E      10.1.0.3/32 [200/0] via 10.2.1.2, Ethernet1
-                              via 10.2.2.2, Ethernet2
- B E      10.1.1.1/32 [200/0] via 10.2.1.2, Ethernet1
-                              via 10.2.2.2, Ethernet2
- C        10.1.1.2/32 is directly connected, Loopback1
- B E      10.1.1.3/32 [200/0] via 10.2.1.2, Ethernet1
-                              via 10.2.2.2, Ethernet2
- C        10.2.1.2/31 is directly connected, Ethernet1
- C        10.2.2.2/31 is directly connected, Ethernet2
+ B E      10.3.10.2/32 [200/0] via VTEP 10.1.1.3 VNI 10000 router-mac 50:00:00:e4:72:94 local-interface Vxlan1
+ C        10.3.10.0/24 is directly connected, Vlan10
+ B E      10.3.20.3/32 [200/0] via VTEP 10.1.1.3 VNI 10000 router-mac 50:00:00:e4:72:94 local-interface Vxlan1
 
-
-Leaf-02#sh bgp evpn summary
-BGP summary information for VRF default
-Router identifier 10.1.0.2, local AS number 65002
-Neighbor Status Codes: m - Under maintenance
-  Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.0.1.0         4 65000            184       269    0    0 00:03:20 Estab   6      6
-  10.0.2.0         4 65000            204       313    0    0 00:03:16 Estab   6      6
-
-
-Leaf-02#show bgp evpn route-type imet
-BGP routing table information for VRF default
-Router identifier 10.1.0.2, local AS number 65002
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >Ec   RD: 10.1.0.1:10010 imet 10.1.1.1
-                                 10.1.1.1              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.1:10010 imet 10.1.1.1
-                                 10.1.1.1              -       100     0       65000 65001 i
- * >     RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.2:10020 imet 10.1.1.2
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
-
-
-Leaf-02#show bgp evpn route-type mac-ip
-BGP routing table information for VRF default
-Router identifier 10.1.0.2, local AS number 65002
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >Ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100
-                                 10.1.1.1              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100
-                                 10.1.1.1              -       100     0       65000 65001 i
- * >Ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100 10.3.10.1
-                                 10.1.1.1              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100 10.3.10.1
-                                 10.1.1.1              -       100     0       65000 65001 i
- * >     RD: 10.1.0.2:10010 mac-ip 0050.0000.0200
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.2:10010 mac-ip 0050.0000.0200 10.3.10.2
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.2:10020 mac-ip 0050.0000.0300
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.2:10020 mac-ip 0050.0000.0300 10.3.20.3
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400 10.3.20.4
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0400 10.3.20.4
-                                 10.1.1.3              -       100     0       65000 65003 i
-
-
-Leaf-02#sh vxlan vtep
-Remote VTEPS for Vxlan1:
-
-VTEP           Tunnel Type(s)
--------------- --------------
-10.1.1.1       flood, unicast
-10.1.1.3       flood, unicast
-
-Total number of remote VTEPS:  2
-
-
-Leaf-02#sh vxlan address-table
-          Vxlan Mac Address Table
-----------------------------------------------------------------------
-
-VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
-----  -----------     ----      ---  ----             -----   ---------
-  10  0050.0000.0100  EVPN      Vx1  10.1.1.1         1       0:03:18 ago
-  20  0050.0000.0400  EVPN      Vx1  10.1.1.3         1       0:03:18 ago
-4094  5000.0000.5183  EVPN      Vx1  10.1.1.3         1       0:03:18 ago
-4094  5000.00ca.39cc  EVPN      Vx1  10.1.1.1         1       0:03:18 ago
-Total Remote Mac Addresses for this criterion: 4
-
-
+Leaf-02#
+Leaf-02#
 Leaf-02#show mac address-table
           Mac Address Table
 ------------------------------------------------------------------
 
 Vlan    Mac Address       Type        Ports      Moves   Last Move
 ----    -----------       ----        -----      -----   ---------
-  10    0050.0000.0100    DYNAMIC     Vx1        1       0:03:18 ago
-  10    0050.0000.0200    DYNAMIC     Et7        1       0:05:05 ago
-  20    0050.0000.0300    DYNAMIC     Et8        1       0:05:05 ago
-  20    0050.0000.0400    DYNAMIC     Vx1        1       0:03:18 ago
-4094    5000.0000.5183    DYNAMIC     Vx1        1       0:03:18 ago
-4094    5000.00ca.39cc    DYNAMIC     Vx1        1       0:03:18 ago
-Total Mac Addresses for this criterion: 6
+  10    0050.0000.0200    DYNAMIC     Vx1        1       0:08:15 ago
+  10    5000.005b.6ff5    STATIC      Po1
+  10    5000.00ca.39cc    DYNAMIC     Po10       1       0:08:23 ago
+4092    5000.005b.6ff5    STATIC      Po1
+4092    5000.00e4.7294    DYNAMIC     Vx1        1       0:08:15 ago
+4093    5000.005b.6ff5    STATIC      Po1
+4094    5000.005b.6ff5    STATIC      Po1
+Total Mac Addresses for this criterion: 7
 
           Multicast Mac Address Table
 ------------------------------------------------------------------
@@ -799,17 +745,50 @@ Total Mac Addresses for this criterion: 6
 Vlan    Mac Address       Type        Ports
 ----    -----------       ----        -----
 Total Mac Addresses for this criterion: 0
+Leaf-02#
+Leaf-02#
+Leaf-02#show vxlan address-table
+          Vxlan Mac Address Table
+----------------------------------------------------------------------
 
+VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
+----  -----------     ----      ---  ----             -----   ---------
+  10  0050.0000.0200  EVPN      Vx1  10.1.1.3         1       0:08:15 ago
+4092  5000.00e4.7294  EVPN      Vx1  10.1.1.3         1       0:08:15 ago
+Total Remote Mac Addresses for this criterion: 2
+Leaf-02#
+Leaf-02#
+Leaf-02#show mlag
+MLAG Configuration:
+domain-id                          :             mlag-01
+local-interface                    :            Vlan4094
+peer-address                       :       169.254.254.1
+peer-link                          :       Port-Channel1
+peer-config                        :          consistent
 
-Leaf-02#show bfd peers
-VRF name: default
------------------
-DstAddr               MyDisc         YourDisc       Interface/Transport           Type               LastUp             LastDown            LastDiag    State
--------------- ---------------- ---------------- ------------------------- -------------- -------------------- -------------------- ------------------- -----
-10.0.1.0          1236533517       3698570466                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
-10.0.2.0          2345063771       2591930530                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
-10.2.1.2          2864335174       2386495424             Ethernet1(14)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
-10.2.2.2          3776027089       2269298508             Ethernet2(15)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+MLAG Status:
+state                              :              Active
+negotiation status                 :           Connected
+peer-link status                   :                  Up
+local-int status                   :                  Up
+system-id                          :   52:00:00:5b:6f:f5
+dual-primary detection             :            Disabled
+dual-primary interface errdisabled :               False
+
+MLAG Ports:
+Disabled                           :                   0
+Configured                         :                   0
+Inactive                           :                   0
+Active-partial                     :                   0
+Active-full                        :                   1
+
+Leaf-02#
+Leaf-02#
+Leaf-02#show mlag interfaces 10
+                                                                 local/remote
+   mlag       desc             state       local       remote          status
+---------- ---------- ----------------- ----------- ------------ ------------
+     10                  active-full        Po10         Po10           up/up
 ```
 </details>
 
@@ -817,18 +796,80 @@ DstAddr               MyDisc         YourDisc       Interface/Transport         
 <summary> Leaf-03: </summary>
 
 ```
-Leaf-03#show ip bgp summary
-BGP summary information for VRF default
+Leaf-03#show ip bgp
+BGP routing table information for VRF default
 Router identifier 10.1.0.3, local AS number 65003
-Neighbor Status Codes: m - Under maintenance
-  Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.2.1.4         4 65000            274       332    0    0 00:05:45 Estab   5      5
-  10.2.2.4         4 65000            273       343    0    0 00:05:41 Estab   5      5
-Leaf-03#
-Leaf-03#
-Leaf-03#sh ip route
+Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
+                    S - Stale, c - Contributing to ECMP, b - backup, L - labeled-unicast
+                    % - Pending BGP convergence
+Origin codes: i - IGP, e - EGP, ? - incomplete
+RPKI Origin Validation codes: V - valid, I - invalid, U - unknown
+AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
 
-VRF: default
+          Network                Next Hop              Metric  AIGP       LocPref Weight  Path
+ * >      10.0.1.0/32            10.2.1.4              0       -          100     0       65000 i
+ * >      10.0.2.0/32            10.2.2.4              0       -          100     0       65000 i
+ * >Ec    10.1.0.0/32            10.2.2.4              0       -          100     0       65000 65001 i
+ *  ec    10.1.0.0/32            10.2.1.4              0       -          100     0       65000 65001 i
+ * >Ec    10.1.0.1/32            10.2.2.4              0       -          100     0       65000 65001 i
+ *  ec    10.1.0.1/32            10.2.1.4              0       -          100     0       65000 65001 i
+ * >Ec    10.1.0.2/32            10.2.2.4              0       -          100     0       65000 65001 i
+ *  ec    10.1.0.2/32            10.2.1.4              0       -          100     0       65000 65001 i
+ * >      10.1.0.3/32            -                     -       -          -       0       i
+ * >      10.1.1.3/32            -                     -       -          -       0       i
+Leaf-03#
+Leaf-03#
+Leaf-03#show bgp evpn
+BGP routing table information for VRF default
+Router identifier 10.1.0.3, local AS number 65003
+Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
+                    S - Stale, c - Contributing to ECMP, b - backup
+                    % - Pending BGP convergence
+Origin codes: i - IGP, e - EGP, ? - incomplete
+AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
+
+          Network                Next Hop              Metric  LocPref Weight  Path
+ * >     RD: 10.1.0.3:10010 mac-ip 0050.0000.0200
+                                 -                     -       -       0       i
+ * >     RD: 10.1.0.3:10010 mac-ip 0050.0000.0200 10.3.10.2
+                                 -                     -       -       0       i
+ * >     RD: 10.1.0.3:10020 mac-ip 0050.0000.0300
+                                 -                     -       -       0       i
+ * >     RD: 10.1.0.3:10020 mac-ip 0050.0000.0300 10.3.20.3
+                                 -                     -       -       0       i
+ * >Ec   RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc
+                                 10.1.0.0              -       100     0       65000 65001 i
+ *  ec   RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc
+                                 10.1.0.0              -       100     0       65000 65001 i
+ * >Ec   RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc
+                                 10.1.0.0              -       100     0       65000 65001 i
+ *  ec   RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc
+                                 10.1.0.0              -       100     0       65000 65001 i
+ * >Ec   RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc 10.3.10.1
+                                 10.1.0.0              -       100     0       65000 65001 i
+ *  ec   RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc 10.3.10.1
+                                 10.1.0.0              -       100     0       65000 65001 i
+ * >Ec   RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc 10.3.10.1
+                                 10.1.0.0              -       100     0       65000 65001 i
+ *  ec   RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc 10.3.10.1
+                                 10.1.0.0              -       100     0       65000 65001 i
+ * >Ec   RD: 10.1.0.1:10010 imet 10.1.0.0
+                                 10.1.0.0              -       100     0       65000 65001 i
+ *  ec   RD: 10.1.0.1:10010 imet 10.1.0.0
+                                 10.1.0.0              -       100     0       65000 65001 i
+ * >Ec   RD: 10.1.0.2:10010 imet 10.1.0.0
+                                 10.1.0.0              -       100     0       65000 65001 i
+ *  ec   RD: 10.1.0.2:10010 imet 10.1.0.0
+                                 10.1.0.0              -       100     0       65000 65001 i
+ * >     RD: 10.1.0.3:10010 imet 10.1.1.3
+                                 -                     -       -       0       i
+ * >     RD: 10.1.0.3:10020 imet 10.1.1.3
+                                 -                     -       -       0       i
+Leaf-03#
+Leaf-03#
+Leaf-03#show ip route vrf VRF-A
+
+VRF: VRF-A
 Codes: C - connected, S - static, K - kernel,
        O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
        E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
@@ -842,119 +883,11 @@ Codes: C - connected, S - static, K - kernel,
 
 Gateway of last resort is not set
 
- B E      10.0.1.0/32 [200/0] via 10.2.1.4, Ethernet1
- B E      10.0.2.0/32 [200/0] via 10.2.2.4, Ethernet2
- B E      10.1.0.1/32 [200/0] via 10.2.1.4, Ethernet1
-                              via 10.2.2.4, Ethernet2
- B E      10.1.0.2/32 [200/0] via 10.2.1.4, Ethernet1
-                              via 10.2.2.4, Ethernet2
- C        10.1.0.3/32 is directly connected, Loopback0
- B E      10.1.1.1/32 [200/0] via 10.2.1.4, Ethernet1
-                              via 10.2.2.4, Ethernet2
- B E      10.1.1.2/32 [200/0] via 10.2.1.4, Ethernet1
-                              via 10.2.2.4, Ethernet2
- C        10.1.1.3/32 is directly connected, Loopback1
- C        10.2.1.4/31 is directly connected, Ethernet1
- C        10.2.2.4/31 is directly connected, Ethernet2
+ B E      10.3.10.1/32 [200/0] via VTEP 10.1.0.0 VNI 10000 router-mac 50:00:00:c3:da:3f local-interface Vxlan1
+                               via VTEP 10.1.0.0 VNI 10000 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ C        10.3.10.0/24 is directly connected, Vlan10
+ C        10.3.20.0/24 is directly connected, Vlan20
 
-Leaf-03#
-Leaf-03#
-Leaf-03#sh bgp evpn summary
-BGP summary information for VRF default
-Router identifier 10.1.0.3, local AS number 65003
-Neighbor Status Codes: m - Under maintenance
-  Neighbor         V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.0.1.0         4 65000            226       300    0    0 00:05:44 Estab   9      9
-  10.0.2.0         4 65000            288       305    0    0 00:05:43 Estab   9      9
-Leaf-03#
-Leaf-03#
-Leaf-03#show bgp evpn route-type imet
-BGP routing table information for VRF default
-Router identifier 10.1.0.3, local AS number 65003
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >Ec   RD: 10.1.0.1:10010 imet 10.1.1.1
-                                 10.1.1.1              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.1:10010 imet 10.1.1.1
-                                 10.1.1.1              -       100     0       65000 65001 i
- * >Ec   RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10010 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >Ec   RD: 10.1.0.2:10020 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10020 imet 10.1.1.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >     RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 -                     -       -       0       i
-Leaf-03#
-Leaf-03#
-Leaf-03#show bgp evpn route-type mac-ip
-BGP routing table information for VRF default
-Router identifier 10.1.0.3, local AS number 65003
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >Ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100
-                                 10.1.1.1              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100
-                                 10.1.1.1              -       100     0       65000 65001 i
- * >Ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100 10.3.10.1
-                                 10.1.1.1              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.1:10010 mac-ip 0050.0000.0100 10.3.10.1
-                                 10.1.1.1              -       100     0       65000 65001 i
- * >Ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >Ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200 10.3.10.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10010 mac-ip 0050.0000.0200 10.3.10.2
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >Ec   RD: 10.1.0.2:10020 mac-ip 0050.0000.0300
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10020 mac-ip 0050.0000.0300
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >Ec   RD: 10.1.0.2:10020 mac-ip 0050.0000.0300 10.3.20.3
-                                 10.1.1.2              -       100     0       65000 65002 i
- *  ec   RD: 10.1.0.2:10020 mac-ip 0050.0000.0300 10.3.20.3
-                                 10.1.1.2              -       100     0       65000 65002 i
- * >     RD: 10.1.0.3:10020 mac-ip 0050.0000.0400
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.3:10020 mac-ip 0050.0000.0400 10.3.20.4
-                                 -                     -       -       0       i
-Leaf-03#
-Leaf-03#
-Leaf-03#sh vxlan vtep
-Remote VTEPS for Vxlan1:
-
-VTEP           Tunnel Type(s)
--------------- --------------
-10.1.1.1       unicast
-10.1.1.2       unicast, flood
-
-Total number of remote VTEPS:  2
-Leaf-03#
-Leaf-03#
-Leaf-03#sh vxlan address-table
-          Vxlan Mac Address Table
-----------------------------------------------------------------------
-
-VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
-----  -----------     ----      ---  ----             -----   ---------
-  20  0050.0000.0300  EVPN      Vx1  10.1.1.2         1       0:05:42 ago
-4094  5000.006b.0f11  EVPN      Vx1  10.1.1.2         1       0:05:43 ago
-4094  5000.00ca.39cc  EVPN      Vx1  10.1.1.1         1       0:05:43 ago
-Total Remote Mac Addresses for this criterion: 3
 Leaf-03#
 Leaf-03#
 Leaf-03#show mac address-table
@@ -963,11 +896,12 @@ Leaf-03#show mac address-table
 
 Vlan    Mac Address       Type        Ports      Moves   Last Move
 ----    -----------       ----        -----      -----   ---------
-  20    0050.0000.0300    DYNAMIC     Vx1        1       0:05:42 ago
-  20    0050.0000.0400    DYNAMIC     Et8        1       0:07:33 ago
-4094    5000.006b.0f11    DYNAMIC     Vx1        1       0:05:43 ago
-4094    5000.00ca.39cc    DYNAMIC     Vx1        1       0:05:43 ago
-Total Mac Addresses for this criterion: 4
+  10    0050.0000.0200    DYNAMIC     Et3        1       15:34:42 ago
+  10    5000.00ca.39cc    DYNAMIC     Vx1        1       0:09:10 ago
+  20    0050.0000.0300    DYNAMIC     Et4        1       15:34:16 ago
+4094    5000.005b.6ff5    DYNAMIC     Vx1        1       0:09:10 ago
+4094    5000.00c3.da3f    DYNAMIC     Vx1        1       0:09:10 ago
+Total Mac Addresses for this criterion: 5
 
           Multicast Mac Address Table
 ------------------------------------------------------------------
@@ -977,16 +911,16 @@ Vlan    Mac Address       Type        Ports
 Total Mac Addresses for this criterion: 0
 Leaf-03#
 Leaf-03#
-Leaf-03#show bfd peers
-VRF name: default
------------------
-DstAddr               MyDisc         YourDisc       Interface/Transport           Type               LastUp             LastDown            LastDiag    State
--------------- ---------------- ---------------- ------------------------- -------------- -------------------- -------------------- ------------------- -----
-10.0.1.0          1183837922       1428561445                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
-10.0.2.0           511213494        562380621                        NA       multihop       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
-10.2.1.4          3568961531       3355172905             Ethernet1(14)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
-10.2.2.4          2226181931        951437747             Ethernet2(15)         normal       07/20/23 08:51       07/20/23 08:51       No Diagnostic       Up
+Leaf-03#show vxlan address-table
+          Vxlan Mac Address Table
+----------------------------------------------------------------------
 
+VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
+----  -----------     ----      ---  ----             -----   ---------
+  10  5000.00ca.39cc  EVPN      Vx1  10.1.0.0         1       0:09:10 ago
+4094  5000.005b.6ff5  EVPN      Vx1  10.1.0.0         1       0:09:10 ago
+4094  5000.00c3.da3f  EVPN      Vx1  10.1.0.0         1       0:09:10 ago
+Total Remote Mac Addresses for this criterion: 3
 ```
 </details>
 
@@ -994,86 +928,68 @@ DstAddr               MyDisc         YourDisc       Interface/Transport         
 <summary> Srv-01: </summary>
 
 ```
-root@Srv-01:~# ping 10.3.10.2 -c 3
-PING 10.3.10.2 (10.3.10.2) 56(84) bytes of data.
-64 bytes from 10.3.10.2: icmp_seq=1 ttl=64 time=14.0 ms
-64 bytes from 10.3.10.2: icmp_seq=2 ttl=64 time=13.4 ms
-64 bytes from 10.3.10.2: icmp_seq=3 ttl=64 time=12.6 ms
+Srv-01(config)#ping 10.3.10.2
+PING 10.3.10.2 (10.3.10.2) 72(100) bytes of data.
+80 bytes from 10.3.10.2: icmp_seq=1 ttl=64 time=18.7 ms
+80 bytes from 10.3.10.2: icmp_seq=2 ttl=64 time=23.4 ms
+80 bytes from 10.3.10.2: icmp_seq=3 ttl=64 time=18.2 ms
+80 bytes from 10.3.10.2: icmp_seq=4 ttl=64 time=15.3 ms
+80 bytes from 10.3.10.2: icmp_seq=5 ttl=64 time=22.1 ms
 
 --- 10.3.10.2 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 12.597/13.355/14.039/0.591 ms
-root@Srv-01:~#
-root@Srv-01:~#
-root@Srv-01:~# ping 10.3.20.3 -c 3
-PING 10.3.20.3 (10.3.20.3) 56(84) bytes of data.
-64 bytes from 10.3.20.3: icmp_seq=1 ttl=62 time=17.3 ms
-64 bytes from 10.3.20.3: icmp_seq=2 ttl=62 time=21.6 ms
-64 bytes from 10.3.20.3: icmp_seq=3 ttl=62 time=16.9 ms
+5 packets transmitted, 5 received, 0% packet loss, time 74ms
+rtt min/avg/max/mdev = 15.370/19.616/23.424/2.885 ms, pipe 2, ipg/ewma 18.512/19.183 ms
+Srv-01(config)#
+Srv-01(config)#
+Srv-01(config)#ping 10.3.20.3
+PING 10.3.20.3 (10.3.20.3) 72(100) bytes of data.
+80 bytes from 10.3.20.3: icmp_seq=1 ttl=62 time=22.1 ms
+80 bytes from 10.3.20.3: icmp_seq=2 ttl=62 time=20.0 ms
+80 bytes from 10.3.20.3: icmp_seq=3 ttl=62 time=23.0 ms
+80 bytes from 10.3.20.3: icmp_seq=4 ttl=62 time=19.9 ms
+80 bytes from 10.3.20.3: icmp_seq=5 ttl=62 time=19.9 ms
 
 --- 10.3.20.3 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-rtt min/avg/max/mdev = 16.924/18.610/21.609/2.125 ms
-root@Srv-01:~# ping 10.3.20.3 -c 4
-PING 10.3.20.3 (10.3.20.3) 56(84) bytes of data.
-64 bytes from 10.3.20.3: icmp_seq=1 ttl=62 time=13.4 ms
-64 bytes from 10.3.20.3: icmp_seq=2 ttl=62 time=72.7 ms
-64 bytes from 10.3.20.3: icmp_seq=3 ttl=62 time=14.1 ms
-64 bytes from 10.3.20.3: icmp_seq=4 ttl=62 time=18.1 ms
-
---- 10.3.20.3 ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3004ms
-rtt min/avg/max/mdev = 13.446/29.583/72.695/24.954 ms
-root@Srv-01:~#
-root@Srv-01:~#
-root@Srv-01:~# ip nei
-10.3.10.2 dev ens3 lladdr 00:50:00:00:02:00 REACHABLE
-10.3.10.254 dev ens3 lladdr 00:00:11:11:11:11 REACHABLE
-
+5 packets transmitted, 5 received, 0% packet loss, time 67ms
+rtt min/avg/max/mdev = 19.942/21.044/23.057/1.318 ms, pipe 3, ipg/ewma 16.821/21.569 ms
+Srv-01(config)#
+Srv-01(config)#
+Srv-01(config)#show ip arp
+Address         Age (sec)  Hardware Addr   Interface
+10.3.10.2         3:42:28  0050.0000.0200  Vlan10, Port-Channel10
+10.3.10.254       0:49:36  0000.1111.1111  Vlan10, not learned
 ```
 </details>
 
  <details>
-<summary> Srv-03: </summary>
+<summary> Srv-02: </summary>
 
 ```
-root@Srv-03:~# ping 10.3.10.1 -c3
+root@Srv-02:~# ping 10.3.10.1 -c3
 PING 10.3.10.1 (10.3.10.1) 56(84) bytes of data.
-64 bytes from 10.3.10.1: icmp_seq=1 ttl=62 time=76.9 ms
-64 bytes from 10.3.10.1: icmp_seq=2 ttl=62 time=15.2 ms
-64 bytes from 10.3.10.1: icmp_seq=3 ttl=62 time=14.1 ms
+64 bytes from 10.3.10.1: icmp_seq=1 ttl=64 time=24.0 ms
+64 bytes from 10.3.10.1: icmp_seq=2 ttl=64 time=14.3 ms
+64 bytes from 10.3.10.1: icmp_seq=3 ttl=64 time=17.7 ms
 
 --- 10.3.10.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+rtt min/avg/max/mdev = 14.259/18.639/24.001/4.037 ms
+root@Srv-02:~#
+root@Srv-02:~#
+root@Srv-02:~# ping 10.3.20.3 -c3
+PING 10.3.20.3 (10.3.20.3) 56(84) bytes of data.
+64 bytes from 10.3.20.3: icmp_seq=1 ttl=63 time=5.53 ms
+64 bytes from 10.3.20.3: icmp_seq=2 ttl=63 time=6.15 ms
+64 bytes from 10.3.20.3: icmp_seq=3 ttl=63 time=7.99 ms
+
+--- 10.3.20.3 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 14.086/35.393/76.902/29.354 ms
-root@Srv-03:~#
-root@Srv-03:~#
-root@Srv-03:~# ping 10.3.10.2 -c3
-PING 10.3.10.2 (10.3.10.2) 56(84) bytes of data.
-64 bytes from 10.3.10.2: icmp_seq=1 ttl=63 time=7.31 ms
-64 bytes from 10.3.10.2: icmp_seq=2 ttl=63 time=6.48 ms
-64 bytes from 10.3.10.2: icmp_seq=3 ttl=63 time=7.07 ms
-
---- 10.3.10.2 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2002ms
-rtt min/avg/max/mdev = 6.475/6.950/7.305/0.349 ms
-root@Srv-03:~#
-root@Srv-03:~#
-root@Srv-03:~# ping 10.3.20.4 -c3
-PING 10.3.20.4 (10.3.20.4) 56(84) bytes of data.
-64 bytes from 10.3.20.4: icmp_seq=1 ttl=64 time=13.2 ms
-64 bytes from 10.3.20.4: icmp_seq=2 ttl=64 time=13.5 ms
-64 bytes from 10.3.20.4: icmp_seq=3 ttl=64 time=14.5 ms
-
---- 10.3.20.4 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 13.210/13.747/14.545/0.575 ms
-root@Srv-03:~#
-root@Srv-03:~#
-root@Srv-03:~# ip ne
-10.3.20.254 dev ens3 lladdr 00:00:11:11:11:11 REACHABLE
-10.3.20.4 dev ens3 lladdr 00:50:00:00:04:00 REACHABLE
-
+rtt min/avg/max/mdev = 5.530/6.556/7.993/1.046 ms
+root@Srv-02:~#
+root@Srv-02:~#
+root@Srv-02:~# ip nei
+10.3.10.1 dev ens3 lladdr 50:00:00:ca:39:cc REACHABLE
+10.3.10.254 dev ens3 lladdr 00:00:11:11:11:11 REACHABLE
 ```
 </details>
 
