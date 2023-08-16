@@ -329,6 +329,7 @@ router bgp 65001
       rd 10.1.0.2:65000
       route-target import evpn 65000:10000
       route-target export evpn 65000:10000
+
 #### Настройка MLAG ####
 interface Ethernet3
    description ### Po1 to Leaf-01 int Eth3 ###
