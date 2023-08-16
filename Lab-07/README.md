@@ -161,13 +161,12 @@ interface Ethernet2
    no switchport
    ip address 10.2.2.1/31
    bfd interval 50 min-rx 50 multiplier 3
-interface Ethernet8
-   description ### Link to Srv-01 int e0 ###
-   switchport access vlan 10
 interface Loopback0
    ip address 10.1.0.1/32
+      description ### For RID/eBGP ###
 interface Loopback1
-   ip address 10.1.1.1/32
+   ip address 10.1.0.0/32
+      description ### For VxLAN ###
 interface Vxlan1
    vxlan source-interface Loopback1
    vxlan udp-port 4789
@@ -211,6 +210,42 @@ router bgp 65001
       rd 10.1.0.1:65000
       route-target import evpn 65000:10000
       route-target export evpn 65000:10000
+	  
+#### Настройка MLAG ####
+interface Ethernet3
+   description ### Po1 to Leaf-02 int Eth3 ###
+   channel-group 1 mode active
+interface Ethernet4
+   description ### Po1 to Leaf-02 int Eth4 ###
+   channel-group 1 mode active
+vlan 4093-4094
+   trunk group mlagpeer
+no spanning-tree vlan-id 4093-4094
+interface Port-Channel1
+   description ### PeerLink to Leaf-02 int Po1 ###
+   switchport mode trunk
+   switchport trunk group mlagpeer
+interface Vlan4093
+   description ### For iBGP ###
+   ip address 169.254.253.1/30
+interface Vlan4094
+   description ### MLAG Peer-address ###
+   ip address 169.254.254.1/30
+mlag configuration
+   domain-id mlag-01
+   local-interface Vlan4094
+   peer-address 169.254.254.2
+   peer-link Port-Channel1
+router bgp 65001
+   neighbor 169.254.253.2 next-hop-self
+   neighbor 169.254.253.2 remote-as 65001
+interface Ethernet5
+   description ### Po10 to Srv-01 int Eth1 ###
+   channel-group 10 mode active
+interface Port-Channel10
+   description ### Link to Srv-01 int Po10 ###
+   switchport access vlan 10
+   mlag 10   
 ```
 </details>
  <details>
