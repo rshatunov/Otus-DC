@@ -385,7 +385,7 @@ route-map LOOPBAKS permit 10
    match interface Loopback0
 route-map LOOPBAKS permit 20
    match interface Loopback1
-vlan 20
+vlan 10,20
 
 #### Настройка интерфейсов ####
 interface Ethernet1
@@ -398,19 +398,28 @@ interface Ethernet2
    no switchport
    ip address 10.2.2.5/31
    bfd interval 50 min-rx 50 multiplier 3
-interface Ethernet8
-   description ### Link to Srv-04 int e0 ###
+interface Ethernet3
+   description ### Link to Srv-02 int e0 ###
+   switchport access vlan 10
+interface Ethernet4
    switchport access vlan 20
+   description ### Link to Srv-03 int e0 ###
 interface Loopback0
    ip address 10.1.0.3/32
+   description ### For RID/eBGP ###
 interface Loopback1
    ip address 10.1.1.3/32
+   description ### For VxLAN ###
+interface Vlan10
+   vrf VRF-A
+   ip address virtual 10.3.10.254/24
 interface Vlan20
    vrf VRF-A
    ip address virtual 10.3.20.254/24
 interface Vxlan1
    vxlan source-interface Loopback1
    vxlan udp-port 4789
+   vxlan vlan 10 vni 10010
    vxlan vlan 20 vni 10020
    vxlan vrf VRF-A vni 10000
 
@@ -436,6 +445,10 @@ router bgp 65003
    neighbor 10.2.1.4 peer group UNDERLAY
    neighbor 10.2.2.4 peer group UNDERLAY
    redistribute connected route-map LOOPBAKS
+   vlan 10
+      rd 10.1.0.3:10010
+      route-target both 65000:10010
+      redistribute learned
    vlan 20
       rd 10.1.0.3:10020
       route-target both 65000:10020
