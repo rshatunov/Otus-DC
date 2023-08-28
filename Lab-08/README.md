@@ -748,33 +748,162 @@ Gateway of last resort is not set
 </details>
 
  <details>
-<summary> Srv-02: </summary>
+<summary> Srv-01: </summary>
 
 ```
-root@Srv-02:~# ping 10.3.10.1 -c3
-PING 10.3.10.1 (10.3.10.1) 56(84) bytes of data.
-64 bytes from 10.3.10.1: icmp_seq=1 ttl=64 time=24.0 ms
-64 bytes from 10.3.10.1: icmp_seq=2 ttl=64 time=14.3 ms
-64 bytes from 10.3.10.1: icmp_seq=3 ttl=64 time=17.7 ms
+root@Srv-01:~# ping 10.10.0.4 -c3
+PING 10.10.0.4 (10.10.0.4) 56(84) bytes of data.
+64 bytes from 10.10.0.4: icmp_seq=1 ttl=64 time=12.0 ms
+64 bytes from 10.10.0.4: icmp_seq=2 ttl=64 time=15.1 ms
+64 bytes from 10.10.0.4: icmp_seq=3 ttl=64 time=64.3 ms
 
---- 10.3.10.1 ping statistics ---
+--- 10.10.0.4 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 11.972/30.467/64.305/23.961 ms
+root@Srv-01:~#
+root@Srv-01:~#
+root@Srv-01:~# ping 10.20.0.2 -c3
+PING 10.20.0.2 (10.20.0.2) 56(84) bytes of data.
+64 bytes from 10.20.0.2: icmp_seq=1 ttl=59 time=35.1 ms
+64 bytes from 10.20.0.2: icmp_seq=2 ttl=59 time=33.1 ms
+64 bytes from 10.20.0.2: icmp_seq=3 ttl=59 time=31.1 ms
+
+--- 10.20.0.2 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-rtt min/avg/max/mdev = 14.259/18.639/24.001/4.037 ms
-root@Srv-02:~#
-root@Srv-02:~#
-root@Srv-02:~# ping 10.3.20.3 -c3
-PING 10.3.20.3 (10.3.20.3) 56(84) bytes of data.
-64 bytes from 10.3.20.3: icmp_seq=1 ttl=63 time=5.53 ms
-64 bytes from 10.3.20.3: icmp_seq=2 ttl=63 time=6.15 ms
-64 bytes from 10.3.20.3: icmp_seq=3 ttl=63 time=7.99 ms
+rtt min/avg/max/mdev = 31.124/33.129/35.133/1.636 ms
+root@Srv-01:~#
+root@Srv-01:~#
+root@Srv-01:~# ping 10.20.0.5 -c3
+PING 10.20.0.5 (10.20.0.5) 56(84) bytes of data.
+64 bytes from 10.20.0.5: icmp_seq=1 ttl=59 time=38.8 ms
+64 bytes from 10.20.0.5: icmp_seq=2 ttl=59 time=28.9 ms
+64 bytes from 10.20.0.5: icmp_seq=3 ttl=59 time=36.1 ms
 
---- 10.3.20.3 ping statistics ---
+--- 10.20.0.5 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 5.530/6.556/7.993/1.046 ms
-root@Srv-02:~#
-root@Srv-02:~#
-root@Srv-02:~# ip nei
-10.3.10.1 dev ens3 lladdr 50:00:00:ca:39:cc REACHABLE
-10.3.10.254 dev ens3 lladdr 00:00:11:11:11:11 REACHABLE
+rtt min/avg/max/mdev = 28.937/34.617/38.768/4.156 ms
+root@Srv-01:~#
+root@Srv-01:~#
+root@Srv-01:~# ping 10.30.0.3 -c3
+PING 10.30.0.3 (10.30.0.3) 56(84) bytes of data.
+64 bytes from 10.30.0.3: icmp_seq=1 ttl=59 time=28.9 ms
+64 bytes from 10.30.0.3: icmp_seq=2 ttl=59 time=33.0 ms
+64 bytes from 10.30.0.3: icmp_seq=3 ttl=59 time=29.1 ms
+
+--- 10.30.0.3 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+rtt min/avg/max/mdev = 28.865/30.296/32.950/1.878 ms
+root@Srv-01:~#
+root@Srv-01:~#
+root@Srv-01:~# ping 10.30.0.6 -c3
+PING 10.30.0.6 (10.30.0.6) 56(84) bytes of data.
+64 bytes from 10.30.0.6: icmp_seq=1 ttl=59 time=32.4 ms
+64 bytes from 10.30.0.6: icmp_seq=2 ttl=59 time=34.2 ms
+64 bytes from 10.30.0.6: icmp_seq=3 ttl=59 time=41.3 ms
+
+--- 10.30.0.6 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+rtt min/avg/max/mdev = 32.354/35.945/41.292/3.854 ms
+root@Srv-01:~#
+root@Srv-01:~#
+root@Srv-01:~# ping 1.1.1.1 -c3
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+64 bytes from 1.1.1.1: icmp_seq=1 ttl=62 time=16.2 ms
+64 bytes from 1.1.1.1: icmp_seq=2 ttl=62 time=15.8 ms
+64 bytes from 1.1.1.1: icmp_seq=3 ttl=62 time=16.4 ms
+
+--- 1.1.1.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 15.788/16.150/16.420/0.266 ms
+root@Srv-01:~#
+root@Srv-01:~#
+root@Srv-01:~# ping 8.8.8.8 -c3
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=62 time=17.6 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=62 time=30.5 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=62 time=16.7 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 16.744/21.637/30.531/6.299 ms
+```
+</details>
+<details>
+<summary> Srv-05: </summary>
+
+```
+root@Srv-05:~# ping 10.10.0.1 -c3
+PING 10.10.0.1 (10.10.0.1) 56(84) bytes of data.
+64 bytes from 10.10.0.1: icmp_seq=1 ttl=59 time=64.0 ms
+64 bytes from 10.10.0.1: icmp_seq=2 ttl=59 time=30.0 ms
+64 bytes from 10.10.0.1: icmp_seq=3 ttl=59 time=30.9 ms
+
+--- 10.10.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+rtt min/avg/max/mdev = 30.033/41.663/64.036/15.824 ms
+root@Srv-05:~#
+root@Srv-05:~#
+root@Srv-05:~# ping 10.10.0.4 -c3
+PING 10.10.0.4 (10.10.0.4) 56(84) bytes of data.
+64 bytes from 10.10.0.4: icmp_seq=1 ttl=59 time=35.8 ms
+64 bytes from 10.10.0.4: icmp_seq=2 ttl=59 time=37.1 ms
+64 bytes from 10.10.0.4: icmp_seq=3 ttl=59 time=33.1 ms
+
+--- 10.10.0.4 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 33.055/35.318/37.106/1.687 ms
+root@Srv-05:~#
+root@Srv-05:~#
+root@Srv-05:~# ping 10.20.0.2 -c3
+PING 10.20.0.2 (10.20.0.2) 56(84) bytes of data.
+64 bytes from 10.20.0.2: icmp_seq=1 ttl=64 time=14.8 ms
+64 bytes from 10.20.0.2: icmp_seq=2 ttl=64 time=20.5 ms
+64 bytes from 10.20.0.2: icmp_seq=3 ttl=64 time=18.2 ms
+
+--- 10.20.0.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 14.834/17.831/20.455/2.309 ms
+root@Srv-05:~#
+root@Srv-05:~#
+root@Srv-05:~# ping 10.30.0.3 -c3
+PING 10.30.0.3 (10.30.0.3) 56(84) bytes of data.
+64 bytes from 10.30.0.3: icmp_seq=1 ttl=59 time=29.7 ms
+64 bytes from 10.30.0.3: icmp_seq=2 ttl=59 time=27.5 ms
+64 bytes from 10.30.0.3: icmp_seq=3 ttl=59 time=39.8 ms
+
+--- 10.30.0.3 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 27.450/32.300/39.751/5.347 ms
+root@Srv-05:~#
+root@Srv-05:~#
+root@Srv-05:~# ping 10.30.0.6 -c3
+PING 10.30.0.6 (10.30.0.6) 56(84) bytes of data.
+64 bytes from 10.30.0.6: icmp_seq=1 ttl=59 time=28.9 ms
+64 bytes from 10.30.0.6: icmp_seq=2 ttl=59 time=30.2 ms
+64 bytes from 10.30.0.6: icmp_seq=3 ttl=59 time=30.7 ms
+
+--- 10.30.0.6 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 28.949/29.957/30.714/0.742 ms
+root@Srv-05:~#
+root@Srv-05:~#
+root@Srv-05:~# ping 1.1.1.1 -c3
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+64 bytes from 1.1.1.1: icmp_seq=1 ttl=62 time=16.3 ms
+64 bytes from 1.1.1.1: icmp_seq=2 ttl=62 time=14.5 ms
+64 bytes from 1.1.1.1: icmp_seq=3 ttl=62 time=19.1 ms
+
+--- 1.1.1.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+rtt min/avg/max/mdev = 14.524/16.642/19.091/1.879 ms
+root@Srv-05:~# ping 8.8.8.8 -c3
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=62 time=15.8 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=62 time=15.0 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=62 time=16.7 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 15.015/15.826/16.677/0.679 ms
 ```
 </details>
