@@ -1,7 +1,8 @@
 # LAB-08
-# VxLAN. MLAG
+# EVPN route-type 5
 ### Цели
-- Настроить отказоустойчивое подключение клиентов с использованием MLAG.
+- Разобрать EVPN route-type 5 и его применение;
+- Настроить route-type для оптимизации маршрутизации.
 ### Схема сети
 ![pic.jpg](pic.jpg)
 ### Настройка оборудования
@@ -19,10 +20,6 @@ aaa authorization exec default local
 ip routing
 route-map LOOPBAKS permit 10
    match interface Loopback0
-peer-filter AS-FILTER
-   10 match as-range 65001 result accept
-   20 match as-range 65002 result accept
-   30 match as-range 65003 result accept
 
 #### Настройка интерфейсов ####
 interface Ethernet1
@@ -36,7 +33,7 @@ interface Ethernet2
    ip address 10.2.1.2/31
    bfd interval 50 min-rx 50 multiplier 3
 interface Ethernet3
-   description ### Link to Leaf-03 int Eth1 ###
+   description ### Link to BR-Leaf-01 int Eth1 ###
    no switchport
    ip address 10.2.1.4/31
    bfd interval 50 min-rx 50 multiplier 3
@@ -45,91 +42,33 @@ interface Loopback0
 
 #### Настройка BGP ####
 router bgp 65000
+   bgp asn notation asdot
    router-id 10.0.1.0
-   maximum-paths 32
-   bgp listen range 10.1.0.0/16 peer-group OVERLAY peer-filter AS-FILTER
-   bgp listen range 10.2.0.0/16 peer-group UNDERLAY peer-filter AS-FILTER
+   bgp listen range 10.1.0.0/24 peer-group OVERLAY remote-as 65000
+   bgp listen range 10.2.1.0/24 peer-group UNDERLAY remote-as 65000
    neighbor OVERLAY peer group
    neighbor OVERLAY update-source Loopback0
    neighbor OVERLAY bfd
-   neighbor OVERLAY ebgp-multihop 2
+   neighbor OVERLAY route-reflector-client
    neighbor OVERLAY timers 5 15
    neighbor OVERLAY password 7 uOE+oO5B97YK28lH6OwjCQ==
    neighbor OVERLAY send-community
    neighbor UNDERLAY peer group
+   neighbor UNDERLAY next-hop-self
    neighbor UNDERLAY bfd
+   neighbor UNDERLAY route-reflector-client
    neighbor UNDERLAY timers 5 15
    neighbor UNDERLAY password 7 ZcyyQF+TaMkNnh+RPCdLHA==
    redistribute connected route-map LOOPBAKS
+   !
    address-family evpn
       neighbor OVERLAY activate
+   !
    address-family ipv4
       no neighbor OVERLAY activate
 ```
 </details>
- <details>
-<summary>  Настройка Spine-02: </summary>
-
-```
-#### Базовая настройка ####
-hostname Spine-02
-service routing protocols model multi-agent
-terminal width 250
-username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
-aaa authorization serial-console
-aaa authorization exec default local
-ip routing
-route-map LOOPBAKS permit 10
-   match interface Loopback0
-peer-filter AS-FILTER
-   10 match as-range 65001 result accept
-   20 match as-range 65002 result accept
-   30 match as-range 65003 result accept
-
-#### Настройка интерфейсов ####
-interface Ethernet1
-   description ### Link to Leaf-01 int Eth2 ###
-   no switchport
-   ip address 10.2.2.0/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Ethernet2
-   description ### Link to Leaf-02 int Eth2 ###
-   no switchport
-   ip address 10.2.2.2/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Ethernet3
-   description ### Link to Leaf-03 int Eth2 ###
-   no switchport
-   ip address 10.2.2.4/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Loopback0
-   ip address 10.0.2.0/32
-
-#### Настройка BGP ####
-router bgp 65000
-   router-id 10.0.2.0
-   maximum-paths 32
-   bgp listen range 10.1.0.0/16 peer-group OVERLAY peer-filter AS-FILTER
-   bgp listen range 10.2.0.0/16 peer-group UNDERLAY peer-filter AS-FILTER
-   neighbor OVERLAY peer group
-   neighbor OVERLAY update-source Loopback0
-   neighbor OVERLAY bfd
-   neighbor OVERLAY ebgp-multihop 2
-   neighbor OVERLAY timers 5 15
-   neighbor OVERLAY password 7 uOE+oO5B97YK28lH6OwjCQ==
-   neighbor OVERLAY send-community
-   neighbor UNDERLAY peer group
-   neighbor UNDERLAY bfd
-   neighbor UNDERLAY timers 5 15
-   neighbor UNDERLAY password 7 ZcyyQF+TaMkNnh+RPCdLHA==
-   redistribute connected route-map LOOPBAKS
-   address-family evpn
-      neighbor OVERLAY activate
-   address-family ipv4
-      no neighbor OVERLAY activate
-```
-</details>
- <details>
+  <details>
 <summary>  Настройка Leaf-01: </summary>
 
 ```
