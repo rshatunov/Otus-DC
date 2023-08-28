@@ -209,49 +209,52 @@ route-map LOOPBAKS permit 20
 
 #### Настройка интерфейсов ####
 interface Ethernet1
-   description ### Link to Spine-01 int Eth3 ###
+   description ### Link to Spine-01 int Eth2 ###
    no switchport
-   ip address 10.2.1.5/31
+   ip address 10.2.1.3/31
    bfd interval 50 min-rx 50 multiplier 3
 interface Ethernet2
-   description ### Link to Spine-02 int Eth3 ###
-   no switchport
-   ip address 10.2.2.5/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Ethernet3
-   description ### Link to Srv-02 int e0 ###
+   description ### Link to Srv-04 int e0 ###
    switchport access vlan 10
-interface Ethernet4
+interface Ethernet3
+   description ### Link to Srv-05 int e0 ###
    switchport access vlan 20
-   description ### Link to Srv-03 int e0 ###
+interface Ethernet4
+   description ### Link to Srv-06 int e0 ###
+   switchport access vlan 30
 interface Loopback0
-   ip address 10.1.0.3/32
-   description ### For RID/eBGP ###
+   ip address 10.1.0.2/32
 interface Loopback1
-   ip address 10.1.1.3/32
-   description ### For VxLAN ###
+   ip address 10.1.1.2/32
 interface Vlan10
-   vrf VRF-A
-   ip address virtual 10.3.10.254/24
+   vrf A
+   ip address virtual 10.10.0.254/24
 interface Vlan20
-   vrf VRF-A
-   ip address virtual 10.3.20.254/24
+   vrf B
+   ip address virtual 10.20.0.254/24
+interface Vlan30
+   vrf C
+   ip address virtual 10.30.0.254/24
 interface Vxlan1
    vxlan source-interface Loopback1
    vxlan udp-port 4789
-   vxlan vlan 10 vni 10010
-   vxlan vlan 20 vni 10020
-   vxlan vrf VRF-A vni 10000
+   vxlan vlan 10 vni 10
+   vxlan vlan 20 vni 20
+   vxlan vlan 30 vni 30
+   vxlan vrf A vni 10010
+   vxlan vrf B vni 10020
+   vxlan vrf C vni 10030
+ip virtual-router mac-address 00:00:11:11:11:11
 
 #### Настройка BGP ####
-router bgp 65003
-   router-id 10.1.0.3
+router bgp 65000
+   bgp asn notation asdot
+   router-id 10.1.0.2
    maximum-paths 32
    neighbor OVERLAY peer group
    neighbor OVERLAY remote-as 65000
    neighbor OVERLAY update-source Loopback0
    neighbor OVERLAY bfd
-   neighbor OVERLAY ebgp-multihop 2
    neighbor OVERLAY timers 5 15
    neighbor OVERLAY password 7 uOE+oO5B97YK28lH6OwjCQ==
    neighbor OVERLAY send-community
@@ -261,26 +264,151 @@ router bgp 65003
    neighbor UNDERLAY timers 5 15
    neighbor UNDERLAY password 7 ZcyyQF+TaMkNnh+RPCdLHA==
    neighbor 10.0.1.0 peer group OVERLAY
-   neighbor 10.0.2.0 peer group OVERLAY
-   neighbor 10.2.1.4 peer group UNDERLAY
-   neighbor 10.2.2.4 peer group UNDERLAY
+   neighbor 10.2.1.2 peer group UNDERLAY
    redistribute connected route-map LOOPBAKS
+   !
    vlan 10
-      rd 10.1.0.3:10010
-      route-target both 65000:10010
+      rd 10.1.0.2:10
+      route-target both 65000:10
       redistribute learned
+   !
    vlan 20
-      rd 10.1.0.3:10020
-      route-target both 65000:10020
+      rd 10.1.0.2:20
+      route-target both 65000:20
       redistribute learned
+   !
+   vlan 30
+      rd 10.1.0.2:30
+      route-target both 65000:30
+      redistribute learned
+   !
    address-family evpn
       neighbor OVERLAY activate
+   !
    address-family ipv4
       no neighbor OVERLAY activate
-   vrf VRF-A
-      rd 10.1.0.3:65000
-      route-target import evpn 65000:10000
-      route-target export evpn 65000:10000
+   !
+   vrf A
+      rd 10.1.0.2:10010
+      route-target import evpn 65000:10010
+      route-target export evpn 65000:10010
+   !
+   vrf B
+      rd 10.1.0.2:10020
+      route-target import evpn 65000:10020
+      route-target export evpn 65000:10020
+   !
+   vrf C
+      rd 10.1.0.2:10030
+      route-target import evpn 65000:10030
+      route-target export evpn 65000:10030
+```
+</details>
+ <details>
+<summary>  Настройка BR-Leaf-01: </summary>
+
+```
+#### Базовая настройка ####
+hostname BR-Leaf-01
+service routing protocols model multi-agent
+terminal width 250
+username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+aaa authorization serial-console
+aaa authorization exec default local
+ip routing
+ip routing vrf A
+ip routing vrf B
+ip routing vrf C
+route-map LOOPBAKS permit 10
+   match interface Loopback0
+route-map LOOPBAKS permit 20
+   match interface Loopback1
+
+#### Настройка интерфейсов ####
+interface Ethernet1
+   description ### Link to Spine-01 int Eth1 ###
+   no switchport
+   ip address 10.2.1.5/31
+   bfd interval 50 min-rx 50 multiplier 3
+interface Ethernet2
+   no switchport
+interface Ethernet2.101
+   encapsulation dot1q vlan 101
+   vrf A
+   ip address 10.3.1.0/31
+interface Ethernet2.102
+   encapsulation dot1q vlan 102
+   vrf B
+   ip address 10.3.1.2/31
+interface Ethernet2.103
+   encapsulation dot1q vlan 103
+   vrf C
+   ip address 10.3.1.4/31
+interface Loopback0
+   ip address 10.1.0.3/32
+interface Loopback1
+   ip address 10.1.1.3/32
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan udp-port 4789
+   vxlan vrf A vni 10010
+   vxlan vrf B vni 10020
+   vxlan vrf C vni 10030
+ip virtual-router mac-address 00:00:11:11:11:11
+
+#### Настройка BGP ####
+router bgp 65000
+   bgp asn notation asdot
+   router-id 10.1.0.3
+   maximum-paths 32
+   neighbor OVERLAY peer group
+   neighbor OVERLAY remote-as 65000
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY bfd
+   neighbor OVERLAY timers 5 15
+   neighbor OVERLAY password 7 uOE+oO5B97YK28lH6OwjCQ==
+   neighbor OVERLAY send-community
+   neighbor UNDERLAY peer group
+   neighbor UNDERLAY remote-as 65000
+   neighbor UNDERLAY bfd
+   neighbor UNDERLAY timers 5 15
+   neighbor UNDERLAY password 7 ZcyyQF+TaMkNnh+RPCdLHA==
+   neighbor 10.0.1.0 peer group OVERLAY
+   neighbor 10.2.1.4 peer group UNDERLAY
+   redistribute connected route-map LOOPBAKS
+   !
+   address-family evpn
+      neighbor OVERLAY activate
+   !
+   address-family ipv4
+      no neighbor OVERLAY activate
+   !
+   vrf A
+      rd 10.1.0.3:10010
+      route-target import evpn 65000:10010
+      route-target export evpn 65000:10010
+      neighbor 10.3.1.1 remote-as 65100
+      neighbor 10.3.1.1 local-as 65000.101 no-prepend replace-as
+      aggregate-address 10.10.0.0/16 summary-only
+      redistribute connected
+   !
+   vrf B
+      rd 10.1.0.3:10020
+      route-target import evpn 65000:10020
+      route-target export evpn 65000:10020
+      neighbor 10.3.1.3 remote-as 65100
+      neighbor 10.3.1.3 local-as 65000.102 no-prepend replace-as
+      aggregate-address 10.20.0.0/16 summary-only
+      redistribute connected
+   !
+   vrf C
+      rd 10.1.0.3:10030
+      route-target import evpn 65000:10030
+      route-target export evpn 65000:10030
+      neighbor 10.3.1.5 remote-as 65100
+      neighbor 10.3.1.5 local-as 65000.103 no-prepend replace-as
+      aggregate-address 10.30.0.0/16 summary-only
+      redistribute connected
 ```
 </details>
 
