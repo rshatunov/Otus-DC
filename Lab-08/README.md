@@ -428,7 +428,6 @@ ip prefix-list Lo10
 route-map Lo10 permit 10
    match ip address prefix-list Lo10
 
-
 #### Настройка интерфейсов ####
 interface Ethernet1
    no switchport
@@ -447,8 +446,6 @@ interface Loopback10
    ip address 1.1.1.1/32
 interface Loopback20
    ip address 8.8.8.8/32
-
-
 
 #### Настройка BGP ####
 router bgp 65100
