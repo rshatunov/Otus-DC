@@ -411,6 +411,60 @@ router bgp 65000
       redistribute connected
 ```
 </details>
+ <details>
+<summary>  Настройка BR-FW: </summary>
+
+```
+#### Базовая настройка ####
+hostname BR-FW
+service routing protocols model multi-agent
+terminal width 250
+username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+aaa authorization serial-console
+aaa authorization exec default local
+ip routing
+ip prefix-list Lo10
+   seq 10 permit 1.0.0.0/8
+route-map Lo10 permit 10
+   match ip address prefix-list Lo10
+
+
+#### Настройка интерфейсов ####
+interface Ethernet1
+   no switchport
+interface Ethernet1.101
+   encapsulation dot1q vlan 101
+   ip address 10.3.1.1/31
+interface Ethernet1.102
+   encapsulation dot1q vlan 102
+   ip address 10.3.1.3/31
+interface Ethernet1.103
+   encapsulation dot1q vlan 103
+   ip address 10.3.1.5/31
+interface Loopback0
+   ip address 10.1.0.254/32
+interface Loopback10
+   ip address 1.1.1.1/32
+interface Loopback20
+   ip address 8.8.8.8/32
+
+
+
+#### Настройка BGP ####
+router bgp 65100
+   bgp asn notation asdot
+   router-id 10.1.0.254
+   neighbor test peer group
+   neighbor 10.3.1.0 remote-as 65000.101
+   neighbor 10.3.1.0 default-originate
+   neighbor 10.3.1.2 remote-as 65000.102
+   neighbor 10.3.1.2 default-originate
+   neighbor 10.3.1.4 remote-as 65000.103
+   neighbor 10.3.1.4 default-originate
+   aggregate-address 1.0.0.0/8 summary-only
+   redistribute connected route-map Lo10
+```
+</details>
 
 ### Проверка настроек  
 
