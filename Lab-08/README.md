@@ -760,8 +760,8 @@ PING 10.10.0.4 (10.10.0.4) 56(84) bytes of data.
 --- 10.10.0.4 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2002ms
 rtt min/avg/max/mdev = 11.972/30.467/64.305/23.961 ms
-root@Srv-01:~#
-root@Srv-01:~#
+
+
 root@Srv-01:~# ping 10.20.0.2 -c3
 PING 10.20.0.2 (10.20.0.2) 56(84) bytes of data.
 64 bytes from 10.20.0.2: icmp_seq=1 ttl=59 time=35.1 ms
@@ -771,8 +771,8 @@ PING 10.20.0.2 (10.20.0.2) 56(84) bytes of data.
 --- 10.20.0.2 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2004ms
 rtt min/avg/max/mdev = 31.124/33.129/35.133/1.636 ms
-root@Srv-01:~#
-root@Srv-01:~#
+
+
 root@Srv-01:~# ping 10.20.0.5 -c3
 PING 10.20.0.5 (10.20.0.5) 56(84) bytes of data.
 64 bytes from 10.20.0.5: icmp_seq=1 ttl=59 time=38.8 ms
@@ -782,8 +782,8 @@ PING 10.20.0.5 (10.20.0.5) 56(84) bytes of data.
 --- 10.20.0.5 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2003ms
 rtt min/avg/max/mdev = 28.937/34.617/38.768/4.156 ms
-root@Srv-01:~#
-root@Srv-01:~#
+
+
 root@Srv-01:~# ping 10.30.0.3 -c3
 PING 10.30.0.3 (10.30.0.3) 56(84) bytes of data.
 64 bytes from 10.30.0.3: icmp_seq=1 ttl=59 time=28.9 ms
@@ -793,8 +793,8 @@ PING 10.30.0.3 (10.30.0.3) 56(84) bytes of data.
 --- 10.30.0.3 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2004ms
 rtt min/avg/max/mdev = 28.865/30.296/32.950/1.878 ms
-root@Srv-01:~#
-root@Srv-01:~#
+
+
 root@Srv-01:~# ping 10.30.0.6 -c3
 PING 10.30.0.6 (10.30.0.6) 56(84) bytes of data.
 64 bytes from 10.30.0.6: icmp_seq=1 ttl=59 time=32.4 ms
@@ -804,8 +804,8 @@ PING 10.30.0.6 (10.30.0.6) 56(84) bytes of data.
 --- 10.30.0.6 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2004ms
 rtt min/avg/max/mdev = 32.354/35.945/41.292/3.854 ms
-root@Srv-01:~#
-root@Srv-01:~#
+
+
 root@Srv-01:~# ping 1.1.1.1 -c3
 PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
 64 bytes from 1.1.1.1: icmp_seq=1 ttl=62 time=16.2 ms
@@ -815,8 +815,8 @@ PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
 --- 1.1.1.1 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2002ms
 rtt min/avg/max/mdev = 15.788/16.150/16.420/0.266 ms
-root@Srv-01:~#
-root@Srv-01:~#
+
+
 root@Srv-01:~# ping 8.8.8.8 -c3
 PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
 64 bytes from 8.8.8.8: icmp_seq=1 ttl=62 time=17.6 ms
@@ -841,8 +841,8 @@ PING 10.10.0.1 (10.10.0.1) 56(84) bytes of data.
 --- 10.10.0.1 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2004ms
 rtt min/avg/max/mdev = 30.033/41.663/64.036/15.824 ms
-root@Srv-05:~#
-root@Srv-05:~#
+
+
 root@Srv-05:~# ping 10.10.0.4 -c3
 PING 10.10.0.4 (10.10.0.4) 56(84) bytes of data.
 64 bytes from 10.10.0.4: icmp_seq=1 ttl=59 time=35.8 ms
@@ -852,8 +852,8 @@ PING 10.10.0.4 (10.10.0.4) 56(84) bytes of data.
 --- 10.10.0.4 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2003ms
 rtt min/avg/max/mdev = 33.055/35.318/37.106/1.687 ms
-root@Srv-05:~#
-root@Srv-05:~#
+
+
 root@Srv-05:~# ping 10.20.0.2 -c3
 PING 10.20.0.2 (10.20.0.2) 56(84) bytes of data.
 64 bytes from 10.20.0.2: icmp_seq=1 ttl=64 time=14.8 ms
@@ -863,8 +863,8 @@ PING 10.20.0.2 (10.20.0.2) 56(84) bytes of data.
 --- 10.20.0.2 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2003ms
 rtt min/avg/max/mdev = 14.834/17.831/20.455/2.309 ms
-root@Srv-05:~#
-root@Srv-05:~#
+
+
 root@Srv-05:~# ping 10.30.0.3 -c3
 PING 10.30.0.3 (10.30.0.3) 56(84) bytes of data.
 64 bytes from 10.30.0.3: icmp_seq=1 ttl=59 time=29.7 ms
@@ -874,8 +874,8 @@ PING 10.30.0.3 (10.30.0.3) 56(84) bytes of data.
 --- 10.30.0.3 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2002ms
 rtt min/avg/max/mdev = 27.450/32.300/39.751/5.347 ms
-root@Srv-05:~#
-root@Srv-05:~#
+
+
 root@Srv-05:~# ping 10.30.0.6 -c3
 PING 10.30.0.6 (10.30.0.6) 56(84) bytes of data.
 64 bytes from 10.30.0.6: icmp_seq=1 ttl=59 time=28.9 ms
@@ -885,8 +885,8 @@ PING 10.30.0.6 (10.30.0.6) 56(84) bytes of data.
 --- 10.30.0.6 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2003ms
 rtt min/avg/max/mdev = 28.949/29.957/30.714/0.742 ms
-root@Srv-05:~#
-root@Srv-05:~#
+
+
 root@Srv-05:~# ping 1.1.1.1 -c3
 PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
 64 bytes from 1.1.1.1: icmp_seq=1 ttl=62 time=16.3 ms
@@ -896,6 +896,8 @@ PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
 --- 1.1.1.1 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2004ms
 rtt min/avg/max/mdev = 14.524/16.642/19.091/1.879 ms
+
+
 root@Srv-05:~# ping 8.8.8.8 -c3
 PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
 64 bytes from 8.8.8.8: icmp_seq=1 ttl=62 time=15.8 ms
