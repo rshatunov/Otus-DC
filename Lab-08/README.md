@@ -469,78 +469,9 @@ router bgp 65100
 <summary> Leaf-01: </summary>
 
 ```
-Leaf-01#show ip bgp
-BGP routing table information for VRF default
-Router identifier 10.1.0.1, local AS number 65001
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup, L - labeled-unicast
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-RPKI Origin Validation codes: V - valid, I - invalid, U - unknown
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
+Leaf-01#show ip route vrf A
 
-          Network                Next Hop              Metric  AIGP       LocPref Weight  Path
- * >      10.0.1.0/32            10.2.1.0              0       -          100     0       65000 i
- *        10.0.1.0/32            169.254.253.2         0       -          100     0       65000 i
- * >      10.0.2.0/32            10.2.2.0              0       -          100     0       65000 i
- *        10.0.2.0/32            169.254.253.2         0       -          100     0       65000 i
- * >      10.1.0.0/32            -                     -       -          -       0       i
- *        10.1.0.0/32            169.254.253.2         0       -          100     0       i
- * >      10.1.0.1/32            -                     -       -          -       0       i
- * >      10.1.0.2/32            169.254.253.2         0       -          100     0       i
- * >Ec    10.1.0.3/32            10.2.2.0              0       -          100     0       65000 65003 i
- *  ec    10.1.0.3/32            10.2.1.0              0       -          100     0       65000 65003 i
- *        10.1.0.3/32            169.254.253.2         0       -          100     0       65000 65003 i
- * >Ec    10.1.1.3/32            10.2.2.0              0       -          100     0       65000 65003 i
- *  ec    10.1.1.3/32            10.2.1.0              0       -          100     0       65000 65003 i
- *        10.1.1.3/32            169.254.253.2         0       -          100     0       65000 65003 i
-Leaf-01#
-Leaf-01#
-Leaf-01#show bgp evpn
-BGP routing table information for VRF default
-Router identifier 10.1.0.1, local AS number 65001
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >Ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >Ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200 10.3.10.2
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200 10.3.10.2
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300 10.3.20.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300 10.3.20.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >     RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc 10.3.10.1
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.1:10010 imet 10.1.0.0
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.3:10010 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10010 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >Ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
-Leaf-01#
-Leaf-01#
-Leaf-01#show ip route vrf VRF-A
-
-VRF: VRF-A
+VRF: A
 Codes: C - connected, S - static, K - kernel,
        O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
        E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
@@ -552,79 +483,70 @@ Codes: C - connected, S - static, K - kernel,
        DP - Dynamic Policy Route, L - VRF Leaked,
        G  - gRIBI, RC - Route Cache Route
 
-Gateway of last resort is not set
+Gateway of last resort:
+ B I      0.0.0.0/0 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
 
- B E      10.3.10.2/32 [200/0] via VTEP 10.1.1.3 VNI 10000 router-mac 50:00:00:e4:72:94 local-interface Vxlan1
- C        10.3.10.0/24 is directly connected, Vlan10
- B E      10.3.20.3/32 [200/0] via VTEP 10.1.1.3 VNI 10000 router-mac 50:00:00:e4:72:94 local-interface Vxlan1
-
-Leaf-01#
-Leaf-01#
-Leaf-01#show mac address-table
-          Mac Address Table
-------------------------------------------------------------------
-
-Vlan    Mac Address       Type        Ports      Moves   Last Move
-----    -----------       ----        -----      -----   ---------
-  10    0050.0000.0200    DYNAMIC     Vx1        1       0:06:33 ago
-  10    5000.00c3.da3f    STATIC      Po1
-  10    5000.00ca.39cc    DYNAMIC     Po10       1       0:06:40 ago
-4092    5000.00c3.da3f    STATIC      Po1
-4092    5000.00e4.7294    DYNAMIC     Vx1        1       0:06:33 ago
-4093    5000.00c3.da3f    STATIC      Po1
-4094    5000.00c3.da3f    STATIC      Po1
-Total Mac Addresses for this criterion: 7
-
-          Multicast Mac Address Table
-------------------------------------------------------------------
-
-Vlan    Mac Address       Type        Ports
-----    -----------       ----        -----
-Total Mac Addresses for this criterion: 0
-Leaf-01#
-Leaf-01#
-Leaf-01#show vxlan address-table
-          Vxlan Mac Address Table
-----------------------------------------------------------------------
-
-VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
-----  -----------     ----      ---  ----             -----   ---------
-  10  0050.0000.0200  EVPN      Vx1  10.1.1.3         1       0:06:33 ago
-4092  5000.00e4.7294  EVPN      Vx1  10.1.1.3         1       0:06:33 ago
-Total Remote Mac Addresses for this criterion: 2
-Leaf-01#
-Leaf-01#
-Leaf-01#show mlag
-MLAG Configuration:
-domain-id                          :             mlag-01
-local-interface                    :            Vlan4094
-peer-address                       :       169.254.254.2
-peer-link                          :       Port-Channel1
-peer-config                        :          consistent
-
-MLAG Status:
-state                              :              Active
-negotiation status                 :           Connected
-peer-link status                   :                  Up
-local-int status                   :                  Up
-system-id                          :   52:00:00:5b:6f:f5
-dual-primary detection             :            Disabled
-dual-primary interface errdisabled :               False
-
-MLAG Ports:
-Disabled                           :                   0
-Configured                         :                   0
-Inactive                           :                   0
-Active-partial                     :                   0
-Active-full                        :                   1
+ B I      1.0.0.0/8 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.3.1.0/31 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.10.0.4/32 [200/0] via VTEP 10.1.1.2 VNI 10010 router-mac 50:00:00:be:a1:e3 local-interface Vxlan1
+ C        10.10.0.0/24 is directly connected, Vlan10
+ B I      10.10.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.20.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.30.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
 
 Leaf-01#
 Leaf-01#
-Leaf-01#show mlag interfaces 10
-                                                                                           local/remote
-   mlag       desc                                       state       local       remote          status
----------- ------------------------------------ ----------------- ----------- ------------ ------------
-     10       ### Link to Srv-01 int Po10 ##       active-full        Po10         Po10           up/up
+Leaf-01#show ip route vrf B
+
+VRF: B
+Codes: C - connected, S - static, K - kernel,
+       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
+       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
+       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
+       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
+       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
+       NG - Nexthop Group Static Route, V - VXLAN Control Service,
+       DH - DHCP client installed default route, M - Martian,
+       DP - Dynamic Policy Route, L - VRF Leaked,
+       G  - gRIBI, RC - Route Cache Route
+
+Gateway of last resort:
+ B I      0.0.0.0/0 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+
+ B I      1.0.0.0/8 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.3.1.2/31 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.10.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.20.0.5/32 [200/0] via VTEP 10.1.1.2 VNI 10020 router-mac 50:00:00:be:a1:e3 local-interface Vxlan1
+ C        10.20.0.0/24 is directly connected, Vlan20
+ B I      10.20.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.30.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+
+Leaf-01#
+Leaf-01#
+Leaf-01#show ip route vrf C
+
+VRF: C
+Codes: C - connected, S - static, K - kernel,
+       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
+       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
+       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
+       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
+       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
+       NG - Nexthop Group Static Route, V - VXLAN Control Service,
+       DH - DHCP client installed default route, M - Martian,
+       DP - Dynamic Policy Route, L - VRF Leaked,
+       G  - gRIBI, RC - Route Cache Route
+
+Gateway of last resort:
+ B I      0.0.0.0/0 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+
+ B I      1.0.0.0/8 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.3.1.4/31 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.10.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.20.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.30.0.6/32 [200/0] via VTEP 10.1.1.2 VNI 10030 router-mac 50:00:00:be:a1:e3 local-interface Vxlan1
+ C        10.30.0.0/24 is directly connected, Vlan30
+ B I      10.30.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
 ```
 </details>
 
@@ -632,78 +554,176 @@ Leaf-01#show mlag interfaces 10
 <summary> Leaf-02: </summary>
 
 ```
-Leaf-02#show ip bgp
-BGP routing table information for VRF default
-Router identifier 10.1.0.2, local AS number 65001
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup, L - labeled-unicast
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-RPKI Origin Validation codes: V - valid, I - invalid, U - unknown
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
+Leaf-02#show ip route vrf B
 
-          Network                Next Hop              Metric  AIGP       LocPref Weight  Path
- * >      10.0.1.0/32            10.2.1.2              0       -          100     0       65000 i
- *        10.0.1.0/32            169.254.253.1         0       -          100     0       65000 i
- * >      10.0.2.0/32            10.2.2.2              0       -          100     0       65000 i
- *        10.0.2.0/32            169.254.253.1         0       -          100     0       65000 i
- * >      10.1.0.0/32            -                     -       -          -       0       i
- *        10.1.0.0/32            169.254.253.1         0       -          100     0       i
- * >      10.1.0.1/32            169.254.253.1         0       -          100     0       i
- * >      10.1.0.2/32            -                     -       -          -       0       i
- * >Ec    10.1.0.3/32            10.2.2.2              0       -          100     0       65000 65003 i
- *  ec    10.1.0.3/32            10.2.1.2              0       -          100     0       65000 65003 i
- *        10.1.0.3/32            169.254.253.1         0       -          100     0       65000 65003 i
- * >Ec    10.1.1.3/32            10.2.2.2              0       -          100     0       65000 65003 i
- *  ec    10.1.1.3/32            10.2.1.2              0       -          100     0       65000 65003 i
- *        10.1.1.3/32            169.254.253.1         0       -          100     0       65000 65003 i
-Leaf-02#
-Leaf-02#
-Leaf-02#show bgp evpn
-BGP routing table information for VRF default
-Router identifier 10.1.0.2, local AS number 65001
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
+VRF: B
+Codes: C - connected, S - static, K - kernel,
+       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
+       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
+       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
+       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
+       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
+       NG - Nexthop Group Static Route, V - VXLAN Control Service,
+       DH - DHCP client installed default route, M - Martian,
+       DP - Dynamic Policy Route, L - VRF Leaked,
+       G  - gRIBI, RC - Route Cache Route
 
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >Ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >Ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200 10.3.10.2
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10010 mac-ip 0050.0000.0200 10.3.10.2
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >Ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300 10.3.20.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 mac-ip 0050.0000.0300 10.3.20.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >     RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc 10.3.10.1
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.2:10010 imet 10.1.0.0
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.3:10010 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10010 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- * >Ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
- *  ec   RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 10.1.1.3              -       100     0       65000 65003 i
-Leaf-02#
-Leaf-02#
-Leaf-02#show ip route vrf VRF-A
+Gateway of last resort:
+ B I      0.0.0.0/0 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
 
-VRF: VRF-A
+ B I      1.0.0.0/8 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.3.1.2/31 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.10.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.20.0.2/32 [200/0] via VTEP 10.1.1.1 VNI 10020 router-mac 50:00:00:11:5d:47 local-interface Vxlan1
+ C        10.20.0.0/24 is directly connected, Vlan20
+ B I      10.20.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.30.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+
+Leaf-02#
+Leaf-02#
+Leaf-02#show ip route vrf C
+
+VRF: C
+Codes: C - connected, S - static, K - kernel,
+       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
+       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
+       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
+       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
+       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
+       NG - Nexthop Group Static Route, V - VXLAN Control Service,
+       DH - DHCP client installed default route, M - Martian,
+       DP - Dynamic Policy Route, L - VRF Leaked,
+       G  - gRIBI, RC - Route Cache Route
+
+Gateway of last resort:
+ B I      0.0.0.0/0 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+
+ B I      1.0.0.0/8 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.3.1.4/31 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.10.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.20.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B I      10.30.0.3/32 [200/0] via VTEP 10.1.1.1 VNI 10030 router-mac 50:00:00:11:5d:47 local-interface Vxlan1
+ C        10.30.0.0/24 is directly connected, Vlan30
+ B I      10.30.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+
+```
+</details>
+
+ <details>
+<summary> BR-Leaf-01: </summary>
+
+```
+BR-Leaf-01#show ip route vrf A
+
+VRF: A
+Codes: C - connected, S - static, K - kernel,
+       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
+       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
+       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
+       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
+       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
+       NG - Nexthop Group Static Route, V - VXLAN Control Service,
+       DH - DHCP client installed default route, M - Martian,
+       DP - Dynamic Policy Route, L - VRF Leaked,
+       G  - gRIBI, RC - Route Cache Route
+
+Gateway of last resort:
+ B E      0.0.0.0/0 [200/0]
+           via 10.3.1.1, Ethernet2.101
+
+ B E      1.0.0.0/8 [200/0]
+           via 10.3.1.1, Ethernet2.101
+ C        10.3.1.0/31 [0/0]
+           via Ethernet2.101, directly connected
+ B I      10.10.0.1/32 [200/0]
+           via VTEP 10.1.1.1 VNI 10010 router-mac 50:00:00:11:5d:47 local-interface Vxlan1
+ B I      10.10.0.4/32 [200/0]
+           via VTEP 10.1.1.2 VNI 10010 router-mac 50:00:00:be:a1:e3 local-interface Vxlan1
+ A B      10.10.0.0/16 [200/0]
+           Null0
+ B E      10.20.0.0/16 [200/0]
+           via 10.3.1.1, Ethernet2.101
+ B E      10.30.0.0/16 [200/0]
+           via 10.3.1.1, Ethernet2.101
+
+BR-Leaf-01#
+BR-Leaf-01#
+BR-Leaf-01#show ip route vrf B
+
+VRF: B
+Codes: C - connected, S - static, K - kernel,
+       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
+       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
+       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
+       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
+       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
+       NG - Nexthop Group Static Route, V - VXLAN Control Service,
+       DH - DHCP client installed default route, M - Martian,
+       DP - Dynamic Policy Route, L - VRF Leaked,
+       G  - gRIBI, RC - Route Cache Route
+
+Gateway of last resort:
+ B E      0.0.0.0/0 [200/0]
+           via 10.3.1.3, Ethernet2.102
+
+ B E      1.0.0.0/8 [200/0]
+           via 10.3.1.3, Ethernet2.102
+ C        10.3.1.2/31 [0/0]
+           via Ethernet2.102, directly connected
+ B E      10.10.0.0/16 [200/0]
+           via 10.3.1.3, Ethernet2.102
+ B I      10.20.0.2/32 [200/0]
+           via VTEP 10.1.1.1 VNI 10020 router-mac 50:00:00:11:5d:47 local-interface Vxlan1
+ B I      10.20.0.5/32 [200/0]
+           via VTEP 10.1.1.2 VNI 10020 router-mac 50:00:00:be:a1:e3 local-interface Vxlan1
+ A B      10.20.0.0/16 [200/0]
+           Null0
+ B E      10.30.0.0/16 [200/0]
+           via 10.3.1.3, Ethernet2.102
+
+BR-Leaf-01#
+BR-Leaf-01#
+BR-Leaf-01#show ip route vrf C
+
+VRF: C
+Codes: C - connected, S - static, K - kernel,
+       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
+       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
+       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
+       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
+       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
+       NG - Nexthop Group Static Route, V - VXLAN Control Service,
+       DH - DHCP client installed default route, M - Martian,
+       DP - Dynamic Policy Route, L - VRF Leaked,
+       G  - gRIBI, RC - Route Cache Route
+
+Gateway of last resort:
+ B E      0.0.0.0/0 [200/0]
+           via 10.3.1.5, Ethernet2.103
+
+ B E      1.0.0.0/8 [200/0]
+           via 10.3.1.5, Ethernet2.103
+ C        10.3.1.4/31 [0/0]
+           via Ethernet2.103, directly connected
+ B E      10.10.0.0/16 [200/0]
+           via 10.3.1.5, Ethernet2.103
+ B E      10.20.0.0/16 [200/0]
+           via 10.3.1.5, Ethernet2.103
+ B I      10.30.0.3/32 [200/0]
+           via VTEP 10.1.1.1 VNI 10030 router-mac 50:00:00:11:5d:47 local-interface Vxlan1
+ B I      10.30.0.6/32 [200/0]
+           via VTEP 10.1.1.2 VNI 10030 router-mac 50:00:00:be:a1:e3 local-interface Vxlan1
+ A B      10.30.0.0/16 [200/0]
+           Null0
+```
+</details>
+ <details>
+<summary> BR-FW: </summary>
+
+```
+BR-FW#show ip route
+
+VRF: default
 Codes: C - connected, S - static, K - kernel,
        O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
        E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
@@ -717,246 +737,13 @@ Codes: C - connected, S - static, K - kernel,
 
 Gateway of last resort is not set
 
- B E      10.3.10.2/32 [200/0] via VTEP 10.1.1.3 VNI 10000 router-mac 50:00:00:e4:72:94 local-interface Vxlan1
- C        10.3.10.0/24 is directly connected, Vlan10
- B E      10.3.20.3/32 [200/0] via VTEP 10.1.1.3 VNI 10000 router-mac 50:00:00:e4:72:94 local-interface Vxlan1
-
-Leaf-02#
-Leaf-02#
-Leaf-02#show mac address-table
-          Mac Address Table
-------------------------------------------------------------------
-
-Vlan    Mac Address       Type        Ports      Moves   Last Move
-----    -----------       ----        -----      -----   ---------
-  10    0050.0000.0200    DYNAMIC     Vx1        1       0:08:15 ago
-  10    5000.005b.6ff5    STATIC      Po1
-  10    5000.00ca.39cc    DYNAMIC     Po10       1       0:08:23 ago
-4092    5000.005b.6ff5    STATIC      Po1
-4092    5000.00e4.7294    DYNAMIC     Vx1        1       0:08:15 ago
-4093    5000.005b.6ff5    STATIC      Po1
-4094    5000.005b.6ff5    STATIC      Po1
-Total Mac Addresses for this criterion: 7
-
-          Multicast Mac Address Table
-------------------------------------------------------------------
-
-Vlan    Mac Address       Type        Ports
-----    -----------       ----        -----
-Total Mac Addresses for this criterion: 0
-Leaf-02#
-Leaf-02#
-Leaf-02#show vxlan address-table
-          Vxlan Mac Address Table
-----------------------------------------------------------------------
-
-VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
-----  -----------     ----      ---  ----             -----   ---------
-  10  0050.0000.0200  EVPN      Vx1  10.1.1.3         1       0:08:15 ago
-4092  5000.00e4.7294  EVPN      Vx1  10.1.1.3         1       0:08:15 ago
-Total Remote Mac Addresses for this criterion: 2
-Leaf-02#
-Leaf-02#
-Leaf-02#show mlag
-MLAG Configuration:
-domain-id                          :             mlag-01
-local-interface                    :            Vlan4094
-peer-address                       :       169.254.254.1
-peer-link                          :       Port-Channel1
-peer-config                        :          consistent
-
-MLAG Status:
-state                              :              Active
-negotiation status                 :           Connected
-peer-link status                   :                  Up
-local-int status                   :                  Up
-system-id                          :   52:00:00:5b:6f:f5
-dual-primary detection             :            Disabled
-dual-primary interface errdisabled :               False
-
-MLAG Ports:
-Disabled                           :                   0
-Configured                         :                   0
-Inactive                           :                   0
-Active-partial                     :                   0
-Active-full                        :                   1
-
-Leaf-02#
-Leaf-02#
-Leaf-02#show mlag interfaces 10
-                                                                 local/remote
-   mlag       desc             state       local       remote          status
----------- ---------- ----------------- ----------- ------------ ------------
-     10                  active-full        Po10         Po10           up/up
-```
-</details>
-
- <details>
-<summary> Leaf-03: </summary>
-
-```
-Leaf-03#show ip bgp
-BGP routing table information for VRF default
-Router identifier 10.1.0.3, local AS number 65003
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup, L - labeled-unicast
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-RPKI Origin Validation codes: V - valid, I - invalid, U - unknown
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  AIGP       LocPref Weight  Path
- * >      10.0.1.0/32            10.2.1.4              0       -          100     0       65000 i
- * >      10.0.2.0/32            10.2.2.4              0       -          100     0       65000 i
- * >Ec    10.1.0.0/32            10.2.2.4              0       -          100     0       65000 65001 i
- *  ec    10.1.0.0/32            10.2.1.4              0       -          100     0       65000 65001 i
- * >Ec    10.1.0.1/32            10.2.2.4              0       -          100     0       65000 65001 i
- *  ec    10.1.0.1/32            10.2.1.4              0       -          100     0       65000 65001 i
- * >Ec    10.1.0.2/32            10.2.2.4              0       -          100     0       65000 65001 i
- *  ec    10.1.0.2/32            10.2.1.4              0       -          100     0       65000 65001 i
- * >      10.1.0.3/32            -                     -       -          -       0       i
- * >      10.1.1.3/32            -                     -       -          -       0       i
-Leaf-03#
-Leaf-03#
-Leaf-03#show bgp evpn
-BGP routing table information for VRF default
-Router identifier 10.1.0.3, local AS number 65003
-Route status codes: s - suppressed, * - valid, > - active, E - ECMP head, e - ECMP
-                    S - Stale, c - Contributing to ECMP, b - backup
-                    % - Pending BGP convergence
-Origin codes: i - IGP, e - EGP, ? - incomplete
-AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Link Local Nexthop
-
-          Network                Next Hop              Metric  LocPref Weight  Path
- * >     RD: 10.1.0.3:10010 mac-ip 0050.0000.0200
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.3:10010 mac-ip 0050.0000.0200 10.3.10.2
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.3:10020 mac-ip 0050.0000.0300
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.3:10020 mac-ip 0050.0000.0300 10.3.20.3
-                                 -                     -       -       0       i
- * >Ec   RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc
-                                 10.1.0.0              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc
-                                 10.1.0.0              -       100     0       65000 65001 i
- * >Ec   RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc
-                                 10.1.0.0              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc
-                                 10.1.0.0              -       100     0       65000 65001 i
- * >Ec   RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc 10.3.10.1
-                                 10.1.0.0              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.1:10010 mac-ip 5000.00ca.39cc 10.3.10.1
-                                 10.1.0.0              -       100     0       65000 65001 i
- * >Ec   RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc 10.3.10.1
-                                 10.1.0.0              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.2:10010 mac-ip 5000.00ca.39cc 10.3.10.1
-                                 10.1.0.0              -       100     0       65000 65001 i
- * >Ec   RD: 10.1.0.1:10010 imet 10.1.0.0
-                                 10.1.0.0              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.1:10010 imet 10.1.0.0
-                                 10.1.0.0              -       100     0       65000 65001 i
- * >Ec   RD: 10.1.0.2:10010 imet 10.1.0.0
-                                 10.1.0.0              -       100     0       65000 65001 i
- *  ec   RD: 10.1.0.2:10010 imet 10.1.0.0
-                                 10.1.0.0              -       100     0       65000 65001 i
- * >     RD: 10.1.0.3:10010 imet 10.1.1.3
-                                 -                     -       -       0       i
- * >     RD: 10.1.0.3:10020 imet 10.1.1.3
-                                 -                     -       -       0       i
-Leaf-03#
-Leaf-03#
-Leaf-03#show ip route vrf VRF-A
-
-VRF: VRF-A
-Codes: C - connected, S - static, K - kernel,
-       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
-       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
-       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
-       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
-       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
-       NG - Nexthop Group Static Route, V - VXLAN Control Service,
-       DH - DHCP client installed default route, M - Martian,
-       DP - Dynamic Policy Route, L - VRF Leaked,
-       G  - gRIBI, RC - Route Cache Route
-
-Gateway of last resort is not set
-
- B E      10.3.10.1/32 [200/0] via VTEP 10.1.0.0 VNI 10000 router-mac 50:00:00:c3:da:3f local-interface Vxlan1
-                               via VTEP 10.1.0.0 VNI 10000 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- C        10.3.10.0/24 is directly connected, Vlan10
- C        10.3.20.0/24 is directly connected, Vlan20
-
-Leaf-03#
-Leaf-03#
-Leaf-03#show mac address-table
-          Mac Address Table
-------------------------------------------------------------------
-
-Vlan    Mac Address       Type        Ports      Moves   Last Move
-----    -----------       ----        -----      -----   ---------
-  10    0050.0000.0200    DYNAMIC     Et3        1       15:34:42 ago
-  10    5000.00ca.39cc    DYNAMIC     Vx1        1       0:09:10 ago
-  20    0050.0000.0300    DYNAMIC     Et4        1       15:34:16 ago
-4094    5000.005b.6ff5    DYNAMIC     Vx1        1       0:09:10 ago
-4094    5000.00c3.da3f    DYNAMIC     Vx1        1       0:09:10 ago
-Total Mac Addresses for this criterion: 5
-
-          Multicast Mac Address Table
-------------------------------------------------------------------
-
-Vlan    Mac Address       Type        Ports
-----    -----------       ----        -----
-Total Mac Addresses for this criterion: 0
-Leaf-03#
-Leaf-03#
-Leaf-03#show vxlan address-table
-          Vxlan Mac Address Table
-----------------------------------------------------------------------
-
-VLAN  Mac Address     Type      Prt  VTEP             Moves   Last Move
-----  -----------     ----      ---  ----             -----   ---------
-  10  5000.00ca.39cc  EVPN      Vx1  10.1.0.0         1       0:09:10 ago
-4094  5000.005b.6ff5  EVPN      Vx1  10.1.0.0         1       0:09:10 ago
-4094  5000.00c3.da3f  EVPN      Vx1  10.1.0.0         1       0:09:10 ago
-Total Remote Mac Addresses for this criterion: 3
-```
-</details>
-
- <details>
-<summary> Srv-01: </summary>
-
-```
-Srv-01(config)#ping 10.3.10.2
-PING 10.3.10.2 (10.3.10.2) 72(100) bytes of data.
-80 bytes from 10.3.10.2: icmp_seq=1 ttl=64 time=18.7 ms
-80 bytes from 10.3.10.2: icmp_seq=2 ttl=64 time=23.4 ms
-80 bytes from 10.3.10.2: icmp_seq=3 ttl=64 time=18.2 ms
-80 bytes from 10.3.10.2: icmp_seq=4 ttl=64 time=15.3 ms
-80 bytes from 10.3.10.2: icmp_seq=5 ttl=64 time=22.1 ms
-
---- 10.3.10.2 ping statistics ---
-5 packets transmitted, 5 received, 0% packet loss, time 74ms
-rtt min/avg/max/mdev = 15.370/19.616/23.424/2.885 ms, pipe 2, ipg/ewma 18.512/19.183 ms
-Srv-01(config)#
-Srv-01(config)#
-Srv-01(config)#ping 10.3.20.3
-PING 10.3.20.3 (10.3.20.3) 72(100) bytes of data.
-80 bytes from 10.3.20.3: icmp_seq=1 ttl=62 time=22.1 ms
-80 bytes from 10.3.20.3: icmp_seq=2 ttl=62 time=20.0 ms
-80 bytes from 10.3.20.3: icmp_seq=3 ttl=62 time=23.0 ms
-80 bytes from 10.3.20.3: icmp_seq=4 ttl=62 time=19.9 ms
-80 bytes from 10.3.20.3: icmp_seq=5 ttl=62 time=19.9 ms
-
---- 10.3.20.3 ping statistics ---
-5 packets transmitted, 5 received, 0% packet loss, time 67ms
-rtt min/avg/max/mdev = 19.942/21.044/23.057/1.318 ms, pipe 3, ipg/ewma 16.821/21.569 ms
-Srv-01(config)#
-Srv-01(config)#
-Srv-01(config)#show ip arp
-Address         Age (sec)  Hardware Addr   Interface
-10.3.10.2         3:42:28  0050.0000.0200  Vlan10, Port-Channel10
-10.3.10.254       0:49:36  0000.1111.1111  Vlan10, not learned
+ C        1.1.1.1/32 is directly connected, Loopback10
+ A B      1.0.0.0/8 is directly connected, Null0
+ C        8.8.8.8/32 is directly connected, Loopback20
+ C        10.1.0.254/32 is directly connected, Loopback0
+ C        10.3.1.0/31 is directly connected, Ethernet1.101
+ C        10.3.1.2/31 is directly connected, Ethernet1.102
+ C        10.3.1.4/31 is directly connected, Ethernet1.103
 ```
 </details>
 
