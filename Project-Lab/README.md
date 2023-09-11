@@ -1040,6 +1040,9 @@ route-map LOOPBAKS permit 20
 !
 route-map BR-Router-11 permit 10
    set local-preference 200
+!
+route-map Spine-DC2 permit 10
+   set as-path prepend auto
 
 #### Настройка интерфейсов ####
 interface Ethernet1
@@ -1132,6 +1135,7 @@ router bgp 65199
    neighbor OVERLAY-2 timers 5 15
    neighbor OVERLAY-2 password 7 5HR+E8CJjttw/PNrUXWb5w==
    neighbor OVERLAY-2 send-community
+   neighbor OVERLAY-2 route-map Spine-DC2 out
    neighbor UNDERLAY-1 peer group
    neighbor UNDERLAY-1 remote-as 65100
    neighbor UNDERLAY-1 timers 5 15
@@ -1211,7 +1215,9 @@ route-map LOOPBAKS permit 20
 !
 route-map BR-Router-21 permit 10
    set local-preference 200
-
+!
+route-map Spine-DC1 permit 10
+   set as-path prepend auto
 
 #### Настройка интерфейсов ####
 interface Ethernet1
@@ -1279,7 +1285,7 @@ interface Vxlan1
    vxlan udp-port 4789
    vxlan vrf VRF-1 vni 10001
    vxlan vrf VRF-2 vni 10002
-
+ 
 #### Настройка BGP ####
 router bgp 65299
    bgp asn notation asdot
@@ -1302,7 +1308,7 @@ router bgp 65299
    neighbor OVERLAY-2 update-source Loopback0
    neighbor OVERLAY-2 ebgp-multihop 5
    neighbor OVERLAY-2 timers 5 15
-   neighbor OVERLAY-2 route-map TEST out
+   neighbor OVERLAY-2 route-map Spine-DC1 out
    neighbor OVERLAY-2 password 7 5HR+E8CJjttw/PNrUXWb5w==
    neighbor OVERLAY-2 send-community
    neighbor UNDERLAY-1 peer group
@@ -1556,12 +1562,12 @@ router bgp 65000
 ### Проверка настроек  
 
  <details>
-<summary> Leaf-01: </summary>
+<summary> Leaf-11: </summary>
 
 ```
-Leaf-01#show ip route vrf A
+Leaf-11#sh ip route vrf VRF-1
 
-VRF: A
+VRF: VRF-1
 Codes: C - connected, S - static, K - kernel,
        O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
        E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
@@ -1574,21 +1580,19 @@ Codes: C - connected, S - static, K - kernel,
        G  - gRIBI, RC - Route Cache Route
 
 Gateway of last resort:
- B I      0.0.0.0/0 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B E      0.0.0.0/0 [200/0] via VTEP 10.1.1.254 VNI 10001 router-mac 50:00:00:00:51:83 local-interface Vxlan1
 
- B I      1.0.0.0/8 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.3.1.0/31 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.10.0.4/32 [200/0] via VTEP 10.1.1.2 VNI 10010 router-mac 50:00:00:be:a1:e3 local-interface Vxlan1
- C        10.10.0.0/24 is directly connected, Vlan10
- B I      10.10.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.20.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.30.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10010 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B E      10.128.0.2/32 [200/0] via VTEP 10.9.1.2 VNI 10001 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+                                via VTEP 10.9.1.1 VNI 10001 router-mac 50:00:00:6b:0f:11 local-interface Vxlan1
+ C        10.128.0.0/24 is directly connected, Vlan10
+ B E      10.128.0.0/16 [200/0] via VTEP 10.1.1.254 VNI 10001 router-mac 50:00:00:00:51:83 local-interface Vxlan1
 
-Leaf-01#
-Leaf-01#
-Leaf-01#show ip route vrf B
+Leaf-11#
+Leaf-11#
+Leaf-11#
+Leaf-11#sh ip route vrf VRF-2
 
-VRF: B
+VRF: VRF-2
 Codes: C - connected, S - static, K - kernel,
        O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
        E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
@@ -1601,52 +1605,64 @@ Codes: C - connected, S - static, K - kernel,
        G  - gRIBI, RC - Route Cache Route
 
 Gateway of last resort:
- B I      0.0.0.0/0 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B E      0.0.0.0/0 [200/0] via VTEP 10.1.1.254 VNI 10002 router-mac 50:00:00:00:51:83 local-interface Vxlan1
 
- B I      1.0.0.0/8 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.3.1.2/31 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.10.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.20.0.5/32 [200/0] via VTEP 10.1.1.2 VNI 10020 router-mac 50:00:00:be:a1:e3 local-interface Vxlan1
- C        10.20.0.0/24 is directly connected, Vlan20
- B I      10.20.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.30.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B E      10.129.0.2/32 [200/0] via VTEP 10.9.1.1 VNI 10002 router-mac 50:00:00:6b:0f:11 local-interface Vxlan1
+                                via VTEP 10.9.1.2 VNI 10002 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ C        10.129.0.0/24 is directly connected, Vlan20
+ B E      10.129.0.0/16 [200/0] via VTEP 10.1.1.254 VNI 10002 router-mac 50:00:00:00:51:83 local-interface Vxlan1
+Leaf-11#
+Leaf-11#
+Leaf-11#sh mlag
+MLAG Configuration:
+domain-id                          :             mlag-01
+local-interface                    :            Vlan4094
+peer-address                       :            10.4.1.3
+peer-link                          :       Port-Channel1
+peer-config                        :          consistent
 
-Leaf-01#
-Leaf-01#
-Leaf-01#show ip route vrf C
+MLAG Status:
+state                              :              Active
+negotiation status                 :           Connected
+peer-link status                   :                  Up
+local-int status                   :                  Up
+system-id                          :   52:00:00:11:5d:47
+dual-primary detection             :            Disabled
+dual-primary interface errdisabled :               False
 
-VRF: C
-Codes: C - connected, S - static, K - kernel,
-       O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
-       E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
-       N2 - OSPF NSSA external type2, B - BGP, B I - iBGP, B E - eBGP,
-       R - RIP, I L1 - IS-IS level 1, I L2 - IS-IS level 2,
-       O3 - OSPFv3, A B - BGP Aggregate, A O - OSPF Summary,
-       NG - Nexthop Group Static Route, V - VXLAN Control Service,
-       DH - DHCP client installed default route, M - Martian,
-       DP - Dynamic Policy Route, L - VRF Leaked,
-       G  - gRIBI, RC - Route Cache Route
+MLAG Ports:
+Disabled                           :                   0
+Configured                         :                   0
+Inactive                           :                   0
+Active-partial                     :                   0
+Active-full                        :                   2
 
-Gateway of last resort:
- B I      0.0.0.0/0 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+Leaf-11#
+Leaf-11#
+Leaf-11#sh mlag interfaces 10
+                                                                                           local/remote
+   mlag       desc                                       state       local       remote          status
+---------- ------------------------------------ ----------------- ----------- ------------ ------------
+     10       ### Link to Srv-11 int Po10 ##       active-full        Po10         Po10           up/up
+Leaf-11#
+Leaf-11#
+Leaf-11#sh mlag interfaces 20
+                                                                                           local/remote
+   mlag       desc                                       state       local       remote          status
+---------- ------------------------------------ ----------------- ----------- ------------ ------------
+     20       ### Link to Srv-12 int Po20 ##       active-full        Po20         Po20           up/up
+Leaf-11#
 
- B I      1.0.0.0/8 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.3.1.4/31 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.10.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.20.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.30.0.6/32 [200/0] via VTEP 10.1.1.2 VNI 10030 router-mac 50:00:00:be:a1:e3 local-interface Vxlan1
- C        10.30.0.0/24 is directly connected, Vlan30
- B I      10.30.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
 ```
 </details>
 
  <details>
-<summary> Leaf-02: </summary>
+<summary> Leaf-12: </summary>
 
 ```
-Leaf-02#show ip route vrf B
+Leaf-21#sh ip route vrf VRF-1
 
-VRF: B
+VRF: VRF-1
 Codes: C - connected, S - static, K - kernel,
        O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
        E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
@@ -1659,21 +1675,19 @@ Codes: C - connected, S - static, K - kernel,
        G  - gRIBI, RC - Route Cache Route
 
 Gateway of last resort:
- B I      0.0.0.0/0 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B E      0.0.0.0/0 [200/0] via VTEP 10.9.1.254 VNI 10001 router-mac 50:00:00:6f:20:c3 local-interface Vxlan1
 
- B I      1.0.0.0/8 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.3.1.2/31 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.10.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.20.0.2/32 [200/0] via VTEP 10.1.1.1 VNI 10020 router-mac 50:00:00:11:5d:47 local-interface Vxlan1
- C        10.20.0.0/24 is directly connected, Vlan20
- B I      10.20.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.30.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10020 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B E      10.128.0.1/32 [200/0] via VTEP 10.1.1.1 VNI 10001 router-mac 50:00:00:d0:a5:18 local-interface Vxlan1
+                                via VTEP 10.1.1.2 VNI 10001 router-mac 50:00:00:11:5d:47 local-interface Vxlan1
+ C        10.128.0.0/24 is directly connected, Vlan10
+ B E      10.128.0.0/16 [200/0] via VTEP 10.9.1.254 VNI 10001 router-mac 50:00:00:6f:20:c3 local-interface Vxlan1
 
-Leaf-02#
-Leaf-02#
-Leaf-02#show ip route vrf C
+Leaf-21#
+Leaf-21#
+Leaf-21#
+Leaf-21#sh ip route vrf VRF-2
 
-VRF: C
+VRF: VRF-2
 Codes: C - connected, S - static, K - kernel,
        O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
        E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
@@ -1686,16 +1700,53 @@ Codes: C - connected, S - static, K - kernel,
        G  - gRIBI, RC - Route Cache Route
 
 Gateway of last resort:
- B I      0.0.0.0/0 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B E      0.0.0.0/0 [200/0] via VTEP 10.9.1.254 VNI 10002 router-mac 50:00:00:6f:20:c3 local-interface Vxlan1
 
- B I      1.0.0.0/8 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.3.1.4/31 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.10.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.20.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
- B I      10.30.0.3/32 [200/0] via VTEP 10.1.1.1 VNI 10030 router-mac 50:00:00:11:5d:47 local-interface Vxlan1
- C        10.30.0.0/24 is directly connected, Vlan30
- B I      10.30.0.0/16 [200/0] via VTEP 10.1.1.3 VNI 10030 router-mac 50:00:00:5b:6f:f5 local-interface Vxlan1
+ B E      10.129.0.1/32 [200/0] via VTEP 10.1.1.1 VNI 10002 router-mac 50:00:00:d0:a5:18 local-interface Vxlan1
+                                via VTEP 10.1.1.2 VNI 10002 router-mac 50:00:00:11:5d:47 local-interface Vxlan1
+ C        10.129.0.0/24 is directly connected, Vlan20
+ B E      10.129.0.0/16 [200/0] via VTEP 10.9.1.254 VNI 10002 router-mac 50:00:00:6f:20:c3 local-interface Vxlan1
 
+Leaf-21#
+Leaf-21#
+Leaf-21#sh mlag
+MLAG Configuration:
+domain-id                          :             mlag-01
+local-interface                    :            Vlan4094
+peer-address                       :           10.12.1.3
+peer-link                          :       Port-Channel1
+peer-config                        :          consistent
+
+MLAG Status:
+state                              :              Active
+negotiation status                 :           Connected
+peer-link status                   :                  Up
+local-int status                   :                  Up
+system-id                          :   52:00:00:5b:6f:f5
+dual-primary detection             :            Disabled
+dual-primary interface errdisabled :               False
+
+MLAG Ports:
+Disabled                           :                   0
+Configured                         :                   0
+Inactive                           :                   0
+Active-partial                     :                   0
+Active-full                        :                   2
+
+Leaf-21#
+Leaf-21#
+Leaf-21#sh mlag interfaces 10
+                                                                                           local/remote
+   mlag       desc                                       state       local       remote          status
+---------- ------------------------------------ ----------------- ----------- ------------ ------------
+     10       ### Link to Srv-21 int Po10 ##       active-full        Po10         Po10           up/up
+Leaf-21#
+Leaf-21#
+Leaf-21#sh mlag interfaces 20
+                                                                                           local/remote
+   mlag       desc                                       state       local       remote          status
+---------- ------------------------------------ ----------------- ----------- ------------ ------------
+     20       ### Link to Srv-22 int Po20 ##       active-full        Po20         Po20           up/up
 ```
 </details>
 
@@ -1838,165 +1889,123 @@ Gateway of last resort is not set
 </details>
 
  <details>
-<summary> Srv-01: </summary>
+<summary> Srv-11: </summary>
 
 ```
-root@Srv-01:~# ping 10.10.0.4 -c3
-PING 10.10.0.4 (10.10.0.4) 56(84) bytes of data.
-64 bytes from 10.10.0.4: icmp_seq=1 ttl=64 time=12.0 ms
-64 bytes from 10.10.0.4: icmp_seq=2 ttl=64 time=15.1 ms
-64 bytes from 10.10.0.4: icmp_seq=3 ttl=64 time=64.3 ms
+Leaf-11#sh port-channel 10 detailed
+Port Channel Port-Channel10 (Fallback State: Unconfigured):
+Minimum links: unconfigured
+Minimum speed: unconfigured
+Current weight/Max weight: 1/16
+  Active Ports:
+       Port                Time Became Active       Protocol       Mode      Weight
+    ------------------- ------------------------ -------------- ------------ ------
+       Ethernet6           Tue 13:49:50             LACP           Active      1
+       PeerEthernet6       Tue 12:35:53             LACP           Active      0
 
---- 10.10.0.4 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2002ms
-rtt min/avg/max/mdev = 11.972/30.467/64.305/23.961 ms
+Leaf-11#
+Leaf-11#
+Srv-11#ping 10.128.0.2 repeat 3
+PING 10.128.0.2 (10.128.0.2) 72(100) bytes of data.
+80 bytes from 10.128.0.2: icmp_seq=1 ttl=64 time=32.5 ms
+80 bytes from 10.128.0.2: icmp_seq=2 ttl=64 time=26.4 ms
+80 bytes from 10.128.0.2: icmp_seq=3 ttl=64 time=26.9 ms
 
+--- 10.128.0.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 24ms
+rtt min/avg/max/mdev = 26.450/28.646/32.523/2.756 ms, pipe 3, ipg/ewma 12.017/31.164 ms
+Srv-11#
+Srv-11#
+Srv-11#ping 10.129.0.1 repeat 3
+PING 10.129.0.1 (10.129.0.1) 72(100) bytes of data.
+80 bytes from 10.129.0.1: icmp_seq=1 ttl=59 time=110 ms
+80 bytes from 10.129.0.1: icmp_seq=2 ttl=59 time=106 ms
+80 bytes from 10.129.0.1: icmp_seq=3 ttl=59 time=100 ms
 
-root@Srv-01:~# ping 10.20.0.2 -c3
-PING 10.20.0.2 (10.20.0.2) 56(84) bytes of data.
-64 bytes from 10.20.0.2: icmp_seq=1 ttl=59 time=35.1 ms
-64 bytes from 10.20.0.2: icmp_seq=2 ttl=59 time=33.1 ms
-64 bytes from 10.20.0.2: icmp_seq=3 ttl=59 time=31.1 ms
+--- 10.129.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 21ms
+rtt min/avg/max/mdev = 100.199/105.971/110.719/4.355 ms, pipe 3, ipg/ewma 10.796/108.996 ms
+Srv-11#
+Srv-11#
+Srv-11#ping 10.129.0.2 repeat 3
+PING 10.129.0.2 (10.129.0.2) 72(100) bytes of data.
+From 10.3.1.3 icmp_seq=1 Time to live exceeded
+From 10.3.1.3 icmp_seq=2 Time to live exceeded
+From 10.3.1.3 icmp_seq=3 Time to live exceeded
 
---- 10.20.0.2 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-rtt min/avg/max/mdev = 31.124/33.129/35.133/1.636 ms
-
-
-root@Srv-01:~# ping 10.20.0.5 -c3
-PING 10.20.0.5 (10.20.0.5) 56(84) bytes of data.
-64 bytes from 10.20.0.5: icmp_seq=1 ttl=59 time=38.8 ms
-64 bytes from 10.20.0.5: icmp_seq=2 ttl=59 time=28.9 ms
-64 bytes from 10.20.0.5: icmp_seq=3 ttl=59 time=36.1 ms
-
---- 10.20.0.5 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 28.937/34.617/38.768/4.156 ms
-
-
-root@Srv-01:~# ping 10.30.0.3 -c3
-PING 10.30.0.3 (10.30.0.3) 56(84) bytes of data.
-64 bytes from 10.30.0.3: icmp_seq=1 ttl=59 time=28.9 ms
-64 bytes from 10.30.0.3: icmp_seq=2 ttl=59 time=33.0 ms
-64 bytes from 10.30.0.3: icmp_seq=3 ttl=59 time=29.1 ms
-
---- 10.30.0.3 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-rtt min/avg/max/mdev = 28.865/30.296/32.950/1.878 ms
-
-
-root@Srv-01:~# ping 10.30.0.6 -c3
-PING 10.30.0.6 (10.30.0.6) 56(84) bytes of data.
-64 bytes from 10.30.0.6: icmp_seq=1 ttl=59 time=32.4 ms
-64 bytes from 10.30.0.6: icmp_seq=2 ttl=59 time=34.2 ms
-64 bytes from 10.30.0.6: icmp_seq=3 ttl=59 time=41.3 ms
-
---- 10.30.0.6 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-rtt min/avg/max/mdev = 32.354/35.945/41.292/3.854 ms
-
-
-root@Srv-01:~# ping 1.1.1.1 -c3
-PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
-64 bytes from 1.1.1.1: icmp_seq=1 ttl=62 time=16.2 ms
-64 bytes from 1.1.1.1: icmp_seq=2 ttl=62 time=15.8 ms
-64 bytes from 1.1.1.1: icmp_seq=3 ttl=62 time=16.4 ms
-
---- 1.1.1.1 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2002ms
-rtt min/avg/max/mdev = 15.788/16.150/16.420/0.266 ms
-
-
-root@Srv-01:~# ping 8.8.8.8 -c3
-PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
-64 bytes from 8.8.8.8: icmp_seq=1 ttl=62 time=17.6 ms
-64 bytes from 8.8.8.8: icmp_seq=2 ttl=62 time=30.5 ms
-64 bytes from 8.8.8.8: icmp_seq=3 ttl=62 time=16.7 ms
+--- 10.129.0.2 ping statistics ---
+3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 22ms
+pipe 3
+Srv-11#ping 8.8.8.8 repeat 3
+PING 8.8.8.8 (8.8.8.8) 72(100) bytes of data.
+80 bytes from 8.8.8.8: icmp_seq=1 ttl=62 time=19.6 ms
+80 bytes from 8.8.8.8: icmp_seq=2 ttl=62 time=16.4 ms
+80 bytes from 8.8.8.8: icmp_seq=3 ttl=62 time=18.9 ms
 
 --- 8.8.8.8 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 16.744/21.637/30.531/6.299 ms
+3 packets transmitted, 3 received, 0% packet loss, time 30ms
+rtt min/avg/max/mdev = 16.474/18.354/19.670/1.373 ms, pipe 2, ipg/ewma 15.358/19.226 ms
 ```
 </details>
 <details>
-<summary> Srv-05: </summary>
+<summary> Srv-22: </summary>
 
 ```
-root@Srv-05:~# ping 10.10.0.1 -c3
-PING 10.10.0.1 (10.10.0.1) 56(84) bytes of data.
-64 bytes from 10.10.0.1: icmp_seq=1 ttl=59 time=64.0 ms
-64 bytes from 10.10.0.1: icmp_seq=2 ttl=59 time=30.0 ms
-64 bytes from 10.10.0.1: icmp_seq=3 ttl=59 time=30.9 ms
+Srv-22#sh port-channel 20 detailed
+Port Channel Port-Channel20 (Fallback State: Unconfigured):
+Minimum links: unconfigured
+Minimum speed: unconfigured
+Current weight/Max weight: 2/16
+  Active Ports:
+       Port            Time Became Active       Protocol       Mode      Weight
+    --------------- ------------------------ -------------- ------------ ------
+       Ethernet1       Wed 13:47:50             LACP           Active      1
+       Ethernet2       Wed 13:47:50             LACP           Active      1
 
---- 10.10.0.1 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-rtt min/avg/max/mdev = 30.033/41.663/64.036/15.824 ms
+Srv-22#
+Srv-22#
+Srv-22#ping 10.128.0.1 repeat 3
+PING 10.128.0.1 (10.128.0.1) 72(100) bytes of data.
+80 bytes from 10.128.0.1: icmp_seq=1 ttl=49 time=799 ms
+80 bytes from 10.128.0.1: icmp_seq=2 ttl=51 time=794 ms
+80 bytes from 10.128.0.1: icmp_seq=3 ttl=51 time=800 ms
 
+--- 10.128.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 22ms
+rtt min/avg/max/mdev = 794.727/798.264/800.084/2.605 ms, pipe 3, ipg/ewma 11.380/799.420 ms
+Srv-22#
+Srv-22#
+Srv-22#ping 10.128.0.2 repeat 3
+PING 10.128.0.2 (10.128.0.2) 72(100) bytes of data.
+80 bytes from 10.128.0.2: icmp_seq=1 ttl=59 time=49.7 ms
+80 bytes from 10.128.0.2: icmp_seq=2 ttl=59 time=42.3 ms
+80 bytes from 10.128.0.2: icmp_seq=3 ttl=59 time=42.6 ms
 
-root@Srv-05:~# ping 10.10.0.4 -c3
-PING 10.10.0.4 (10.10.0.4) 56(84) bytes of data.
-64 bytes from 10.10.0.4: icmp_seq=1 ttl=59 time=35.8 ms
-64 bytes from 10.10.0.4: icmp_seq=2 ttl=59 time=37.1 ms
-64 bytes from 10.10.0.4: icmp_seq=3 ttl=59 time=33.1 ms
+--- 10.128.0.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 22ms
+rtt min/avg/max/mdev = 42.363/44.921/49.766/3.427 ms, pipe 3, ipg/ewma 11.438/48.064 ms
+Srv-22#
+Srv-22#
+Srv-22#ping 10.129.0.1 repeat 3
+PING 10.129.0.1 (10.129.0.1) 72(100) bytes of data.
+80 bytes from 10.129.0.1: icmp_seq=1 ttl=64 time=32.0 ms
+80 bytes from 10.129.0.1: icmp_seq=2 ttl=64 time=23.7 ms
+80 bytes from 10.129.0.1: icmp_seq=3 ttl=64 time=27.1 ms
 
---- 10.10.0.4 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 33.055/35.318/37.106/1.687 ms
-
-
-root@Srv-05:~# ping 10.20.0.2 -c3
-PING 10.20.0.2 (10.20.0.2) 56(84) bytes of data.
-64 bytes from 10.20.0.2: icmp_seq=1 ttl=64 time=14.8 ms
-64 bytes from 10.20.0.2: icmp_seq=2 ttl=64 time=20.5 ms
-64 bytes from 10.20.0.2: icmp_seq=3 ttl=64 time=18.2 ms
-
---- 10.20.0.2 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 14.834/17.831/20.455/2.309 ms
-
-
-root@Srv-05:~# ping 10.30.0.3 -c3
-PING 10.30.0.3 (10.30.0.3) 56(84) bytes of data.
-64 bytes from 10.30.0.3: icmp_seq=1 ttl=59 time=29.7 ms
-64 bytes from 10.30.0.3: icmp_seq=2 ttl=59 time=27.5 ms
-64 bytes from 10.30.0.3: icmp_seq=3 ttl=59 time=39.8 ms
-
---- 10.30.0.3 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2002ms
-rtt min/avg/max/mdev = 27.450/32.300/39.751/5.347 ms
-
-
-root@Srv-05:~# ping 10.30.0.6 -c3
-PING 10.30.0.6 (10.30.0.6) 56(84) bytes of data.
-64 bytes from 10.30.0.6: icmp_seq=1 ttl=59 time=28.9 ms
-64 bytes from 10.30.0.6: icmp_seq=2 ttl=59 time=30.2 ms
-64 bytes from 10.30.0.6: icmp_seq=3 ttl=59 time=30.7 ms
-
---- 10.30.0.6 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 28.949/29.957/30.714/0.742 ms
-
-
-root@Srv-05:~# ping 1.1.1.1 -c3
-PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
-64 bytes from 1.1.1.1: icmp_seq=1 ttl=62 time=16.3 ms
-64 bytes from 1.1.1.1: icmp_seq=2 ttl=62 time=14.5 ms
-64 bytes from 1.1.1.1: icmp_seq=3 ttl=62 time=19.1 ms
-
---- 1.1.1.1 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-rtt min/avg/max/mdev = 14.524/16.642/19.091/1.879 ms
-
-
-root@Srv-05:~# ping 8.8.8.8 -c3
-PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
-64 bytes from 8.8.8.8: icmp_seq=1 ttl=62 time=15.8 ms
-64 bytes from 8.8.8.8: icmp_seq=2 ttl=62 time=15.0 ms
-64 bytes from 8.8.8.8: icmp_seq=3 ttl=62 time=16.7 ms
+--- 10.129.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 22ms
+rtt min/avg/max/mdev = 23.708/27.631/32.022/3.415 ms, pipe 3, ipg/ewma 11.314/30.505 ms
+Srv-22#
+Srv-22#
+Srv-22#ping 8.8.8.8 repeat 3
+PING 8.8.8.8 (8.8.8.8) 72(100) bytes of data.
+80 bytes from 8.8.8.8: icmp_seq=1 ttl=62 time=18.9 ms
+80 bytes from 8.8.8.8: icmp_seq=2 ttl=62 time=18.1 ms
+80 bytes from 8.8.8.8: icmp_seq=3 ttl=62 time=20.1 ms
 
 --- 8.8.8.8 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 15.015/15.826/16.677/0.679 ms
+3 packets transmitted, 3 received, 0% packet loss, time 32ms
+rtt min/avg/max/mdev = 18.148/19.067/20.153/0.827 ms, pipe 2, ipg/ewma 16.372/18.974 ms
 ```
 </details>
 
