@@ -1352,161 +1352,204 @@ router bgp 65299
 ```
 </details>
    <details>
-<summary>  Настройка BR-Leaf-01: </summary>
+<summary>  Настройка BR-Router-11: </summary>
 
 ```
 #### Базовая настройка ####
-hostname BR-Leaf-01
-service routing protocols model multi-agent
+hostname BR-Router-11
+!
 terminal width 250
+!
 username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+!
 aaa authorization serial-console
 aaa authorization exec default local
+!
 ip routing
-ip routing vrf A
-ip routing vrf B
-ip routing vrf C
-route-map LOOPBAKS permit 10
-   match interface Loopback0
-route-map LOOPBAKS permit 20
-   match interface Loopback1
+!
+ip prefix-list BR-Leaf seq 10 permit 0.0.0.0/0
+!
+route-map BR-Leaf permit 10
+   match ip address prefix-list BR-Leaf
+
 
 #### Настройка интерфейсов ####
 interface Ethernet1
-   description ### Link to Spine-01 int Eth1 ###
+   description ### Link to BR-Leaf-11 int Eth5 ###
    no switchport
-   ip address 10.2.1.5/31
-   bfd interval 50 min-rx 50 multiplier 3
-interface Ethernet2
-   no switchport
-interface Ethernet2.101
-   encapsulation dot1q vlan 101
-   vrf A
+!
+interface Ethernet1.1
+   description ### Link to VRF-1 BR-Leaf-11 int Eth5.1 ###
+   encapsulation dot1q vlan 1
    ip address 10.3.1.0/31
-interface Ethernet2.102
-   encapsulation dot1q vlan 102
-   vrf B
+!
+interface Ethernet1.2
+   description ### Link to VRF-2 BR-Leaf-11 int Eth5.2 ###
+   encapsulation dot1q vlan 2
    ip address 10.3.1.2/31
-interface Ethernet2.103
-   encapsulation dot1q vlan 103
-   vrf C
-   ip address 10.3.1.4/31
+!
+interface Ethernet2
+   description ### Link to BR-Leaf-21 int Eth6 ###
+   no switchport
+!
+interface Ethernet2.1
+   description ### Link to VRF-1 BR-Leaf-21 int Eth6.1 ###
+   encapsulation dot1q vlan 1
+   ip address 10.3.2.0/31
+!
+interface Ethernet2.2
+   description ### Link to VRF-2 BR-Leaf-21 int Eth6.2 ###
+   encapsulation dot1q vlan 2
+   ip address 10.3.2.2/31
+!
+interface Ethernet3
+   description ### Link to BR-Router-21 int Eth3 ###
+   no switchport
+   ip address 10.5.0.0/31
+!
 interface Loopback0
-   ip address 10.1.0.3/32
-interface Loopback1
-   ip address 10.1.1.3/32
-interface Vxlan1
-   vxlan source-interface Loopback1
-   vxlan udp-port 4789
-   vxlan vrf A vni 10010
-   vxlan vrf B vni 10020
-   vxlan vrf C vni 10030
-ip virtual-router mac-address 00:00:11:11:11:11
+   description ### For RID ###
+   ip address 10.5.1.0/32
+!
+interface Loopback10
+   description ### host-1 ###
+   ip address 200.0.0.1/32
+!
+interface Loopback11
+   description ### host-2 ###
+   ip address 100.0.0.1/32
+!
+interface Loopback12
+   description ### host-3 ###
+   ip address 8.8.8.8/32
+
 
 #### Настройка BGP ####
 router bgp 65000
    bgp asn notation asdot
-   router-id 10.1.0.3
+   router-id 10.5.1.0
    maximum-paths 32
-   neighbor OVERLAY peer group
-   neighbor OVERLAY remote-as 65000
-   neighbor OVERLAY update-source Loopback0
-   neighbor OVERLAY bfd
-   neighbor OVERLAY timers 5 15
-   neighbor OVERLAY password 7 uOE+oO5B97YK28lH6OwjCQ==
-   neighbor OVERLAY send-community
-   neighbor UNDERLAY peer group
-   neighbor UNDERLAY remote-as 65000
-   neighbor UNDERLAY bfd
-   neighbor UNDERLAY timers 5 15
-   neighbor UNDERLAY password 7 ZcyyQF+TaMkNnh+RPCdLHA==
-   neighbor 10.0.1.0 peer group OVERLAY
-   neighbor 10.2.1.4 peer group UNDERLAY
-   redistribute connected route-map LOOPBAKS
-   !
-   address-family evpn
-      neighbor OVERLAY activate
-   !
-   address-family ipv4
-      no neighbor OVERLAY activate
-   !
-   vrf A
-      rd 10.1.0.3:10010
-      route-target import evpn 65000:10010
-      route-target export evpn 65000:10010
-      neighbor 10.3.1.1 remote-as 65100
-      neighbor 10.3.1.1 local-as 65000.101 no-prepend replace-as
-      aggregate-address 10.10.0.0/16 summary-only
-      redistribute connected
-   !
-   vrf B
-      rd 10.1.0.3:10020
-      route-target import evpn 65000:10020
-      route-target export evpn 65000:10020
-      neighbor 10.3.1.3 remote-as 65100
-      neighbor 10.3.1.3 local-as 65000.102 no-prepend replace-as
-      aggregate-address 10.20.0.0/16 summary-only
-      redistribute connected
-   !
-   vrf C
-      rd 10.1.0.3:10030
-      route-target import evpn 65000:10030
-      route-target export evpn 65000:10030
-      neighbor 10.3.1.5 remote-as 65100
-      neighbor 10.3.1.5 local-as 65000.103 no-prepend replace-as
-      aggregate-address 10.30.0.0/16 summary-only
-      redistribute connected
+   neighbor BR-Leaf-1 peer group
+   neighbor BR-Leaf-1 remote-as 65199
+   neighbor BR-Leaf-1 timers 5 15
+   neighbor BR-Leaf-1 route-map BR-Leaf out
+   neighbor BR-Leaf-1 password 7 h89y9wbnsh7/69fLhlTqtQ==
+   neighbor BR-Leaf-1 default-originate
+   neighbor BR-Leaf-2 peer group
+   neighbor BR-Leaf-2 remote-as 65299
+   neighbor BR-Leaf-2 timers 5 15
+   neighbor BR-Leaf-2 route-map BR-Leaf out
+   neighbor BR-Leaf-2 password 7 NkjfnoWdmeiYpNCV/HY69A==
+   neighbor BR-Leaf-2 default-originate
+   neighbor 10.3.1.1 peer group BR-Leaf-1
+   neighbor 10.3.1.3 peer group BR-Leaf-1
+   neighbor 10.3.2.1 peer group BR-Leaf-2
+   neighbor 10.3.2.3 peer group BR-Leaf-2
+   neighbor 10.5.0.1 remote-as 65000
+   neighbor 10.5.0.1 next-hop-self
+   neighbor 10.5.0.1 timers 5 15
+   neighbor 10.5.0.1 password 7 Eq2YBDFujM335oxnEa5yAg==
+
 ```
 </details>
  <details>
-<summary>  Настройка BR-FW: </summary>
+<summary>  Настройка BR-Router-21: </summary>
 
 ```
 #### Базовая настройка ####
-hostname BR-FW
-service routing protocols model multi-agent
+hostname BR-Router-21
+!
+!
 terminal width 250
+!
 username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+!
 aaa authorization serial-console
 aaa authorization exec default local
+!
 ip routing
-ip prefix-list Lo10
-   seq 10 permit 1.0.0.0/8
-route-map Lo10 permit 10
-   match ip address prefix-list Lo10
+!
+ip prefix-list BR-Leaf seq 10 permit 0.0.0.0/0
+!
+route-map BR-Leaf permit 10
+   match ip address prefix-list BR-Leaf
+
 
 #### Настройка интерфейсов ####
 interface Ethernet1
+   description ### Link to BR-Leaf-21 int Eth5 ###
    no switchport
-interface Ethernet1.101
-   encapsulation dot1q vlan 101
-   ip address 10.3.1.1/31
-interface Ethernet1.102
-   encapsulation dot1q vlan 102
-   ip address 10.3.1.3/31
-interface Ethernet1.103
-   encapsulation dot1q vlan 103
-   ip address 10.3.1.5/31
+!
+interface Ethernet1.1
+   description ### Link to VRF-1 BR-Leaf-21 int Eth5.1 ###
+   encapsulation dot1q vlan 1
+   ip address 10.11.2.0/31
+!
+interface Ethernet1.2
+   description ### Link to VRF-2 BR-Leaf-21 int Eth5.2 ###
+   encapsulation dot1q vlan 2
+   ip address 10.11.2.2/31
+!
+interface Ethernet2
+   description ### Link to BR-Leaf-11 int Eth6 ###
+   no switchport
+!
+interface Ethernet2.1
+   description ### Link to VRF-1 BR-Leaf-11 int Eth6.1 ###
+   encapsulation dot1q vlan 1
+   ip address 10.11.1.0/31
+!
+interface Ethernet2.2
+   description ### Link to VRF-2 BR-Leaf-21 int Eth6.2 ###
+   encapsulation dot1q vlan 2
+   ip address 10.11.1.2/31
+!
+interface Ethernet3
+   description ### Link to BR-Router-11 int Eth3 ###
+   no switchport
+   ip address 10.5.0.1/31
+!
 interface Loopback0
-   ip address 10.1.0.254/32
+   description ### For RID ###
+   ip address 10.5.2.0/32
+!
 interface Loopback10
-   ip address 1.1.1.1/32
-interface Loopback20
+   description ### host-1 ###
+   ip address 200.0.0.1/32
+!
+interface Loopback11
+   description ### host-2 ###
+   ip address 100.0.0.1/32
+!
+interface Loopback12
+   description ### host-3 ###
    ip address 8.8.8.8/32
 
+
 #### Настройка BGP ####
-router bgp 65100
-   bgp asn notation asdot
-   router-id 10.1.0.254
-   neighbor test peer group
-   neighbor 10.3.1.0 remote-as 65000.101
-   neighbor 10.3.1.0 default-originate
-   neighbor 10.3.1.2 remote-as 65000.102
-   neighbor 10.3.1.2 default-originate
-   neighbor 10.3.1.4 remote-as 65000.103
-   neighbor 10.3.1.4 default-originate
-   aggregate-address 1.0.0.0/8 summary-only
-   redistribute connected route-map Lo10
+router bgp 65000
+   router-id 10.5.2.0
+   maximum-paths 32
+   neighbor BR-Leaf-1 peer group
+   neighbor BR-Leaf-1 remote-as 65199
+   neighbor BR-Leaf-1 timers 5 15
+   neighbor BR-Leaf-1 route-map BR-Leaf out
+   neighbor BR-Leaf-1 password 7 h89y9wbnsh7/69fLhlTqtQ==
+   neighbor BR-Leaf-1 default-originate
+   neighbor BR-Leaf-2 peer group
+   neighbor BR-Leaf-2 remote-as 65299
+   neighbor BR-Leaf-2 timers 5 15
+   neighbor BR-Leaf-2 route-map BR-Leaf out
+   neighbor BR-Leaf-2 password 7 NkjfnoWdmeiYpNCV/HY69A==
+   neighbor BR-Leaf-2 default-originate
+   neighbor 10.5.0.0 remote-as 65000
+   neighbor 10.5.0.0 next-hop-self
+   neighbor 10.5.0.0 timers 5 15
+   neighbor 10.5.0.0 password 7 Eq2YBDFujM335oxnEa5yAg==
+   neighbor 10.11.1.1 peer group BR-Leaf-1
+   neighbor 10.11.1.3 peer group BR-Leaf-1
+   neighbor 10.11.2.1 peer group BR-Leaf-2
+   neighbor 10.11.2.3 peer group BR-Leaf-2
 ```
 </details>
 
