@@ -120,7 +120,7 @@ interface Ethernet2
    ip address 10.2.2.2/31
 !
 interface Ethernet3
-   description ### Link to BR-Leaf-21 int Eth2 ###
+   description ### Link to BR-Leaf-11 int Eth2 ###
    no switchport
    ip address 10.2.2.4/31
 !
@@ -311,99 +311,856 @@ router bgp 65200
 ```
 </details>
   <details>
-<summary>  Настройка Leaf-01: </summary>
+<summary>  Настройка Leaf-11: </summary>
 
 ```
 #### Базовая настройка ####
-hostname Leaf-01
+hostname Leaf-11
+!
 service routing protocols model multi-agent
+!
 terminal width 250
+!
 username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+!
 aaa authorization serial-console
 aaa authorization exec default local
-vlan 10,20,30
+!
+vlan 10,20
+!
+vrf instance VRF-1
+!
+vrf instance VRF-2
+!
+ip virtual-router mac-address 00:00:11:11:11:11
+!
 ip routing
-ip routing vrf A
-ip routing vrf B
-ip routing vrf C
+ip routing vrf VRF-1
+ip routing vrf VRF-2
+!
 route-map LOOPBAKS permit 10
    match interface Loopback0
+!
 route-map LOOPBAKS permit 20
    match interface Loopback1
+!
+interface Loopback0
+   description ### For RID ###
+   ip address 10.1.0.1/32
+!
+interface Loopback1
+   description ### For VTEP ###
+   ip address 10.1.1.1/32
+
+#### Настройка интерфейсов ####
+interface Ethernet1
+   description ### Link to Spine-11 int Eth1 ###
+   no switchport
+   ip address 10.2.1.1/31
+!
+interface Ethernet2
+   description ### Link to Spine-12 int Eth2 ###
+   no switchport
+   ip address 10.2.2.1/31
+!
+interface Vlan10
+   vrf VRF-1
+   ip address virtual 10.128.0.254/24
+!
+interface Vlan20
+   vrf VRF-2
+   ip address virtual 10.129.0.254/24
+!
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan udp-port 4789
+   vxlan vlan 10 vni 10
+   vxlan vlan 20 vni 20
+   vxlan vrf VRF-1 vni 10001
+   vxlan vrf VRF-2 vni 10002
+
+#### Настройка MLAG ####
+no spanning-tree vlan-id 4093-4094
+!
+vlan 4093-4094
+   trunk group mlagpeer
+!
+interface Ethernet3
+   description ### Po1 to Leaf-12 int Eth3 ###
+   channel-group 1 mode active
+!
+interface Ethernet4
+   description ### Po1 to Leaf-12 int Eth4 ###
+   channel-group 1 mode active
+!
+interface Ethernet6
+   description ### Po10 to Srv-11 int Eth1 ###
+   channel-group 10 mode active
+!
+interface Ethernet7
+   description ### Po20 to Srv-12 int Eth1 ###
+   channel-group 20 mode active
+!
+interface Port-Channel1
+   description ### PeerLink to Leaf-12 int Po1 ###
+   switchport mode trunk
+   switchport trunk group mlagpeer
+!
+interface Port-Channel10
+   description ### Link to Srv-11 int Po10 ###
+   switchport access vlan 10
+   mlag 10
+!
+interface Port-Channel20
+   description ### Link to Srv-12 int Po20 ###
+   switchport access vlan 20
+   mlag 20
+!
+interface Vlan4093
+   description ### For iBGP ###
+   ip address 10.4.1.0/31
+!
+interface Vlan4094
+   description ### MLAG Peer-address ###
+   ip address 10.4.1.2/31
+!
+mlag configuration
+   domain-id mlag-01
+   local-interface Vlan4094
+   peer-address 10.4.1.3
+   peer-link Port-Channel1
+
+#### Настройка BGP ####
+router bgp 65101
+   router-id 10.1.0.1
+   maximum-paths 32
+   neighbor OVERLAY peer group
+   neighbor OVERLAY remote-as 65100
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY ebgp-multihop 5
+   neighbor OVERLAY timers 5 15
+   neighbor OVERLAY password 7 9xQQO6egEpUfFr9iWyF7Cg==
+   neighbor OVERLAY send-community
+   neighbor UNDERLAY peer group
+   neighbor UNDERLAY remote-as 65100
+   neighbor UNDERLAY timers 5 15
+   neighbor UNDERLAY password 7 c2Lge1fq0/XPJRBznUKq1g==
+   neighbor iBGP peer group
+   neighbor iBGP remote-as 65101
+   neighbor iBGP next-hop-self
+   neighbor iBGP timers 5 15
+   neighbor iBGP password 7 d3DyfwhRApq/cx8UQ+Aw7A==
+   neighbor 10.0.1.0 peer group OVERLAY
+   neighbor 10.0.2.0 peer group OVERLAY
+   neighbor 10.2.1.0 peer group UNDERLAY
+   neighbor 10.2.2.0 peer group UNDERLAY
+   neighbor 10.4.1.1 peer group iBGP
+   redistribute connected route-map LOOPBAKS
+   !
+   vlan 10
+      rd 10.1.0.1:10
+      route-target both 1:10
+      redistribute learned
+   !
+   vlan 20
+      rd 10.1.0.1:20
+      route-target both 1:20
+      redistribute learned
+   !
+   address-family evpn
+      neighbor OVERLAY activate
+   !
+   address-family ipv4
+      no neighbor OVERLAY activate
+   !
+   vrf VRF-1
+      rd 10.1.0.1:10001
+      route-target import evpn 1:10001
+      route-target export evpn 1:10001
+   !
+   vrf VRF-2
+      rd 10.1.0.1:10002
+      route-target import evpn 2:10002
+      route-target export evpn 2:10002
+```
+</details>
+   <details>
+<summary>  Настройка Leaf-12: </summary>
+
+```
+#### Базовая настройка ####
+hostname Leaf-12
+!
+service routing protocols model multi-agent
+!
+terminal width 250
+!
+username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+!
+aaa authorization serial-console
+aaa authorization exec default local
+!
+vlan 10,20
+!
+vrf instance VRF-1
+!
+vrf instance VRF-2
+!
+ip virtual-router mac-address 00:00:11:11:11:11
+!
+ip routing
+ip routing vrf VRF-1
+ip routing vrf VRF-2
+!
+route-map LOOPBAKS permit 10
+   match interface Loopback0
+!
+route-map LOOPBAKS permit 20
+   match interface Loopback1
+!
+interface Loopback0
+   description ### For RID ###
+   ip address 10.1.0.2/32
+!
+interface Loopback1
+   description ### For VTEP ###
+   ip address 10.1.1.2/32
+
+#### Настройка интерфейсов ####
+interface Ethernet1
+   description ### Link to Spine-11 int Eth2 ###
+   no switchport
+   ip address 10.2.1.3/31
+!
+interface Ethernet2
+   description ### Link to Spine-12 int Eth2 ###
+   no switchport
+   ip address 10.2.2.3/31
+!
+interface Vlan10
+   vrf VRF-1
+   ip address virtual 10.128.0.254/24
+!
+interface Vlan20
+   vrf VRF-2
+   ip address virtual 10.129.0.254/24
+!
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan udp-port 4789
+   vxlan vlan 10 vni 10
+   vxlan vlan 20 vni 20
+   vxlan vrf VRF-1 vni 10001
+   vxlan vrf VRF-2 vni 10002
+
+#### Настройка MLAG ####
+no spanning-tree vlan-id 4093-4094
+!
+vlan 4093-4094
+   trunk group mlagpeer
+!
+interface Ethernet3
+   description ### Po1 to Leaf-11 int Eth3 ###
+   channel-group 1 mode active
+!
+interface Ethernet4
+   description ### Po1 to Leaf-11 int Eth4 ###
+   channel-group 1 mode active
+!
+interface Ethernet6
+   description ### Po10 to Srv-11 int Eth2 ###
+   channel-group 10 mode active
+!
+interface Ethernet7
+   description ### Po20 to Srv-12 int Eth2 ###
+   channel-group 20 mode active
+!
+interface Port-Channel1
+   description ### PeerLink to Leaf-11 int Po1 ###
+   switchport mode trunk
+   switchport trunk group mlagpeer
+!
+interface Port-Channel10
+   description ### Link to Srv-11 int Po10 ###
+   switchport access vlan 10
+   mlag 10
+!
+interface Port-Channel20
+   description ### Link to Srv-12 int Po20 ###
+   switchport access vlan 20
+   mlag 20
+!
+interface Vlan4093
+   description ### For iBGP ###
+   ip address 10.4.1.1/31
+!
+interface Vlan4094
+   description ### MLAG Peer-address ###
+   ip address 10.4.1.3/31
+!
+mlag configuration
+   domain-id mlag-01
+   local-interface Vlan4094
+   peer-address 10.4.1.2
+   peer-link Port-Channel1
+
+#### Настройка BGP ####
+router bgp 65101
+   router-id 10.1.0.2
+   maximum-paths 32
+   neighbor OVERLAY peer group
+   neighbor OVERLAY remote-as 65100
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY ebgp-multihop 5
+   neighbor OVERLAY timers 5 15
+   neighbor OVERLAY password 7 9xQQO6egEpUfFr9iWyF7Cg==
+   neighbor OVERLAY send-community
+   neighbor UNDERLAY peer group
+   neighbor UNDERLAY remote-as 65100
+   neighbor UNDERLAY timers 5 15
+   neighbor UNDERLAY password 7 c2Lge1fq0/XPJRBznUKq1g==
+   neighbor iBGP peer group
+   neighbor iBGP remote-as 65101
+   neighbor iBGP next-hop-self
+   neighbor iBGP timers 5 15
+   neighbor iBGP password 7 d3DyfwhRApq/cx8UQ+Aw7A==
+   neighbor 10.0.1.0 peer group OVERLAY
+   neighbor 10.0.2.0 peer group OVERLAY
+   neighbor 10.2.1.2 peer group UNDERLAY
+   neighbor 10.2.2.2 peer group UNDERLAY
+   neighbor 10.4.1.0 peer group iBGP
+   redistribute connected route-map LOOPBAKS
+   !
+   vlan 10
+      rd 10.1.0.2:10
+      route-target both 1:10
+      redistribute learned
+   !
+   vlan 20
+      rd 10.1.0.2:20
+      route-target both 1:20
+      redistribute learned
+   !
+   address-family evpn
+      neighbor OVERLAY activate
+   !
+   address-family ipv4
+      no neighbor OVERLAY activate
+   !
+   vrf VRF-1
+      rd 10.1.0.1:10001
+      route-target import evpn 1:10001
+      route-target export evpn 1:10001
+   !
+   vrf VRF-2
+      rd 10.1.0.1:10002
+      route-target import evpn 2:10002
+      route-target export evpn 2:10002
+```
+</details>  
+   <details>
+<summary>  Настройка Leaf-21: </summary>
+
+```
+#### Базовая настройка ####
+hostname Leaf-21
+!
+service routing protocols model multi-agent
+!
+terminal width 250
+!
+username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+!
+aaa authorization serial-console
+aaa authorization exec default local
+!
+vlan 10,20
+!
+vrf instance VRF-1
+!
+vrf instance VRF-2
+!
+ip virtual-router mac-address 00:00:11:11:11:11
+!
+ip routing
+ip routing vrf VRF-1
+ip routing vrf VRF-2
+!
+route-map LOOPBAKS permit 10
+   match interface Loopback0
+!
+route-map LOOPBAKS permit 20
+   match interface Loopback1
+!
+interface Loopback0
+   description ### For RID ###
+   ip address 10.9.0.1/32
+!
+interface Loopback1
+   description ### For VTEP ###
+   ip address 10.9.1.1/32
+
+#### Настройка интерфейсов ####
+interface Ethernet1
+   description ### Link to Spine-21 int Eth1 ###
+   no switchport
+   ip address 10.10.1.1/31
+!
+interface Ethernet2
+   description ### Link to Spine-22 int Eth2 ###
+   no switchport
+   ip address 10.10.2.1/31
+!
+interface Vlan10
+   vrf VRF-1
+   ip address virtual 10.128.0.254/24
+!
+interface Vlan20
+   vrf VRF-2
+   ip address virtual 10.129.0.254/24
+!
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan udp-port 4789
+   vxlan vlan 10 vni 10
+   vxlan vlan 20 vni 20
+   vxlan vrf VRF-1 vni 10001
+   vxlan vrf VRF-2 vni 10002
+
+#### Настройка MLAG ####
+no spanning-tree vlan-id 4093-4094
+!
+vlan 4093-4094
+   trunk group mlagpeer
+!
+interface Ethernet3
+   description ### Po1 to Leaf-22 int Eth3 ###
+   channel-group 1 mode active
+!
+interface Ethernet4
+   description ### Po1 to Leaf-22 int Eth4 ###
+   channel-group 1 mode active
+!
+interface Ethernet6
+   description ### Po10 to Srv-21 int Eth1 ###
+   channel-group 10 mode active
+!
+interface Ethernet7
+   description ### Po20 to Srv-22 int Eth1 ###
+   channel-group 20 mode active
+!
+interface Port-Channel1
+   description ### PeerLink to Leaf-22 int Po1 ###
+   switchport mode trunk
+   switchport trunk group mlagpeer
+!
+interface Port-Channel10
+   description ### Link to Srv-21 int Po10 ###
+   switchport access vlan 10
+   mlag 10
+!
+interface Port-Channel20
+   description ### Link to Srv-22 int Po20 ###
+   switchport access vlan 20
+   mlag 20
+!
+interface Vlan4093
+   description ### For iBGP ###
+   ip address 10.12.1.0/31
+!
+interface Vlan4094
+   description ### MLAG Peer-address ###
+   ip address 10.12.1.2/31
+!
+mlag configuration
+   domain-id mlag-01
+   local-interface Vlan4094
+   peer-address 10.12.1.3
+   peer-link Port-Channel1
+
+#### Настройка BGP ####
+router bgp 65201
+   router-id 10.9.0.1
+   maximum-paths 32
+   neighbor OVERLAY peer group
+   neighbor OVERLAY remote-as 65200
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY ebgp-multihop 5
+   neighbor OVERLAY timers 5 15
+   neighbor OVERLAY password 7 9xQQO6egEpUfFr9iWyF7Cg==
+   neighbor OVERLAY send-community
+   neighbor UNDERLAY peer group
+   neighbor UNDERLAY remote-as 65200
+   neighbor UNDERLAY timers 5 15
+   neighbor UNDERLAY password 7 c2Lge1fq0/XPJRBznUKq1g==
+   neighbor iBGP peer group
+   neighbor iBGP remote-as 65201
+   neighbor iBGP next-hop-self
+   neighbor iBGP timers 5 15
+   neighbor iBGP password 7 d3DyfwhRApq/cx8UQ+Aw7A==
+   neighbor 10.8.1.0 peer group OVERLAY
+   neighbor 10.8.2.0 peer group OVERLAY
+   neighbor 10.10.1.0 peer group UNDERLAY
+   neighbor 10.10.2.0 peer group UNDERLAY
+   neighbor 10.12.1.1 peer group iBGP
+   redistribute connected route-map LOOPBAKS
+   !
+   vlan 10
+      rd 10.9.0.1:10
+      route-target both 1:10
+      redistribute learned
+   !
+   vlan 20
+      rd 10.9.0.1:20
+      route-target both 1:20
+      redistribute learned
+   !
+   address-family evpn
+      neighbor OVERLAY activate
+   !
+   address-family ipv4
+      no neighbor OVERLAY activate
+   !
+   vrf VRF-1
+      rd 10.9.0.1:10001
+      route-target import evpn 1:10001
+      route-target export evpn 1:10001
+   !
+   vrf VRF-2
+      rd 10.9.0.1:10002
+      route-target import evpn 2:10002
+      route-target export evpn 2:10002
+```
+</details>  
+   <details>
+<summary>  Настройка Leaf-22: </summary>
+
+```
+#### Базовая настройка ####
+hostname Leaf-22
+!
+service routing protocols model multi-agent
+!
+terminal width 250
+!
+username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+!
+aaa authorization serial-console
+aaa authorization exec default local
+!
+vlan 10,20
+!
+vrf instance VRF-1
+!
+vrf instance VRF-2
+!
+ip virtual-router mac-address 00:00:11:11:11:11
+!
+ip routing
+ip routing vrf VRF-1
+ip routing vrf VRF-2
+!
+route-map LOOPBAKS permit 10
+   match interface Loopback0
+!
+route-map LOOPBAKS permit 20
+   match interface Loopback1
+!
+interface Loopback0
+   description ### For RID ###
+   ip address 10.9.0.2/32
+!
+interface Loopback1
+   description ### For VTEP ###
+   ip address 10.9.1.2/32
+
+#### Настройка интерфейсов ####
+interface Ethernet1
+   description ### Link to Spine-21 int Eth1 ###
+   no switchport
+   ip address 10.10.1.3/31
+!
+interface Ethernet2
+   description ### Link to Spine-22 int Eth2 ###
+   no switchport
+   ip address 10.10.2.3/31
+!
+interface Vlan10
+   vrf VRF-1
+   ip address virtual 10.128.0.254/24
+!
+interface Vlan20
+   vrf VRF-2
+   ip address virtual 10.129.0.254/24
+!
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan udp-port 4789
+   vxlan vlan 10 vni 10
+   vxlan vlan 20 vni 20
+   vxlan vrf VRF-1 vni 10001
+   vxlan vrf VRF-2 vni 10002
+
+#### Настройка MLAG ####
+no spanning-tree vlan-id 4093-4094
+!
+vlan 4093-4094
+   trunk group mlagpeer
+!
+interface Ethernet3
+   description ### Po1 to Leaf-21 int Eth3 ###
+   channel-group 1 mode active
+!
+interface Ethernet4
+   description ### Po1 to Leaf-21 int Eth4 ###
+   channel-group 1 mode active
+!
+interface Ethernet6
+   description ### Po10 to Srv-21 int Eth1 ###
+   channel-group 10 mode active
+!
+interface Ethernet7
+   description ### Po20 to Srv-22 int Eth1 ###
+   channel-group 20 mode active
+!
+interface Port-Channel1
+   description ### PeerLink to Leaf-21 int Po1 ###
+   switchport mode trunk
+   switchport trunk group mlagpeer
+!
+interface Port-Channel10
+   description ### Link to Srv-21 int Po10 ###
+   switchport access vlan 10
+   mlag 10
+!
+interface Port-Channel20
+   description ### Link to Srv-22 int Po20 ###
+   switchport access vlan 20
+   mlag 20
+!
+interface Vlan4093
+   description ### For iBGP ###
+   ip address 10.12.1.1/31
+!
+interface Vlan4094
+   description ### MLAG Peer-address ###
+   ip address 10.12.1.3/31
+!
+mlag configuration
+   domain-id mlag-01
+   local-interface Vlan4094
+   peer-address 10.12.1.2
+   peer-link Port-Channel1
+
+#### Настройка BGP ####
+router bgp 65201
+   router-id 10.9.0.1
+   maximum-paths 32
+   neighbor OVERLAY peer group
+   neighbor OVERLAY remote-as 65200
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY ebgp-multihop 5
+   neighbor OVERLAY timers 5 15
+   neighbor OVERLAY password 7 9xQQO6egEpUfFr9iWyF7Cg==
+   neighbor OVERLAY send-community
+   neighbor UNDERLAY peer group
+   neighbor UNDERLAY remote-as 65200
+   neighbor UNDERLAY timers 5 15
+   neighbor UNDERLAY password 7 c2Lge1fq0/XPJRBznUKq1g==
+   neighbor iBGP peer group
+   neighbor iBGP remote-as 65201
+   neighbor iBGP next-hop-self
+   neighbor iBGP timers 5 15
+   neighbor iBGP password 7 d3DyfwhRApq/cx8UQ+Aw7A==
+   neighbor 10.8.1.0 peer group OVERLAY
+   neighbor 10.8.2.0 peer group OVERLAY
+   neighbor 10.10.1.0 peer group UNDERLAY
+   neighbor 10.10.2.0 peer group UNDERLAY
+   neighbor 10.12.1.1 peer group iBGP
+   redistribute connected route-map LOOPBAKS
+   !
+   vlan 10
+      rd 10.9.0.1:10
+      route-target both 1:10
+      redistribute learned
+   !
+   vlan 20
+      rd 10.9.0.1:20
+      route-target both 1:20
+      redistribute learned
+   !
+   address-family evpn
+      neighbor OVERLAY activate
+   !
+   address-family ipv4
+      no neighbor OVERLAY activate
+   !
+   vrf VRF-1
+      rd 10.9.0.1:10001
+      route-target import evpn 1:10001
+      route-target export evpn 1:10001
+   !
+   vrf VRF-2
+      rd 10.9.0.1:10002
+      route-target import evpn 2:10002
+      route-target export evpn 2:10002
+```
+</details>  
+   <details>
+<summary>  Настройка Leaf-11: </summary>
+
+```
+#### Базовая настройка ####
+hostname Leaf-11
+!
+service routing protocols model multi-agent
+!
+terminal width 250
+!
+username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+!
+aaa authorization serial-console
+aaa authorization exec default local
+!
+vlan 10,20
+!
+vrf instance VRF-1
+!
+vrf instance VRF-2
+!
+ip virtual-router mac-address 00:00:11:11:11:11
+!
+ip routing
+ip routing vrf VRF-1
+ip routing vrf VRF-2
+!
+route-map LOOPBAKS permit 10
+   match interface Loopback0
+!
+route-map LOOPBAKS permit 20
+   match interface Loopback1
+!
+interface Loopback0
+   description ### For RID ###
+   ip address 10.1.0.1/32
+!
+interface Loopback1
+   description ### For VTEP ###
+   ip address 10.1.1.1/32
 
 #### Настройка интерфейсов ####
 interface Ethernet1
    description ### Link to Spine-01 int Eth1 ###
    no switchport
    ip address 10.2.1.1/31
-   bfd interval 50 min-rx 50 multiplier 3
+!
 interface Ethernet2
-   description ### Link to Srv-01 int e0 ###
-   switchport access vlan 10
-interface Ethernet3
-   description ### Link to Srv-02 int e0 ###
-   switchport access vlan 20
-interface Ethernet4
-   description ### Link to Srv-03 int e0 ###
-   switchport access vlan 30
-interface Loopback0
-   ip address 10.1.0.1/32
-interface Loopback1
-   ip address 10.1.1.1/32
+   description ### Link to Spine-02 int Eth2 ###
+   no switchport
+   ip address 10.2.2.1/31
+!
 interface Vlan10
-   vrf A
-   ip address virtual 10.10.0.254/24
+   vrf VRF-1
+   ip address virtual 10.128.0.254/24
+!
 interface Vlan20
-   vrf B
-   ip address virtual 10.20.0.254/24
-interface Vlan30
-   vrf C
-   ip address virtual 10.30.0.254/24
+   vrf VRF-2
+   ip address virtual 10.129.0.254/24
+!
 interface Vxlan1
    vxlan source-interface Loopback1
    vxlan udp-port 4789
    vxlan vlan 10 vni 10
    vxlan vlan 20 vni 20
-   vxlan vlan 30 vni 30
-   vxlan vrf A vni 10010
-   vxlan vrf B vni 10020
-   vxlan vrf C vni 10030
-ip virtual-router mac-address 00:00:11:11:11:11
+   vxlan vrf VRF-1 vni 10001
+   vxlan vrf VRF-2 vni 10002
+
+#### Настройка MLAG ####
+no spanning-tree vlan-id 4093-4094
+!
+vlan 4093-4094
+   trunk group mlagpeer
+!
+interface Ethernet3
+   description ### Po1 to Leaf-12 int Eth3 ###
+   channel-group 1 mode active
+!
+interface Ethernet4
+   description ### Po1 to Leaf-12 int Eth4 ###
+   channel-group 1 mode active
+!
+interface Ethernet6
+   description ### Po10 to Srv-11 int Eth1 ###
+   channel-group 10 mode active
+!
+interface Ethernet7
+   description ### Po20 to Srv-12 int Eth1 ###
+   channel-group 20 mode active
+!
+interface Port-Channel1
+   description ### PeerLink to Leaf-12 int Po1 ###
+   switchport mode trunk
+   switchport trunk group mlagpeer
+!
+interface Port-Channel10
+   description ### Link to Srv-11 int Po10 ###
+   switchport access vlan 10
+   mlag 10
+!
+interface Port-Channel20
+   description ### Link to Srv-12 int Po20 ###
+   switchport access vlan 20
+   mlag 20
+!
+interface Vlan4093
+   description ### For iBGP ###
+   ip address 10.4.1.0/31
+!
+interface Vlan4094
+   description ### MLAG Peer-address ###
+   ip address 10.4.1.2/31
+!
+mlag configuration
+   domain-id mlag-01
+   local-interface Vlan4094
+   peer-address 10.4.1.3
+   peer-link Port-Channel1
 
 #### Настройка BGP ####
-router bgp 65000
-   bgp asn notation asdot
+router bgp 65101
    router-id 10.1.0.1
    maximum-paths 32
    neighbor OVERLAY peer group
-   neighbor OVERLAY remote-as 65000
+   neighbor OVERLAY remote-as 65100
    neighbor OVERLAY update-source Loopback0
-   neighbor OVERLAY bfd
+   neighbor OVERLAY ebgp-multihop 5
    neighbor OVERLAY timers 5 15
-   neighbor OVERLAY password 7 uOE+oO5B97YK28lH6OwjCQ==
+   neighbor OVERLAY password 7 9xQQO6egEpUfFr9iWyF7Cg==
    neighbor OVERLAY send-community
    neighbor UNDERLAY peer group
-   neighbor UNDERLAY remote-as 65000
-   neighbor UNDERLAY bfd
+   neighbor UNDERLAY remote-as 65100
    neighbor UNDERLAY timers 5 15
-   neighbor UNDERLAY password 7 ZcyyQF+TaMkNnh+RPCdLHA==
+   neighbor UNDERLAY password 7 c2Lge1fq0/XPJRBznUKq1g==
+   neighbor iBGP peer group
+   neighbor iBGP remote-as 65101
+   neighbor iBGP next-hop-self
+   neighbor iBGP timers 5 15
+   neighbor iBGP password 7 d3DyfwhRApq/cx8UQ+Aw7A==
    neighbor 10.0.1.0 peer group OVERLAY
+   neighbor 10.0.2.0 peer group OVERLAY
    neighbor 10.2.1.0 peer group UNDERLAY
+   neighbor 10.2.2.0 peer group UNDERLAY
+   neighbor 10.4.1.1 peer group iBGP
    redistribute connected route-map LOOPBAKS
    !
    vlan 10
       rd 10.1.0.1:10
-      route-target both 65000:10
+      route-target both 1:10
       redistribute learned
    !
    vlan 20
       rd 10.1.0.1:20
-      route-target both 65000:20
-      redistribute learned
-   !
-   vlan 30
-      rd 10.1.0.1:30
-      route-target both 65000:30
+      route-target both 1:20
       redistribute learned
    !
    address-family evpn
@@ -412,116 +1169,171 @@ router bgp 65000
    address-family ipv4
       no neighbor OVERLAY activate
    !
-   vrf A
-      rd 10.1.0.1:10010
-      route-target import evpn 65000:10010
-      route-target export evpn 65000:10010
+   vrf VRF-1
+      rd 10.1.0.1:10001
+      route-target import evpn 1:10001
+      route-target export evpn 1:10001
    !
-   vrf B
-      rd 10.1.0.1:10020
-      route-target import evpn 65000:10020
-      route-target export evpn 65000:10020
-   !
-   vrf C
-      rd 10.1.0.1:10030
-      route-target import evpn 65000:10030
-      route-target export evpn 65000:10030
+   vrf VRF-2
+      rd 10.1.0.1:10002
+      route-target import evpn 2:10002
+      route-target export evpn 2:10002
 ```
-</details>
- <details>
-<summary>  Настройка Leaf-02: </summary>
+</details>  <details>
+<summary>  Настройка Leaf-11: </summary>
 
 ```
 #### Базовая настройка ####
-hostname Leaf-02
+hostname Leaf-11
+!
 service routing protocols model multi-agent
+!
 terminal width 250
+!
 username admin privilege 15 role network-admin secret sha512 $6$V/UTnBIIFB18Cw1L$RE5uJmJfjGnLeLRqERxwBH3lJ/YidTa2O/5oviIYzLb1dzkz/rAEzn91Qvyx7eIR5aHTQ/dtAGxyebZy7jnMt/
+!
 aaa authorization serial-console
 aaa authorization exec default local
-vlan 10,20,30
+!
+vlan 10,20
+!
+vrf instance VRF-1
+!
+vrf instance VRF-2
+!
+ip virtual-router mac-address 00:00:11:11:11:11
+!
 ip routing
-ip routing vrf A
-ip routing vrf B
-ip routing vrf C
+ip routing vrf VRF-1
+ip routing vrf VRF-2
+!
 route-map LOOPBAKS permit 10
    match interface Loopback0
+!
 route-map LOOPBAKS permit 20
    match interface Loopback1
+!
+interface Loopback0
+   description ### For RID ###
+   ip address 10.1.0.1/32
+!
+interface Loopback1
+   description ### For VTEP ###
+   ip address 10.1.1.1/32
 
 #### Настройка интерфейсов ####
 interface Ethernet1
-   description ### Link to Spine-01 int Eth2 ###
+   description ### Link to Spine-01 int Eth1 ###
    no switchport
-   ip address 10.2.1.3/31
-   bfd interval 50 min-rx 50 multiplier 3
+   ip address 10.2.1.1/31
+!
 interface Ethernet2
-   description ### Link to Srv-04 int e0 ###
-   switchport access vlan 10
-interface Ethernet3
-   description ### Link to Srv-05 int e0 ###
-   switchport access vlan 20
-interface Ethernet4
-   description ### Link to Srv-06 int e0 ###
-   switchport access vlan 30
-interface Loopback0
-   ip address 10.1.0.2/32
-interface Loopback1
-   ip address 10.1.1.2/32
+   description ### Link to Spine-02 int Eth2 ###
+   no switchport
+   ip address 10.2.2.1/31
+!
 interface Vlan10
-   vrf A
-   ip address virtual 10.10.0.254/24
+   vrf VRF-1
+   ip address virtual 10.128.0.254/24
+!
 interface Vlan20
-   vrf B
-   ip address virtual 10.20.0.254/24
-interface Vlan30
-   vrf C
-   ip address virtual 10.30.0.254/24
+   vrf VRF-2
+   ip address virtual 10.129.0.254/24
+!
 interface Vxlan1
    vxlan source-interface Loopback1
    vxlan udp-port 4789
    vxlan vlan 10 vni 10
    vxlan vlan 20 vni 20
-   vxlan vlan 30 vni 30
-   vxlan vrf A vni 10010
-   vxlan vrf B vni 10020
-   vxlan vrf C vni 10030
-ip virtual-router mac-address 00:00:11:11:11:11
+   vxlan vrf VRF-1 vni 10001
+   vxlan vrf VRF-2 vni 10002
+
+#### Настройка MLAG ####
+no spanning-tree vlan-id 4093-4094
+!
+vlan 4093-4094
+   trunk group mlagpeer
+!
+interface Ethernet3
+   description ### Po1 to Leaf-12 int Eth3 ###
+   channel-group 1 mode active
+!
+interface Ethernet4
+   description ### Po1 to Leaf-12 int Eth4 ###
+   channel-group 1 mode active
+!
+interface Ethernet6
+   description ### Po10 to Srv-11 int Eth1 ###
+   channel-group 10 mode active
+!
+interface Ethernet7
+   description ### Po20 to Srv-12 int Eth1 ###
+   channel-group 20 mode active
+!
+interface Port-Channel1
+   description ### PeerLink to Leaf-12 int Po1 ###
+   switchport mode trunk
+   switchport trunk group mlagpeer
+!
+interface Port-Channel10
+   description ### Link to Srv-11 int Po10 ###
+   switchport access vlan 10
+   mlag 10
+!
+interface Port-Channel20
+   description ### Link to Srv-12 int Po20 ###
+   switchport access vlan 20
+   mlag 20
+!
+interface Vlan4093
+   description ### For iBGP ###
+   ip address 10.4.1.0/31
+!
+interface Vlan4094
+   description ### MLAG Peer-address ###
+   ip address 10.4.1.2/31
+!
+mlag configuration
+   domain-id mlag-01
+   local-interface Vlan4094
+   peer-address 10.4.1.3
+   peer-link Port-Channel1
 
 #### Настройка BGP ####
-router bgp 65000
-   bgp asn notation asdot
-   router-id 10.1.0.2
+router bgp 65101
+   router-id 10.1.0.1
    maximum-paths 32
    neighbor OVERLAY peer group
-   neighbor OVERLAY remote-as 65000
+   neighbor OVERLAY remote-as 65100
    neighbor OVERLAY update-source Loopback0
-   neighbor OVERLAY bfd
+   neighbor OVERLAY ebgp-multihop 5
    neighbor OVERLAY timers 5 15
-   neighbor OVERLAY password 7 uOE+oO5B97YK28lH6OwjCQ==
+   neighbor OVERLAY password 7 9xQQO6egEpUfFr9iWyF7Cg==
    neighbor OVERLAY send-community
    neighbor UNDERLAY peer group
-   neighbor UNDERLAY remote-as 65000
-   neighbor UNDERLAY bfd
+   neighbor UNDERLAY remote-as 65100
    neighbor UNDERLAY timers 5 15
-   neighbor UNDERLAY password 7 ZcyyQF+TaMkNnh+RPCdLHA==
+   neighbor UNDERLAY password 7 c2Lge1fq0/XPJRBznUKq1g==
+   neighbor iBGP peer group
+   neighbor iBGP remote-as 65101
+   neighbor iBGP next-hop-self
+   neighbor iBGP timers 5 15
+   neighbor iBGP password 7 d3DyfwhRApq/cx8UQ+Aw7A==
    neighbor 10.0.1.0 peer group OVERLAY
-   neighbor 10.2.1.2 peer group UNDERLAY
+   neighbor 10.0.2.0 peer group OVERLAY
+   neighbor 10.2.1.0 peer group UNDERLAY
+   neighbor 10.2.2.0 peer group UNDERLAY
+   neighbor 10.4.1.1 peer group iBGP
    redistribute connected route-map LOOPBAKS
    !
    vlan 10
-      rd 10.1.0.2:10
-      route-target both 65000:10
+      rd 10.1.0.1:10
+      route-target both 1:10
       redistribute learned
    !
    vlan 20
-      rd 10.1.0.2:20
-      route-target both 65000:20
-      redistribute learned
-   !
-   vlan 30
-      rd 10.1.0.2:30
-      route-target both 65000:30
+      rd 10.1.0.1:20
+      route-target both 1:20
       redistribute learned
    !
    address-family evpn
@@ -530,20 +1342,15 @@ router bgp 65000
    address-family ipv4
       no neighbor OVERLAY activate
    !
-   vrf A
-      rd 10.1.0.2:10010
-      route-target import evpn 65000:10010
-      route-target export evpn 65000:10010
+   vrf VRF-1
+      rd 10.1.0.1:10001
+      route-target import evpn 1:10001
+      route-target export evpn 1:10001
    !
-   vrf B
-      rd 10.1.0.2:10020
-      route-target import evpn 65000:10020
-      route-target export evpn 65000:10020
-   !
-   vrf C
-      rd 10.1.0.2:10030
-      route-target import evpn 65000:10030
-      route-target export evpn 65000:10030
+   vrf VRF-2
+      rd 10.1.0.1:10002
+      route-target import evpn 2:10002
+      route-target export evpn 2:10002
 ```
 </details>
  <details>
